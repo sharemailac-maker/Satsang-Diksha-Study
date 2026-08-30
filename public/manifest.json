@@ -1,0 +1,25 @@
+{
+  "name": "Satsang Diksha Study",
+  "short_name": "Satsang Diksha",
+  "description": "Authentic Satsang Diksha scripture study app with all 315 Sanskrit shlokas, multi-language translations, word-by-word padachheda, Mukhpath practice, and cross-references.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F5EE",
+  "theme_color": "#8B2500",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "books", "lifestyle"]
+}

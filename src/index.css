@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-sanskrit: 'Noto Serif Devanagari', 'Noto Sans Devanagari', serif;
+    --font-gujarati: 'Noto Sans Gujarati', sans-serif;
+    --font-hindi: 'Noto Sans Devanagari', sans-serif;
+    --font-english: 'Outfit', sans-serif;
+    --font-display: 'Cinzel', serif;
+  }
+}
+
+.font-sanskrit {
+  font-family: var(--font-sanskrit);
+}
+
+.font-gujarati {
+  font-family: var(--font-gujarati);
+}
+
+.font-hindi {
+  font-family: var(--font-hindi);
+}
+
+.font-english {
+  font-family: var(--font-english);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(196, 130, 15, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 130, 15, 0.6);
+}
+
+/* Theme presets */
+.theme-light {
+  --bg-primary: #FDFBF7;
+  --bg-card: #FFFFFF;
+  --bg-secondary: #F4EFE6;
+  --text-primary: #2D241E;
+  --text-secondary: #6B5E51;
+  --border-color: #E8DFD1;
+  --accent-gold: #C4820F;
+  --accent-saffron: #E26D14;
+}
+
+.theme-sepia {
+  --bg-primary: #F4ECD8;
+  --bg-card: #EFE4CC;
+  --bg-secondary: #E5D7B7;
+  --text-primary: #382D1E;
+  --text-secondary: #66553E;
+  --border-color: #D9C8A5;
+  --accent-gold: #B87200;
+  --accent-saffron: #D05E05;
+}
+
+.theme-dark {
+  --bg-primary: #171412;
+  --bg-card: #221D1A;
+  --bg-secondary: #2E2722;
+  --text-primary: #F2ECE4;
+  --text-secondary: #A89D91;
+  --border-color: #3D342C;
+  --accent-gold: #E5A029;
+  --accent-saffron: #F38224;
+}
+
