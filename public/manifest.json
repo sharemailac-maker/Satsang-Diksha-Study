@@ -1,8 +1,8 @@
 {
-  "name": "Satsang Diksha Study",
+  "name": "Satsang Diksha",
   "short_name": "Satsang Diksha",
-  "description": "Authentic Satsang Diksha scripture study app with all 315 Sanskrit shlokas, multi-language translations, word-by-word padachheda, Mukhpath practice, and cross-references.",
-  "id": "/?source=pwa",
+  "description": "Authentic Satsang Diksha scripture study app with all 316 Sanskrit shlokas, multi-language translations, word-by-word padachheda, Mukhpath practice, and cross-references.",
+  "id": "org.baps.satsangdiksha",
   "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
@@ -13,6 +13,7 @@
   "dir": "ltr",
   "lang": "gu-IN",
   "categories": ["education", "books", "lifestyle"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",
