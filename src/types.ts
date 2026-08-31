@@ -1,4 +1,4 @@
-export type Language = 'gujarati' | 'hindi' | 'english' | 'all';
+export type Language = 'gujarati' | 'hindi' | 'english' | 'all' | 'marathi' | 'bengali' | 'tamil' | 'telugu' | 'kannada';
 
 export type SanskritScript = 'devanagari' | 'gujarati' | 'iast';
 
@@ -12,6 +12,12 @@ export interface WordMeaning {
   meaningGu: string;
   meaningHi: string;
   meaningEn: string;
+  meaningMr?: string;
+  meaningTa?: string;
+  meaningTe?: string;
+  meaningKn?: string;
+  meaningBn?: string;
+  grammaticalRole?: string;
   scriptureReference?: {
     source: string; // e.g. 'વચનામૃત ગઢડા પ્રથમ ૧' or 'સ્વામીની વાત ૧/૩'
     quoteGu: string;
@@ -20,13 +26,21 @@ export interface WordMeaning {
 }
 
 export interface ScriptureReference {
-  type: 'vachnamrut' | 'swamini_vato' | 'shikshapatri';
-  title: string;
-  section: string;
-  textGu: string;
-  textHi: string;
-  textEn: string;
-  correlationNote: string;
+  type?: 'vachnamrut' | 'swamini_vato' | 'shikshapatri' | string;
+  source?: string;
+  title?: string;
+  titleGu?: string;
+  titleHi?: string;
+  titleEn?: string;
+  section?: string;
+  topic?: string;
+  textGu?: string;
+  textHi?: string;
+  textEn?: string;
+  quoteGu?: string;
+  quoteHi?: string;
+  quoteEn?: string;
+  correlationNote?: string;
 }
 
 export interface Shloka {
@@ -44,6 +58,11 @@ export interface Shloka {
   meaningGu: string;
   meaningHi: string;
   meaningEn: string;
+  meaningMr?: string;
+  meaningTa?: string;
+  meaningTe?: string;
+  meaningKn?: string;
+  meaningBn?: string;
   padachheda?: WordMeaning[];
   anwayarthGu?: string;
   anwayarthHi?: string;
@@ -66,13 +85,35 @@ export interface Chapter {
   iconName: string;
 }
 
+export interface ReminderSettings {
+  enabled: boolean;
+  time: string; // e.g. "21:00" for 9:00 PM IST
+  sound: boolean;
+  vibrate: boolean;
+  customMessage?: string;
+}
+
+export interface LanguagePack {
+  id: Language;
+  nameGu: string;
+  nameEn: string;
+  nativeName: string;
+  sizeMb: number;
+  isDefaultInstalled?: boolean;
+}
+
 export interface UserPreferences {
-  activeLanguage: Language;
+  activeLanguage: Language; // Primary language (Default: 'gujarati')
+  secondaryLanguages: ('hindi' | 'english' | 'marathi' | 'tamil' | 'telugu' | 'kannada' | 'bengali')[];
   sanskritScript: SanskritScript;
   theme: ThemeMode;
   fontSize: number; // in px, e.g. 18
   showWordBreakdownDefault: boolean;
   showCommentaryDefault: boolean;
+  showGrammarDetails: boolean;
+  reminder: ReminderSettings;
+  installedLanguagePacks: Language[];
+  dailyGoal: number; // shlokas per day, default 5
 }
 
 export interface Bookmark {

@@ -3,11 +3,15 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Ignored if SW registration fails in dev or sandboxed environments
-    });
+    navigator.serviceWorker.register('/sw.js')
+      .then((reg) => {
+        console.log('ServiceWorker registered with scope:', reg.scope);
+      })
+      .catch((err) => {
+        console.log('ServiceWorker registration error:', err);
+      });
   });
 }
 

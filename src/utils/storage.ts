@@ -1,26 +1,61 @@
-import { Bookmark, MukhpathRecord, UserPreferences } from '../types';
+import { Bookmark, Language, LanguagePack, MukhpathRecord, UserPreferences } from '../types';
 
 const STORAGE_KEYS = {
   PREFS: 'satsang_diksha_prefs',
   BOOKMARKS: 'satsang_diksha_bookmarks',
   MUKHPATH: 'satsang_diksha_mukhpath',
-  LAST_READ: 'satsang_diksha_last_read'
+  LAST_READ: 'satsang_diksha_last_read',
+  DOWNLOADED_PACKS: 'satsang_diksha_lang_packs',
+  DAILY_STATS: 'satsang_diksha_daily_stats'
 };
 
+export const AVAILABLE_LANGUAGE_PACKS: LanguagePack[] = [
+  { id: 'gujarati', nameGu: 'ગુજરાતી ભાષાંતર અને પદચ્છેદ', nameEn: 'Gujarati (Default Authentic)', nativeName: 'ગુજરાતી', sizeMb: 2.4, isDefaultInstalled: true },
+  { id: 'hindi', nameGu: 'હિન્દી ભાવાર્થ અને સંદર્ભ', nameEn: 'Hindi Commentary & Meaning', nativeName: 'हिन्दी', sizeMb: 2.1, isDefaultInstalled: true },
+  { id: 'english', nameGu: 'અંગ્રેજી અનુવાદ અને વ્યાખ્યા', nameEn: 'English Translation & Purport', nativeName: 'English', sizeMb: 1.8, isDefaultInstalled: true },
+  { id: 'marathi', nameGu: 'મરાઠી ભાષાંતર', nameEn: 'Marathi Translation Pack', nativeName: 'मराठी', sizeMb: 1.6 },
+  { id: 'bengali', nameGu: 'બંગાળી ભાષાંતર', nameEn: 'Bengali Translation Pack', nativeName: 'বাংলা', sizeMb: 1.5 },
+  { id: 'tamil', nameGu: 'તમિલ ભાષાંતર', nameEn: 'Tamil Translation Pack', nativeName: 'தமிழ்', sizeMb: 1.7 },
+  { id: 'telugu', nameGu: 'તેલુગુ ભાષાંતર', nameEn: 'Telugu Translation Pack', nativeName: 'తెలుగు', sizeMb: 1.7 },
+  { id: 'kannada', nameGu: 'કન્નડ ભાષાંતર', nameEn: 'Kannada Translation Pack', nativeName: 'ಕನ್ನಡ', sizeMb: 1.6 }
+];
+
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  activeLanguage: 'all',
+  activeLanguage: 'gujarati', // Default is Sanskrit to Gujarati as requested
+  secondaryLanguages: ['hindi', 'english'],
   sanskritScript: 'devanagari',
   theme: 'light',
   fontSize: 18,
-  showWordBreakdownDefault: false,
-  showCommentaryDefault: false
+  showWordBreakdownDefault: true,
+  showCommentaryDefault: true,
+  showGrammarDetails: true,
+  reminder: {
+    enabled: true,
+    time: '21:00', // 9:00 PM Indian Standard Time default as requested
+    sound: true,
+    vibrate: true,
+    customMessage: 'સત્સંગ દીક્ષા સ્વાધ્યાય અને મુખપાઠ સાધના કરવાનો સમય થયો છે.'
+  },
+  installedLanguagePacks: ['gujarati', 'hindi', 'english'],
+  dailyGoal: 5
 };
 
 export const StorageService = {
   getPreferences(): UserPreferences {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PREFS);
-      return data ? { ...DEFAULT_PREFERENCES, ...JSON.parse(data) } : DEFAULT_PREFERENCES;
+      if (!data) return DEFAULT_PREFERENCES;
+      const parsed = JSON.parse(data);
+      return {
+        ...DEFAULT_PREFERENCES,
+        ...parsed,
+        reminder: {
+          ...DEFAULT_PREFERENCES.reminder,
+          ...(parsed.reminder || {})
+        },
+        installedLanguagePacks: parsed.installedLanguagePacks || DEFAULT_PREFERENCES.installedLanguagePacks,
+        secondaryLanguages: parsed.secondaryLanguages || DEFAULT_PREFERENCES.secondaryLanguages
+      };
     } catch {
       return DEFAULT_PREFERENCES;
     }
@@ -32,6 +67,28 @@ export const StorageService = {
     } catch {
       // ignore
     }
+  },
+
+  installLanguagePack(lang: Language): Language[] {
+    const prefs = this.getPreferences();
+    const current = new Set<Language>(prefs.installedLanguagePacks || ['gujarati', 'hindi', 'english']);
+    current.add(lang);
+    const updated: Language[] = Array.from(current);
+    prefs.installedLanguagePacks = updated;
+    this.savePreferences(prefs);
+    return updated;
+  },
+
+  uninstallLanguagePack(lang: Language): Language[] {
+    if (lang === 'gujarati') return ['gujarati']; // Gujarati cannot be uninstalled
+    const prefs = this.getPreferences();
+    const updated: Language[] = (prefs.installedLanguagePacks || []).filter(l => l !== lang);
+    prefs.installedLanguagePacks = updated;
+    if (prefs.activeLanguage === lang) {
+      prefs.activeLanguage = 'gujarati';
+    }
+    this.savePreferences(prefs);
+    return updated;
   },
 
   getBookmarks(): Bookmark[] {

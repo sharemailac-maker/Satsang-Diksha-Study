@@ -1,0 +1,884 @@
+import { Language } from '../types';
+
+export interface UIStrings {
+  // Navigation Tabs
+  tabHome: string;
+  tabReader: string;
+  tabMukhpath: string;
+  tabChapters: string;
+  tabCrossref: string;
+  tabQuiz: string;
+  tabBookmarks: string;
+  tabSettings: string;
+  tabApk: string;
+
+  // Header & Search
+  appTitle: string;
+  appSubtitle: string;
+  searchPlaceholder: string;
+  quickJump: string;
+  clearSearch: string;
+  sanskritScriptLabel: string;
+  meaningLanguageLabel: string;
+  moreLanguages: string;
+
+  // Shloka Card & Study
+  shlokaNumberPrefix: string;
+  chapterPrefix: string;
+  listenAudio: string;
+  listenAudioStop: string;
+  copyShloka: string;
+  copied: string;
+  bookmarkAdd: string;
+  bookmarkRemove: string;
+  primaryMeaningTitle: string;
+  secondaryMeaningTitle: string;
+  wordBreakdownTitle: string;
+  wordBreakdownDesc: string;
+  closeWordBreakdown: string;
+  detailedCommentaryTitle: string;
+  syntaxBreakdown: string;
+  coreSpiritualTeaching: string;
+  scriptureCrossRefTitle: string;
+  reflectionNoteLabel: string;
+  reflectionNotePlaceholder: string;
+
+  // Mukhpath Levels
+  statusUnlearned: string;
+  statusLearning: string;
+  statusMemorized: string;
+  statusMastered: string;
+
+  // Reader Filters
+  allShlokas: string;
+  filterShowingCount: string;
+  clearFilter: string;
+  noShlokasFound: string;
+  noShlokasDesc: string;
+
+  // Settings Modal
+  settingsTitle: string;
+  settingsSubtitle: string;
+  primaryLanguageTitle: string;
+  primaryLanguageDesc: string;
+  secondaryLanguagesTitle: string;
+  secondaryLanguagesDesc: string;
+  offlinePackManagerTitle: string;
+  offlinePackManagerDesc: string;
+  offlineReadyBadge: string;
+  installedBadge: string;
+  installButton: string;
+  installingButton: string;
+  dailyReminderTitle: string;
+  dailyReminderDesc: string;
+  reminderTimeLabel: string;
+  testNotificationButton: string;
+  sanskritScriptTitle: string;
+  fontSizeTitle: string;
+  themeTitle: string;
+  themeLight: string;
+  themeSepia: string;
+  themeDark: string;
+  studyOptionsTitle: string;
+  autoExpandBreakdown: string;
+  autoExpandCommentary: string;
+  offlineSecurityBadge: string;
+  resetButton: string;
+  saveCloseButton: string;
+
+  // APK & App Shell
+  appModeTitle: string;
+  appModeDesc: string;
+  installAppBanner: string;
+  installAppBtn: string;
+  apkAabReadyBadge: string;
+}
+
+export const I18N_TRANSLATIONS: Record<Language, UIStrings> = {
+  gujarati: {
+    tabHome: 'મુખ્ય પૃષ્ઠ',
+    tabReader: 'શ્લોક અધ્યયન',
+    tabMukhpath: 'મુખપાઠ સાધના',
+    tabChapters: 'પ્રકરણ સૂચિ',
+    tabCrossref: 'વચનામૃત સંબંધ',
+    tabQuiz: 'સ્વાધ્યાય કસોટી',
+    tabBookmarks: 'સાચવેલા શ્લોકો',
+    tabSettings: 'સેટિંગ્સ',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'સત્સંગ દીક્ષા',
+    appSubtitle: 'BAPS સ્વામિનારાયણ શાસ્ત્ર અધ્યયન • ૩૧૫ શ્લોક',
+    searchPlaceholder: 'શ્લોક નંબર (૧-૩૧૫), સંસ્કૃત શબ્દ, ગુજરાતી/હિન્દી/અંગ્રેજી અર્થ અથવા વિષય શોધો...',
+    quickJump: '૧ - ૩૧૫ ઝડપી કૂદકો',
+    clearSearch: 'સાફ કરો',
+    sanskritScriptLabel: 'લિપિ:',
+    meaningLanguageLabel: 'અર્થ ભાષા:',
+    moreLanguages: 'વધુ ભાષાઓ...',
+
+    shlokaNumberPrefix: 'શ્લોક',
+    chapterPrefix: 'પ્રકરણ',
+    listenAudio: 'સંસ્કૃત શ્લોક ઉચ્ચારણ સાંભળો',
+    listenAudioStop: 'ઉચ્ચારણ બંધ કરો',
+    copyShloka: 'શ્લોક અને અર્થ કોપી કરો',
+    copied: 'કોપી થઈ ગયું!',
+    bookmarkAdd: 'શ્લોક સાચવો (Bookmark)',
+    bookmarkRemove: 'સાચવેલ હટાવો',
+    primaryMeaningTitle: 'ગુજરાતી મૂળ ભાવાર્થ',
+    secondaryMeaningTitle: 'વધારાના ભાવાર્થો',
+    wordBreakdownTitle: 'પદચ્છેદ અને શબ્દાર્થ અધ્યયન',
+    wordBreakdownDesc: 'કોઈપણ સંસ્કૃત પદ પર ક્લિક કરી અર્થ અને વ્યાકરણ જાણો',
+    closeWordBreakdown: 'બંધ કરો',
+    detailedCommentaryTitle: 'વિશેષ અન્વયાર્થ & શાસ્ત્રીય રહસ્ય',
+    syntaxBreakdown: 'અન્વય (Syntax Breakdown):',
+    coreSpiritualTeaching: 'મુખ્ય સિદ્ધાંત બોધ (Core Spiritual Teaching):',
+    scriptureCrossRefTitle: 'વચનામૃત & સ્વામીની વાતો અનુસંધાન',
+    reflectionNoteLabel: 'વ્યક્તિગત મનન નોંધ:',
+    reflectionNotePlaceholder: 'આ શ્લોક અંગે તમારી અંગત નોંધ અથવા સંકલ્પ લખો...',
+
+    statusUnlearned: 'શીખવાનું બાકી',
+    statusLearning: 'અભ્યાસ ચાલુ ⏳',
+    statusMemorized: 'મુખપાઠ થયેલ ✓',
+    statusMastered: 'સિદ્ધ કંઠસ્થ ★',
+
+    allShlokas: 'સર્વ શ્લોકો (All 315)',
+    filterShowingCount: 'દર્શાવેલ શ્લોકો:',
+    clearFilter: 'ફિલ્ટર હટાવો',
+    noShlokasFound: 'કોઈ મેળ ખાતો શ્લોક મળ્યો નથી',
+    noShlokasDesc: 'કૃપા કરીને શ્લોક નંબર (૧ થી ૩૧૫) અથવા અન્ય સંસ્કૃત/ગુજરાતી શબ્દો વડે શોધો.',
+
+    settingsTitle: 'અધ્યયન & ભાષા સેટિંગ્સ',
+    settingsSubtitle: 'ભાષા પસંદગી, ઑફલાઇન પેક & નોટિફિકેશન',
+    primaryLanguageTitle: 'મુખ્ય અનુવાદ ભાષા (Primary Meaning Language)',
+    primaryLanguageDesc: 'શ્લોક નીચે દર્શાવાતો મુખ્ય ભાવાર્થ. (પૂર્વ-નિર્ધારિત: સંસ્કૃત થી ગુજરાતી):',
+    secondaryLanguagesTitle: 'શ્લોક નીચે વધારાના ભાવાર્થો (Secondary Languages)',
+    secondaryLanguagesDesc: 'સંસ્કૃત શ્લોક નીચે એક સાથે અનેક ભાષાના ભાવાર્થો બ્લોગ સ્વરૂપે દર્શાવો:',
+    offlinePackManagerTitle: 'ઑફલાઇન ભાષા પેક મેનેજર (Offline Language Packs)',
+    offlinePackManagerDesc: 'ઇન્ટરનેટ વિના ૧૦૦% ઑફલાઇન અધ્યયન માટે ભાષા પેક ઇન્સ્ટોલ કરો:',
+    offlineReadyBadge: '૧૦૦% ઑફલાઇન સપોર્ટ',
+    installedBadge: 'ઇન્સ્ટોલ થયેલ',
+    installButton: 'ઇન્સ્ટોલ કરો',
+    installingButton: 'ડાઉનલોડ ચાલુ...',
+    dailyReminderTitle: 'દૈનિક સ્વાધ્યાય રીમાઇન્ડર (Daily Study Reminder)',
+    dailyReminderDesc: 'નિયમિત શ્લોક અધ્યયન અને મુખપાઠ સાધના માટે દૈનિક નોટિફિકેશન (રાત્રે ૯:૦૦ વાગ્યે):',
+    reminderTimeLabel: 'રીમાઇન્ડર સમય:',
+    testNotificationButton: 'નોટિફિકેશન ટેસ્ટ મોકલો',
+    sanskritScriptTitle: 'સંસ્કૃત શ્લોક લિપિ (Default Sanskrit Script):',
+    fontSizeTitle: 'શાસ્ત્ર લખાણ કદ (Font Size):',
+    themeTitle: 'થીમ મોડ (Visual Theme):',
+    themeLight: 'પ્રકાશ (Light)',
+    themeSepia: 'સેપિયા (Sepia)',
+    themeDark: 'રાત્રિ (Dark)',
+    studyOptionsTitle: 'અધ્યયન વિકલ્પો (Study Display Options):',
+    autoExpandBreakdown: 'પદચ્છેદ અને શબ્દાર્થ આપમેળે ખોલો',
+    autoExpandCommentary: 'અન્વયાર્થ અને વિશ્લેષણ આપમેળે ખોલો',
+    offlineSecurityBadge: 'આ એપ્લિકેશન ૧૦૦% ઑફલાઇન કાર્ય કરે છે. ડાઉનલોડ કરેલા તમામ ભાષા પેક અને મુખપાઠ સાધના તમારા ઉપકરણમાં સાચવાય છે.',
+    resetButton: 'મૂળ સેટિંગ્સ (Reset)',
+    saveCloseButton: 'સાચવો & બંધ કરો',
+
+    appModeTitle: 'નેટિવ એપ્લિકેશન મોડ',
+    appModeDesc: 'આ એપ્લિકેશન વેબપેજ નહીં પરંતુ સંપૂર્ણ Android APK / AAB નેટિવ એપ તરીકે કાર્ય કરે છે.',
+    installAppBanner: 'આ એપને તમારા મોબાઇલમાં APK/PWA તરીકે ઇન્સ્ટોલ કરો',
+    installAppBtn: 'એપ ઇન્સ્ટોલ કરો',
+    apkAabReadyBadge: 'APK & AAB સજ્જ'
+  },
+
+  hindi: {
+    tabHome: 'मुख्य पृष्ठ',
+    tabReader: 'श्लोक अध्ययन',
+    tabMukhpath: 'मुखपाठ साधना',
+    tabChapters: 'प्रकरण सूची',
+    tabCrossref: 'वचनामृत संबंध',
+    tabQuiz: 'स्वाध्याय परीक्षा',
+    tabBookmarks: 'सहेजे गए श्लोक',
+    tabSettings: 'सेटिंग्स',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'सत्सङ्गदीक्षा',
+    appSubtitle: 'BAPS स्वामीनारायण शास्त्र अध्ययन • ३१५ श्लोक',
+    searchPlaceholder: 'श्लोक संख्या (१-३१५), संस्कृत शब्द, हिन्दी/गुजराती/अंग्रेजी अर्थ खोजें...',
+    quickJump: '१ - ३१५ त्वरित श्लोक',
+    clearSearch: 'साफ करें',
+    sanskritScriptLabel: 'लिपि:',
+    meaningLanguageLabel: 'अर्थ भाषा:',
+    moreLanguages: 'अन्य भाषाएँ...',
+
+    shlokaNumberPrefix: 'श्लोक',
+    chapterPrefix: 'प्रकरण',
+    listenAudio: 'संस्कृत श्लोक उच्चारण सुनें',
+    listenAudioStop: 'उच्चारण रोकें',
+    copyShloka: 'श्लोक व अर्थ कॉपी करें',
+    copied: 'कॉपी हो गया!',
+    bookmarkAdd: 'श्लोक सहेजें (Bookmark)',
+    bookmarkRemove: 'बुकमार्क हटाएं',
+    primaryMeaningTitle: 'हिन्दी सरल भावार्थ',
+    secondaryMeaningTitle: 'अतिरिक्त भाषानुवाद',
+    wordBreakdownTitle: 'पदच्छेद एवं शब्दार्थ अध्ययन',
+    wordBreakdownDesc: 'किसी भी संस्कृत पद पर क्लिक करके अर्थ और व्याकरण जानें',
+    closeWordBreakdown: 'बंद करें',
+    detailedCommentaryTitle: 'विशेष अन्वयार्थ एवं शास्त्रीय रहस्य',
+    syntaxBreakdown: 'अन्वय (Syntax Breakdown):',
+    coreSpiritualTeaching: 'मुख्य सिद्धांत बोध (Core Spiritual Teaching):',
+    scriptureCrossRefTitle: 'वचनामृत एवं स्वामीनी बातों संदर्भ',
+    reflectionNoteLabel: 'व्यक्तिगत मनन टिप्पणी:',
+    reflectionNotePlaceholder: 'इस श्लोक के बारे में अपनी निजी टिप्पणी या संकल्प लिखें...',
+
+    statusUnlearned: 'सीखना शेष',
+    statusLearning: 'अभ्यास जारी ⏳',
+    statusMemorized: 'कंठस्थ सम्पन्न ✓',
+    statusMastered: 'सिद्ध कंठस्थ ★',
+
+    allShlokas: 'सभी श्लोक (All 315)',
+    filterShowingCount: 'प्रदर्शित श्लोक:',
+    clearFilter: 'फ़िल्टर हटाएं',
+    noShlokasFound: 'कोई मेल खाता श्लोक नहीं मिला',
+    noShlokasDesc: 'कृपया श्लोक संख्या (१ से ३१५) या अन्य संस्कृत/हिन्दी शब्दों से खोजें।',
+
+    settingsTitle: 'अध्ययन एवं भाषा सेटिंग्स',
+    settingsSubtitle: 'भाषा चयन, ऑफ़लाइन पैकेज एवं सूचनाएं',
+    primaryLanguageTitle: 'मुख्य अनुवाद भाषा (Primary Meaning Language)',
+    primaryLanguageDesc: 'श्लोक के नीचे प्रदर्शित होने वाला मुख्य भावार्थ (डिफ़ॉल्ट: संस्कृत से गुजराती / हिन्दी):',
+    secondaryLanguagesTitle: 'श्लोक के नीचे अतिरिक्त भाषानुवाद (Secondary Languages)',
+    secondaryLanguagesDesc: 'संस्कृत श्लोक के नीचे एक साथ विभिन्न भाषाओं का भावार्थ ब्लॉग रूप में देखें:',
+    offlinePackManagerTitle: 'ऑफ़लाइन भाषा पैकेज प्रबंधक (Offline Language Packs)',
+    offlinePackManagerDesc: 'बिना इंटरनेट १००% ऑफ़लाइन अध्ययन के लिए भाषा पैकेज इंस्टॉल करें:',
+    offlineReadyBadge: '१००% ऑफ़लाइन समर्थन',
+    installedBadge: 'इंस्टॉल किया गया',
+    installButton: 'इंस्टॉल करें',
+    installingButton: 'डाउनलोड हो रहा है...',
+    dailyReminderTitle: 'दैनिक स्वाध्याय अनुस्मारक (Daily Study Reminder)',
+    dailyReminderDesc: 'नियमित श्लोक अध्ययन और मुखपाठ साधना के लिए दैनिक नोटिफिकेशन (रात ९:०० बजे):',
+    reminderTimeLabel: 'अनुस्मारक समय:',
+    testNotificationButton: 'परीक्षण सूचना भेजें',
+    sanskritScriptTitle: 'संस्कृत श्लोक लिपि (Default Sanskrit Script):',
+    fontSizeTitle: 'शास्त्र पाठ आकार (Font Size):',
+    themeTitle: 'थीम मोड (Visual Theme):',
+    themeLight: 'प्रकाश (Light)',
+    themeSepia: 'सेपिया (Sepia)',
+    themeDark: 'रात्रि (Dark)',
+    studyOptionsTitle: 'अध्ययन प्रदर्शन विकल्प (Study Display Options):',
+    autoExpandBreakdown: 'पदच्छेद एवं शब्दार्थ स्वतः खोलें',
+    autoExpandCommentary: 'अन्वयार्थ एवं विश्लेषण स्वतः खोलें',
+    offlineSecurityBadge: 'यह ऐप १००% ऑफ़लाइन कार्य करता है। सभी डाउनलोड किए गए भाषा पैकेज और मुखपाठ रिकॉर्ड आपके डिवाइस में सुरक्षित रहते हैं।',
+    resetButton: 'डिफ़ॉल्ट सेटिंग्स (Reset)',
+    saveCloseButton: 'सहेजें और बंद करें',
+
+    appModeTitle: 'नेटिव एप्लिकेशन मोड',
+    appModeDesc: 'यह ऐप वेबपेज नहीं बल्कि वास्तविक Android APK / AAB नेटिव एप्लिकेशन के रूप में कार्य करता है।',
+    installAppBanner: 'इस ऐप को अपने फोन में APK/PWA के रूप में इंस्टॉल करें',
+    installAppBtn: 'ऐप इंस्टॉल करें',
+    apkAabReadyBadge: 'APK एवं AAB तैयार'
+  },
+
+  english: {
+    tabHome: 'Home',
+    tabReader: 'Shlokas 1-315',
+    tabMukhpath: 'Mukhpath Tool',
+    tabChapters: 'Chapters',
+    tabCrossref: 'Vachnamrut Links',
+    tabQuiz: 'Quiz & Test',
+    tabBookmarks: 'Bookmarks',
+    tabSettings: 'Settings',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'Satsang Diksha',
+    appSubtitle: 'BAPS Swaminarayan Scripture Study • 315 Shlokas',
+    searchPlaceholder: 'Search by shloka # (1-315), Sanskrit verse, Gujarati/Hindi/English meaning, or topics...',
+    quickJump: '1 - 315 Quick Jump',
+    clearSearch: 'Clear',
+    sanskritScriptLabel: 'Script:',
+    meaningLanguageLabel: 'Meaning Lang:',
+    moreLanguages: 'More Languages...',
+
+    shlokaNumberPrefix: 'Shloka',
+    chapterPrefix: 'Chapter',
+    listenAudio: 'Listen to Sanskrit verse recitation',
+    listenAudioStop: 'Stop recitation',
+    copyShloka: 'Copy Shloka & Meanings',
+    copied: 'Copied!',
+    bookmarkAdd: 'Bookmark Shloka',
+    bookmarkRemove: 'Remove Bookmark',
+    primaryMeaningTitle: 'Primary Translation & Purport',
+    secondaryMeaningTitle: 'Secondary Language Translations',
+    wordBreakdownTitle: 'Word-by-Word Breakdown (Padachheda)',
+    wordBreakdownDesc: 'Click any Sanskrit word to explore its grammatical meaning & references',
+    closeWordBreakdown: 'Close',
+    detailedCommentaryTitle: 'Detailed Philosophical Commentary & Anwayarth',
+    syntaxBreakdown: 'Syntax Breakdown (Anwaya):',
+    coreSpiritualTeaching: 'Core Spiritual Principle:',
+    scriptureCrossRefTitle: 'Scriptural Cross-References (Vachnamrut & Swami ni Vato)',
+    reflectionNoteLabel: 'Personal Reflection Note:',
+    reflectionNotePlaceholder: 'Write your personal study note or resolution for this shloka...',
+
+    statusUnlearned: 'Unlearned',
+    statusLearning: 'Learning ⏳',
+    statusMemorized: 'Memorized ✓',
+    statusMastered: 'Mastered ★',
+
+    allShlokas: 'All Shlokas (1 - 315)',
+    filterShowingCount: 'Showing Shlokas:',
+    clearFilter: 'Clear Filter',
+    noShlokasFound: 'No Matching Shlokas Found',
+    noShlokasDesc: 'No shlokas matched your search. Try searching by number (1 to 315) or other keywords.',
+
+    settingsTitle: 'Study & Language Settings',
+    settingsSubtitle: 'Language Selection, Offline Packs & Notifications',
+    primaryLanguageTitle: 'Primary Meaning Language',
+    primaryLanguageDesc: 'Primary translation shown directly beneath the Sanskrit verse (Default: Sanskrit to Gujarati):',
+    secondaryLanguagesTitle: 'Secondary Translations Beneath Verse',
+    secondaryLanguagesDesc: 'Display additional language purports stacked beneath the verse like an article/blog:',
+    offlinePackManagerTitle: 'Offline Language Pack Manager',
+    offlinePackManagerDesc: 'Install language packs once for 100% offline study without internet connection:',
+    offlineReadyBadge: '100% Offline Ready',
+    installedBadge: 'Installed',
+    installButton: 'Install Pack',
+    installingButton: 'Downloading...',
+    dailyReminderTitle: 'Daily Study Reminder',
+    dailyReminderDesc: 'Daily study and Mukhpath practice notification reminder (Default: 9:00 PM IST):',
+    reminderTimeLabel: 'Reminder Time:',
+    testNotificationButton: 'Send Test Notification',
+    sanskritScriptTitle: 'Default Sanskrit Script:',
+    fontSizeTitle: 'Scripture Text Size (Font Size):',
+    themeTitle: 'Visual Theme Mode:',
+    themeLight: 'Light (Warm Ivory)',
+    themeSepia: 'Sepia (Palm Leaf)',
+    themeDark: 'Dark (Night Mode)',
+    studyOptionsTitle: 'Study Display Preferences:',
+    autoExpandBreakdown: 'Auto-expand word-by-word breakdown by default',
+    autoExpandCommentary: 'Auto-expand commentary & philosophical insights by default',
+    offlineSecurityBadge: 'This app operates 100% offline. All installed language packs and Mukhpath records are securely stored on your device.',
+    resetButton: 'Reset to Defaults',
+    saveCloseButton: 'Save & Close',
+
+    appModeTitle: 'Native Application Mode',
+    appModeDesc: 'This application functions as a real native Android APK / AAB app rather than a regular website.',
+    installAppBanner: 'Install this app on your device as standalone APK / PWA',
+    installAppBtn: 'Install App',
+    apkAabReadyBadge: 'APK & AAB Ready'
+  },
+
+  marathi: {
+    tabHome: 'मुख्य पृष्ठ',
+    tabReader: 'श्लोक अध्ययन',
+    tabMukhpath: 'मुखपाठ साधना',
+    tabChapters: 'प्रकरण सूची',
+    tabCrossref: 'वचनामृत संबंध',
+    tabQuiz: 'स्वाध्याय परीक्षा',
+    tabBookmarks: 'जतन केलेले श्लोक',
+    tabSettings: 'सेटिंग्ज',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'सत्सङ्गदीक्षा',
+    appSubtitle: 'BAPS स्वामीनारायण शास्त्र अध्ययन • ३१५ श्लोक',
+    searchPlaceholder: 'श्लोक क्रमांक (१-३१५), संस्कृत शब्द, मराठी/गुजराती अर्थ शोधा...',
+    quickJump: '१ - ३१५ त्वरित उडी',
+    clearSearch: 'साफ करा',
+    sanskritScriptLabel: 'लिपी:',
+    meaningLanguageLabel: 'अर्थ भाषा:',
+    moreLanguages: 'अधिक भाषा...',
+
+    shlokaNumberPrefix: 'श्लोक',
+    chapterPrefix: 'प्रकरण',
+    listenAudio: 'संस्कृत श्लोक उच्चारण ऐका',
+    listenAudioStop: 'उच्चारण थांबवा',
+    copyShloka: 'श्लोक आणि अर्थ कॉपी करा',
+    copied: 'कॉपी झाले!',
+    bookmarkAdd: 'श्लोक जतन करा (Bookmark)',
+    bookmarkRemove: 'बुकमार्क काढा',
+    primaryMeaningTitle: 'मराठी भावार्थ व अनुवाद',
+    secondaryMeaningTitle: 'इतर भाषांमधील अनुवाद',
+    wordBreakdownTitle: 'पदच्छेद आणि शब्दार्थ अध्ययन',
+    wordBreakdownDesc: 'अर्थ आणि व्याकरण जाणून घेण्यासाठी कोणत्याही संस्कृत शब्दावर क्लिक करा',
+    closeWordBreakdown: 'बंद करा',
+    detailedCommentaryTitle: 'विशेष अन्वयार्थ आणि शास्त्रीय रहस्य',
+    syntaxBreakdown: 'अन्वय (Syntax Breakdown):',
+    coreSpiritualTeaching: 'मुख्य सिद्धांत बोध:',
+    scriptureCrossRefTitle: 'वचनामृत आणि स्वामींची बातें संदर्भ',
+    reflectionNoteLabel: 'वैयक्तिक मनन टीप:',
+    reflectionNotePlaceholder: 'या श्लोकाविषयी तुमची वैयक्तिक टीप लिहा...',
+
+    statusUnlearned: 'शिकणे बाकी',
+    statusLearning: 'अभ्यास सुरू ⏳',
+    statusMemorized: 'कंठस्थ झाले ✓',
+    statusMastered: 'सिद्ध कंठस्थ ★',
+
+    allShlokas: 'सर्व श्लोक (All 315)',
+    filterShowingCount: 'दर्शविलेले श्लोक:',
+    clearFilter: 'फिल्टर काढा',
+    noShlokasFound: 'कोणताही श्लोक सापडला नाही',
+    noShlokasDesc: 'कृपया श्लोक क्रमांक किंवा इतर शब्दांद्वारे शोधा.',
+
+    settingsTitle: 'अध्ययन आणि भाषा सेटिंग्ज',
+    settingsSubtitle: 'भाषा निवड, ऑफलाइन पॅक आणि सूचना',
+    primaryLanguageTitle: 'मुख्य अनुवाद भाषा',
+    primaryLanguageDesc: 'श्लोकाखाली दाखवला जाणारा मुख्य भावार्थ:',
+    secondaryLanguagesTitle: 'अतिरिक्त अनुवाद',
+    secondaryLanguagesDesc: 'श्लोकाखाली इतर भाषांमधील भावार्थ ब्लॉग स्वरूपात पहा:',
+    offlinePackManagerTitle: 'ऑफलाइन भाषा पॅक मॅनेजर',
+    offlinePackManagerDesc: 'इंटरनेटशिवाय १००% ऑफलाइन अभ्यासासाठी भाषा पॅक इंस्टॉल करा:',
+    offlineReadyBadge: '१००% ऑफलाइन',
+    installedBadge: 'स्थापित',
+    installButton: 'इंस्टॉल करा',
+    installingButton: 'डाउनलोड होत आहे...',
+    dailyReminderTitle: 'दैनिक स्वाध्याय स्मरणपत्र',
+    dailyReminderDesc: 'दररोज नियमित अभ्यासासाठी सूचना (रात्री ९:०० वाजता):',
+    reminderTimeLabel: 'स्मरण वेळ:',
+    testNotificationButton: 'चाचणी सूचना पाठवा',
+    sanskritScriptTitle: 'संस्कृत श्लोक लिपी:',
+    fontSizeTitle: 'मजकूर आकार:',
+    themeTitle: 'थीम मोड:',
+    themeLight: 'प्रकाश (Light)',
+    themeSepia: 'सेपिया (Sepia)',
+    themeDark: 'रात्र (Dark)',
+    studyOptionsTitle: 'अध्ययन पर्याय:',
+    autoExpandBreakdown: 'पदच्छेद आपोआप उघडा',
+    autoExpandCommentary: 'अन्वयार्थ आपोआप उघडा',
+    offlineSecurityBadge: 'हे ॲप १००% ऑफलाइन कार्य करते.',
+    resetButton: 'रीसेट करा',
+    saveCloseButton: 'जतन करा आणि बंद करा',
+
+    appModeTitle: 'नेटिव्ह ॲप्लिकेशन मोड',
+    appModeDesc: 'हे ॲप वेबपेज नाही तर Android APK / AAB ॲपप्रमाणे कार्य करते.',
+    installAppBanner: 'हे ॲप तुमच्या फोनवर स्थापित करा',
+    installAppBtn: 'ॲप इंस्टॉल करा',
+    apkAabReadyBadge: 'APK आणि AAB सज्ज'
+  },
+
+  bengali: {
+    tabHome: 'মূল পাতা',
+    tabReader: 'শ্লোক অধ্যয়ন',
+    tabMukhpath: 'মুখস্থ সাধনা',
+    tabChapters: 'অধ্যায় সূচি',
+    tabCrossref: 'বচনামৃত সম্পর্ক',
+    tabQuiz: 'পরীক্ষা ও কুইজ',
+    tabBookmarks: 'সংরক্ষিত শ্লোক',
+    tabSettings: 'সেটিংস',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'সত্সঙ্গদীক্ষা',
+    appSubtitle: 'বিএপিএস স্বামীনারায়ণ শাস্ত্র অধ্যয়ন • ৩১৫ শ্লোক',
+    searchPlaceholder: 'শ্লোক সংখ্যা (১-৩১৫), সংস্কৃত শব্দ বা অর্থ খুঁজুন...',
+    quickJump: '১ - ৩১৫ সরাসরি যান',
+    clearSearch: 'মুছুন',
+    sanskritScriptLabel: 'লিপি:',
+    meaningLanguageLabel: 'অর্থের ভাষা:',
+    moreLanguages: 'আরও ভাষা...',
+
+    shlokaNumberPrefix: 'শ্লোক',
+    chapterPrefix: 'অধ্যায়',
+    listenAudio: 'সংস্কৃত শ্লোক উচ্চারণ শুনুন',
+    listenAudioStop: 'উচ্চারণ বন্ধ করুন',
+    copyShloka: 'শ্লোক ও অর্থ কপি করুন',
+    copied: 'কপি হয়েছে!',
+    bookmarkAdd: 'শ্লোক সংরক্ষণ করুন',
+    bookmarkRemove: 'সংরক্ষণ মুছুন',
+    primaryMeaningTitle: 'বাংলা অনুবাদ ও ভাবার্থ',
+    secondaryMeaningTitle: 'অন্যান্য ভাষার অনুবাদ',
+    wordBreakdownTitle: 'পদচ্ছেদ ও শব্দার্থ অধ্যয়ন',
+    wordBreakdownDesc: 'অর্থ ও ব্যাকরণ জানতে যে কোনো সংস্কৃত পদে ক্লিক করুন',
+    closeWordBreakdown: 'বন্ধ করুন',
+    detailedCommentaryTitle: 'বিশেষ অন্বয়ার্থ ও ব্যাখ্যা',
+    syntaxBreakdown: 'অন্বয় (Syntax Breakdown):',
+    coreSpiritualTeaching: 'মূল আধ্যাত্মিক শিক্ষা:',
+    scriptureCrossRefTitle: 'বচনামৃত ও স্বামীজীর বাণী সম্পর্ক',
+    reflectionNoteLabel: 'ব্যক্তিগত পাঠ মন্তব্য:',
+    reflectionNotePlaceholder: 'এই শ্লোক সম্পর্কে আপনার ব্যক্তিগত নোট লিখুন...',
+
+    statusUnlearned: 'শেখা বাকি',
+    statusLearning: 'অনুশীলন চলছে ⏳',
+    statusMemorized: 'মুখস্থ সম্পন্ন ✓',
+    statusMastered: 'সিদ্ধ কণ্ঠস্থ ★',
+
+    allShlokas: 'সকল শ্লোক (All 315)',
+    filterShowingCount: 'প্রদর্শিত শ্লোক:',
+    clearFilter: 'ফিল্টার সরান',
+    noShlokasFound: 'কোনো শ্লোক পাওয়া যায়নি',
+    noShlokasDesc: 'অনুগ্রহ করে শ্লোক নম্বর বা অন্য শব্দ দিয়ে খুঁজুন।',
+
+    settingsTitle: 'অধ্যয়ন ও ভাষা সেটিংস',
+    settingsSubtitle: 'ভাষা নির্বাচন ও অফলাইন প্যাকেজ',
+    primaryLanguageTitle: 'মূল অনুবাদ ভাষা',
+    primaryLanguageDesc: 'শ্লোকের নিচে প্রদর্শিত প্রধান ভাবার্থ:',
+    secondaryLanguagesTitle: 'অতিরিক্ত অনুবাদ',
+    secondaryLanguagesDesc: 'শ্লোকের নিচে অন্যান্য ভাষার ভাবার্থ ব্লগের মতো দেখুন:',
+    offlinePackManagerTitle: 'অফলাইন ভাষা প্যাকেজ ম্যানেজার',
+    offlinePackManagerDesc: 'ইন্টারনেট ছাড়া ১০০% অফলাইনে ব্যবহারের জন্য প্যাকেজ ইনস্টল করুন:',
+    offlineReadyBadge: '১০০% অফলাইন',
+    installedBadge: 'ইনস্টল হয়েছে',
+    installButton: 'ইনস্টল করুন',
+    installingButton: 'ডাউনলোড হচ্ছে...',
+    dailyReminderTitle: 'দৈনিক অধ্যয়ন রিমাইন্ডার',
+    dailyReminderDesc: 'নিয়মিত অনুশীলনের জন্য দৈনিক বিজ্ঞপ্তি (রাত ৯:০০ টায়):',
+    reminderTimeLabel: 'রিমাইন্ডার সময়:',
+    testNotificationButton: 'টেস্ট নোটিফিকেশন পাঠান',
+    sanskritScriptTitle: 'সংস্কৃত শ্লোক লিপি:',
+    fontSizeTitle: 'ফন্ট সাইজ:',
+    themeTitle: 'থিম মোড:',
+    themeLight: 'আলো (Light)',
+    themeSepia: 'সেপিয়া (Sepia)',
+    themeDark: 'অন্ধকার (Dark)',
+    studyOptionsTitle: 'অধ্যয়ন বিকল্প:',
+    autoExpandBreakdown: 'পদচ্ছেদ স্বয়ংক্রিয় খুলুন',
+    autoExpandCommentary: 'অন্বয়ার্থ স্বয়ংক্রিয় খুলুন',
+    offlineSecurityBadge: 'এই অ্যাপটি ১০০% অফলাইনে কাজ করে।',
+    resetButton: 'রিসেট করুন',
+    saveCloseButton: 'সংরক্ষণ ও বন্ধ',
+
+    appModeTitle: 'নেটিভ অ্যাপ্লিকেশন মোড',
+    appModeDesc: 'এই অ্যাপটি একটি বাস্তব Android APK / AAB অ্যাপ্লিকেশন হিসেবে কাজ করে।',
+    installAppBanner: 'আপনার ফোনে অ্যাপটি ইনস্টল করুন',
+    installAppBtn: 'ইনস্টল করুন',
+    apkAabReadyBadge: 'APK এবং AAB প্রস্তুত'
+  },
+
+  tamil: {
+    tabHome: 'முகப்பு',
+    tabReader: 'ஸ்லோகங்கள்',
+    tabMukhpath: 'மனப்பாடம்',
+    tabChapters: 'அத்தியாயங்கள்',
+    tabCrossref: 'வசனாம்ருதம்',
+    tabQuiz: 'வினாடி வினா',
+    tabBookmarks: 'புத்தகக்குறிகள்',
+    tabSettings: 'அமைப்புகள்',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'சத்ஸங்க தீக்ஷா',
+    appSubtitle: 'BAPS சுவாமிநாராயண் சாஸ்திர படிப்பு • 315 ஸ்லோகங்கள்',
+    searchPlaceholder: 'ஸ்லோக எண் (1-315) அல்லது சொற்களைத் தேடுங்கள்...',
+    quickJump: '1 - 315 விரைவு தாவல்',
+    clearSearch: 'அழி',
+    sanskritScriptLabel: 'எழுத்துமுறை:',
+    meaningLanguageLabel: 'பொருள் மொழி:',
+    moreLanguages: 'மேலும் மொழிகள்...',
+
+    shlokaNumberPrefix: 'ஸ்லோகம்',
+    chapterPrefix: 'அத்தியாயம்',
+    listenAudio: 'ஸ்லோக உச்சரிப்பைக் கேளுங்கள்',
+    listenAudioStop: 'நிறுத்து',
+    copyShloka: 'நகலெடு',
+    copied: 'நகலெடுக்கப்பட்டது!',
+    bookmarkAdd: 'சேமி',
+    bookmarkRemove: 'நீக்கு',
+    primaryMeaningTitle: 'தமிழ் பொருள் விளக்கம்',
+    secondaryMeaningTitle: 'பிற மொழிகளில் பொருள்',
+    wordBreakdownTitle: 'பதச்சேதம் மற்றும் சொல் பொருள்',
+    wordBreakdownDesc: 'பொருள் அறிய எந்த சமஸ்கிருத சொல்லையும் கிளிக் செய்யவும்',
+    closeWordBreakdown: 'மூடு',
+    detailedCommentaryTitle: 'விளக்க உரை மற்றும் தாத்பரியம்',
+    syntaxBreakdown: 'தொடரியல் விளக்கம்:',
+    coreSpiritualTeaching: 'முக்கிய தத்துவம்:',
+    scriptureCrossRefTitle: 'வசனாம்ருத தொடர்பு',
+    reflectionNoteLabel: 'சுய குறிப்பு:',
+    reflectionNotePlaceholder: 'உங்கள் குறிப்பை இங்கே எழுதுங்கள்...',
+
+    statusUnlearned: 'படிக்க வேண்டியவை',
+    statusLearning: 'பயிற்சியில் ⏳',
+    statusMemorized: 'மனப்பாடம் ✓',
+    statusMastered: 'முழுமை ★',
+
+    allShlokas: 'அனைத்து ஸ்லோகங்கள் (315)',
+    filterShowingCount: 'காட்டப்படும் ஸ்லோகங்கள்:',
+    clearFilter: 'வடிகட்டி நீக்கு',
+    noShlokasFound: 'ஸ்லோகம் காணப்படவில்லை',
+    noShlokasDesc: 'வேறு எண் அல்லது வார்த்தை மூலம் தேடவும்.',
+
+    settingsTitle: 'படிப்பு மற்றும் மொழி அமைப்புகள்',
+    settingsSubtitle: 'மொழி தேர்வு மற்றும் ஆஃப்லைன் பயன்பாடு',
+    primaryLanguageTitle: 'முதன்மை மொழி',
+    primaryLanguageDesc: 'ஸ்லோகத்தின் கீழ் காட்டப்படும் முதன்மை பொருள்:',
+    secondaryLanguagesTitle: 'கூடுதல் மொழிகள்',
+    secondaryLanguagesDesc: 'பல மொழிகளில் விளக்கத்தை ஒரே பக்கத்தில் பார்க்கவும்:',
+    offlinePackManagerTitle: 'ஆஃப்லைன் மொழி மேலாளர்',
+    offlinePackManagerDesc: 'இணையம் இல்லாமல் படிக்க மொழி தொகுப்பை நிறுவவும்:',
+    offlineReadyBadge: '100% ஆஃப்லைன்',
+    installedBadge: 'நிறுவப்பட்டது',
+    installButton: 'நிறுவு',
+    installingButton: 'பதிவிறக்குகிறது...',
+    dailyReminderTitle: 'தினசரி நினைவூட்டல்',
+    dailyReminderDesc: 'தினசரி படிப்புக்கான அறிவிப்பு (இரவு 9:00 மணிக்கு):',
+    reminderTimeLabel: 'நினைவூட்டல் நேரம்:',
+    testNotificationButton: 'சோதனை அறிவிப்பு',
+    sanskritScriptTitle: 'சமஸ்கிருத எழுத்துமுறை:',
+    fontSizeTitle: 'எழுத்து அளவு:',
+    themeTitle: 'தீம் முறை:',
+    themeLight: 'வெளிச்சம் (Light)',
+    themeSepia: 'செபியா (Sepia)',
+    themeDark: 'இரவு (Dark)',
+    studyOptionsTitle: 'படிப்பு விருப்பங்கள்:',
+    autoExpandBreakdown: 'பதச்சேதத்தை தானாக திறக்கவும்',
+    autoExpandCommentary: 'விளக்கத்தை தானாக திறக்கவும்',
+    offlineSecurityBadge: 'இந்த பயன்பாடு 100% ஆஃப்லைனில் செயல்படுகிறது.',
+    resetButton: 'மீட்டமை',
+    saveCloseButton: 'சேமித்து மூடு',
+
+    appModeTitle: 'நேட்டிவ் ஆப் பயன்முறை',
+    appModeDesc: 'இது வலைப்பக்கம் அல்ல, முழுமையான Android APK / AAB செயலியாக செயல்படுகிறது.',
+    installAppBanner: 'இந்த பயன்பாட்டை உங்கள் போனில் நிறுவவும்',
+    installAppBtn: 'நிறுவு',
+    apkAabReadyBadge: 'APK & AAB தயார்'
+  },
+
+  telugu: {
+    tabHome: 'ప్రధాన పేజీ',
+    tabReader: 'శ్లోక అధ్యయనం',
+    tabMukhpath: 'ముఖపాఠం',
+    tabChapters: 'అధ్యాయాలు',
+    tabCrossref: 'వచనామృతం',
+    tabQuiz: 'క్విజ్ & పరీక్ష',
+    tabBookmarks: 'బుక్‌మార్క్‌లు',
+    tabSettings: 'సెట్టింగ్‌లు',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'సత్సంగదీక్షా',
+    appSubtitle: 'BAPS స్వామినారాయణ శాస్త్ర అధ్యయనం • 315 శ్లోకాలు',
+    searchPlaceholder: 'శ్లోక సంఖ్య (1-315) లేదా పదాలను శోధించండి...',
+    quickJump: '1 - 315 త్వరిత జంప్',
+    clearSearch: 'క్లియర్ చేయండి',
+    sanskritScriptLabel: 'లిపి:',
+    meaningLanguageLabel: 'అర్థం భాష:',
+    moreLanguages: 'మరిన్ని భాషలు...',
+
+    shlokaNumberPrefix: 'శ్లోకం',
+    chapterPrefix: 'అధ్యాయం',
+    listenAudio: 'శ్లోక పఠనం వినండి',
+    listenAudioStop: 'ఆపండి',
+    copyShloka: 'కాపీ చేయండి',
+    copied: 'కాపీ చేయబడింది!',
+    bookmarkAdd: 'బుక్‌మార్క్ చేయండి',
+    bookmarkRemove: 'తొలగించండి',
+    primaryMeaningTitle: 'తెలుగు భావార్థం',
+    secondaryMeaningTitle: 'ఇతర భాషల అనువాదాలు',
+    wordBreakdownTitle: 'పదచ్ఛేదం మరియు అర్థం',
+    wordBreakdownDesc: 'అర్థం తెలుసుకోవడానికి ఏ సంస్కృత పదంపై అయినా క్లిక్ చేయండి',
+    closeWordBreakdown: 'మూసివేయండి',
+    detailedCommentaryTitle: 'వివరణాత్మక వ్యాఖ్యానం',
+    syntaxBreakdown: 'అన్వయం:',
+    coreSpiritualTeaching: 'ముఖ్య సిద్ధాంతం:',
+    scriptureCrossRefTitle: 'వచనామృత బంధం',
+    reflectionNoteLabel: 'వ్యక్తిగత గమనిక:',
+    reflectionNotePlaceholder: 'మీ గమనికను ఇక్కడ రాయండి...',
+
+    statusUnlearned: 'నేర్చుకోవలసినవి',
+    statusLearning: 'అభ్యసిస్తున్నారు ⏳',
+    statusMemorized: 'కంఠస్థం ✓',
+    statusMastered: 'సిద్ధం ★',
+
+    allShlokas: 'అన్ని శ్లోకాలు (315)',
+    filterShowingCount: 'చూపిస్తున్న శ్లోకాలు:',
+    clearFilter: 'ఫిల్టర్ తీసివేయండి',
+    noShlokasFound: 'ఏ శ్లోకం కనుగొనబడలేదు',
+    noShlokasDesc: 'దయచేసి వేరే శ్లోక సంఖ్యతో శోధించండి.',
+
+    settingsTitle: 'అధ్యయన మరియు భాషా సెట్టింగ్‌లు',
+    settingsSubtitle: 'భాష ఎంపిక మరియు ఆఫ్‌లైన్ ప్యాకేజీలు',
+    primaryLanguageTitle: 'ప్రధాన అనువాద భాష',
+    primaryLanguageDesc: 'శ్లోకం కింద చూపబడే ప్రధాన భావార్థం:',
+    secondaryLanguagesTitle: 'అదనపు అనువాదాలు',
+    secondaryLanguagesDesc: 'వివిధ భాషలలో భావార్థాన్ని బ్లాగ్ రూపంలో చూడండి:',
+    offlinePackManagerTitle: 'ఆఫ్‌లైన్ భాషా ప్యాక్ మేనేజర్',
+    offlinePackManagerDesc: 'ఇంటర్నెట్ లేకుండా చదవడానికి భాషా ప్యాక్‌ను ఇన్‌స్టాల్ చేయండి:',
+    offlineReadyBadge: '100% ఆఫ్‌లైన్',
+    installedBadge: 'ఇన్‌స్టాల్ చేయబడింది',
+    installButton: 'ఇన్‌స్టాల్ చేయండి',
+    installingButton: 'డౌన్‌లోడ్ అవుతోంది...',
+    dailyReminderTitle: 'రోజువారీ రిమైండర్',
+    dailyReminderDesc: 'రోజువారీ అధ్యయన నోటిఫికేషన్ (రాత్రి 9:00 గంటలకు):',
+    reminderTimeLabel: 'రిమైండర్ సమయం:',
+    testNotificationButton: 'టెస్ట్ నోటిఫికేషన్',
+    sanskritScriptTitle: 'సంస్కృత లిపి:',
+    fontSizeTitle: 'ఫాంట్ పరిమాణం:',
+    themeTitle: 'థీమ్ మోడ్:',
+    themeLight: 'కాంతి (Light)',
+    themeSepia: 'సెపియా (Sepia)',
+    themeDark: 'రాత్రి (Dark)',
+    studyOptionsTitle: 'అధ్యయన ఎంపికలు:',
+    autoExpandBreakdown: 'పదచ్ఛేదాన్ని స్వయంచాలకంగా తెరవండి',
+    autoExpandCommentary: 'వ్యాఖ్యానాన్ని స్వయంచాలకంగా తెరవండి',
+    offlineSecurityBadge: 'ఈ యాప్ 100% ఆఫ్‌లైన్‌లో పనిచేస్తుంది.',
+    resetButton: 'రీసెట్ చేయండి',
+    saveCloseButton: 'సేవ్ చేసి మూసివేయండి',
+
+    appModeTitle: 'స్థానిక అప్లికేషన్ మోడ్',
+    appModeDesc: 'ఇది వెబ్‌పేజీ కాదు, నిజమైన Android APK / AAB అప్లికేషన్‌గా పనిచేస్తుంది.',
+    installAppBanner: 'ఈ యాప్‌ను మీ ఫోన్‌లో ఇన్‌స్టాల్ చేయండి',
+    installAppBtn: 'ఇన్‌స్టాల్ చేయండి',
+    apkAabReadyBadge: 'APK & AAB సిద్ధం'
+  },
+
+  kannada: {
+    tabHome: 'ಮುಖ್ಯ ಪುಟ',
+    tabReader: 'ಶ್ಲೋಕ ಅಧ್ಯಯನ',
+    tabMukhpath: 'ಮುಖಪಾಠ ಸಾಧನೆ',
+    tabChapters: 'ಅಧ್ಯಾಯಗಳು',
+    tabCrossref: 'ವಚನಾಮೃತ ಸಂಬಂಧ',
+    tabQuiz: 'ರಸಪ್ರಶ್ನೆ',
+    tabBookmarks: 'ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು',
+    tabSettings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'ಸತ್ಸಂಗದೀಕ್ಷಾ',
+    appSubtitle: 'ಬಿಎಪಿಎಸ್ ಸ್ವಾಮಿನಾರಾಯಣ ಶಾಸ್ತ್ರ ಅಧ್ಯಯನ • ೩೧೫ ಶ್ಲೋಕಗಳು',
+    searchPlaceholder: 'ಶ್ಲೋಕ ಸಂಖ್ಯೆ (೧-೩೧೫) ಅಥವಾ ಪದಗಳನ್ನು ಹುಡುಕಿ...',
+    quickJump: '೧ - ೩೧೫ ತ್ವರಿತ ಜಂಪ್',
+    clearSearch: 'ತೆರವುಗೊಳಿಸಿ',
+    sanskritScriptLabel: 'ಲಿಪಿ:',
+    meaningLanguageLabel: 'ಅರ್ಥದ ಭಾಷೆ:',
+    moreLanguages: 'ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು...',
+
+    shlokaNumberPrefix: 'ಶ್ಲೋಕ',
+    chapterPrefix: 'ಅಧ್ಯಾಯ',
+    listenAudio: 'ಶ್ಲೋಕ ಉಚ್ಚಾರಣೆ ಕೇಳಿ',
+    listenAudioStop: 'ನಿಲ್ಲಿಸಿ',
+    copyShloka: 'ಕಾಪಿ ಮಾಡಿ',
+    copied: 'ಕಾಪಿ ಮಾಡಲಾಗಿದೆ!',
+    bookmarkAdd: 'ಬುಕ್‌ಮಾರ್ಕ್ ಮಾಡಿ',
+    bookmarkRemove: 'ತೆಗೆದುಹಾಕಿ',
+    primaryMeaningTitle: 'ಕನ್ನಡ ಭಾವಾರ್ಥ',
+    secondaryMeaningTitle: 'ಇತರ ಭಾಷೆಗಳ ಅನುವಾದ',
+    wordBreakdownTitle: 'ಪದಚ್ಛೇದ ಮತ್ತು ಅರ್ಥ',
+    wordBreakdownDesc: 'ಅರ್ಥ ತಿಳಿಯಲು ಯಾವುದೇ ಸಂಸ್ಕೃತ ಪದದ ಮೇಲೆ ಕ್ಲಿಕ್ ಮಾಡಿ',
+    closeWordBreakdown: 'ಮುಚ್ಚಿ',
+    detailedCommentaryTitle: 'ವಿವರಣಾತ್ಮಕ ವ್ಯಾಖ್ಯಾನ',
+    syntaxBreakdown: 'ಅನ್ವಯ:',
+    coreSpiritualTeaching: 'ಮುಖ್ಯ ತತ್ವ:',
+    scriptureCrossRefTitle: 'ವಚನಾಮೃತ ಸಂಬಂಧ',
+    reflectionNoteLabel: 'ವೈಯಕ್ತಿಕ ಟಿಪ್ಪಣಿ:',
+    reflectionNotePlaceholder: 'ನಿಮ್ಮ ಟಿಪ್ಪಣಿಯನ್ನು ಇಲ್ಲಿ ಬರೆಯಿರಿ...',
+
+    statusUnlearned: 'ಕಲಿಯಬೇಕಾದವು',
+    statusLearning: 'ಅಭ್ಯಾಸದಲ್ಲಿದೆ ⏳',
+    statusMemorized: 'ಕಂಠಪಾಠ ✓',
+    statusMastered: 'ಸಿದ್ಧ ★',
+
+    allShlokas: 'ಎಲ್ಲ ಶ್ಲೋಕಗಳು (೩೧೫)',
+    filterShowingCount: 'ತೋರಿಸಲಾದ ಶ್ಲೋಕಗಳು:',
+    clearFilter: 'ಫಿಲ್ಟರ್ ತೆಗೆಯಿರಿ',
+    noShlokasFound: 'ಯಾವುದೇ ಶ್ಲೋಕ ಕಂಡುಬಂದಿಲ್ಲ',
+    noShlokasDesc: 'ದಯವಿಟ್ಟು ಬೇರೆ ಶ್ಲೋಕ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಹುಡುಕಿ.',
+
+    settingsTitle: 'ಅಧ್ಯಯನ ಮತ್ತು ಭಾಷಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
+    settingsSubtitle: 'ಭಾಷೆ ಆಯ್ಕೆ ಮತ್ತು ಆಫ್‌ಲೈನ್ ಪ್ಯಾಕೇಜ್‌ಗಳು',
+    primaryLanguageTitle: 'ಮುಖ್ಯ ಅನುವಾದ ಭಾಷೆ',
+    primaryLanguageDesc: 'ಶ್ಲೋಕದ ಕೆಳಗೆ ತೋರಿಸಲಾಗುವ ಮುಖ್ಯ ಭಾವಾರ್ಥ:',
+    secondaryLanguagesTitle: 'ಹೆಚ್ಚುವರಿ ಅನುವಾದಗಳು',
+    secondaryLanguagesDesc: 'ವಿವಿಧ ಭಾಷೆಗಳ ಭಾವಾರ್ಥವನ್ನು ಬ್ಲಾಗ್ ರೂಪದಲ್ಲಿ ನೋಡಿ:',
+    offlinePackManagerTitle: 'ಆಫ್‌ಲೈನ್ ಭಾಷಾ ಪ್ಯಾಕ್ ಮ್ಯಾನೇಜರ್',
+    offlinePackManagerDesc: 'ಇಂಟರ್ನೆಟ್ ಇಲ್ಲದೆ ಓದಲು ಭಾಷಾ ಪ್ಯಾಕ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ:',
+    offlineReadyBadge: '೧೦೦% ಆಫ್‌ಲೈನ್',
+    installedBadge: 'ಇನ್‌ಸ್ಟಾಲ್ ಆಗಿದೆ',
+    installButton: 'ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ',
+    installingButton: 'ಡೌನ್‌ಲೋಡ್ ಆಗುತ್ತಿದೆ...',
+    dailyReminderTitle: 'ದೈನಂದಿನ ಜ್ಞಾಪನೆ',
+    dailyReminderDesc: 'ದೈನಂದಿನ ಅಧ್ಯಯನ ಅಧಿಸೂಚನೆ (ರಾತ್ರಿ ೯:೦೦ ಕ್ಕೆ):',
+    reminderTimeLabel: 'ಜ್ಞಾಪನೆ ಸಮಯ:',
+    testNotificationButton: 'ಪರೀಕ್ಷಾರ್ಥ ಅಧಿಸೂಚನೆ',
+    sanskritScriptTitle: 'ಸಂಸ್ಕೃತ ಲಿಪಿ:',
+    fontSizeTitle: 'ಫಾಂಟ್ ಗಾತ್ರ:',
+    themeTitle: 'ಥೀಮ್ ಮೋಡ್:',
+    themeLight: 'ಬೆಳಕು (Light)',
+    themeSepia: 'ಸೆಪಿಯಾ (Sepia)',
+    themeDark: 'ರಾತ್ರಿ (Dark)',
+    studyOptionsTitle: 'ಅಧ್ಯಯನ ಆಯ್ಕೆಗಳು:',
+    autoExpandBreakdown: 'ಪದಚ್ಛೇದವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ',
+    autoExpandCommentary: 'ವ್ಯಾಖ್ಯಾನವನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯಿರಿ',
+    offlineSecurityBadge: 'ಈ ಅಪ್ಲಿಕೇಶನ್ ೧೦೦% ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.',
+    resetButton: 'ರೀಸೆಟ್ ಮಾಡಿ',
+    saveCloseButton: 'ಉಳಿಸಿ ಮತ್ತು ಮುಚ್ಚಿ',
+
+    appModeTitle: 'ಸ್ಥಳೀಯ ಅಪ್ಲಿಕೇಶನ್ ಮೋಡ್',
+    appModeDesc: 'ಇದು ವೆಬ್‌ಪುಟವಲ್ಲ, ನೈಜ Android APK / AAB ಆ್ಯಪ್‌ನಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.',
+    installAppBanner: 'ಈ ಆ್ಯಪ್ ಅನ್ನು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ',
+    installAppBtn: 'ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ',
+    apkAabReadyBadge: 'APK & AAB ಸಿದ್ಧ'
+  },
+
+  all: {
+    tabHome: 'મુખ્ય / Home',
+    tabReader: 'શ્લોક / Shlokas 1-315',
+    tabMukhpath: 'મુખપાઠ / Mukhpath',
+    tabChapters: 'પ્રકરણ / Chapters',
+    tabCrossref: 'સંદર્ભ / Cross-Ref',
+    tabQuiz: 'કસોટી / Quiz',
+    tabBookmarks: 'સાચવેલા / Bookmarks',
+    tabSettings: 'સેટિંગ્સ / Settings',
+    tabApk: 'Android APK / AAB',
+
+    appTitle: 'સત્સંગ દીક્ષા • सत्सङ्गदीक्षा',
+    appSubtitle: 'Authentic 315 Shlokas Study App',
+    searchPlaceholder: 'Search # 1-315, Sanskrit, Gujarati, Hindi, English...',
+    quickJump: '1 - 315 Quick Jump',
+    clearSearch: 'Clear',
+    sanskritScriptLabel: 'લિપિ / Script:',
+    meaningLanguageLabel: 'ભાષા / Language:',
+    moreLanguages: 'All Languages...',
+
+    shlokaNumberPrefix: 'શ્લોક / Shloka',
+    chapterPrefix: 'પ્રકરણ / Ch.',
+    listenAudio: 'Listen Sanskrit Recitation',
+    listenAudioStop: 'Stop Recitation',
+    copyShloka: 'Copy All Translations',
+    copied: 'Copied!',
+    bookmarkAdd: 'Bookmark',
+    bookmarkRemove: 'Remove',
+    primaryMeaningTitle: 'સર્વ ત્રિભાષા ભાવાર્થ (Parallel Translations)',
+    secondaryMeaningTitle: 'અન્ય ભાષાઓ (Regional Languages)',
+    wordBreakdownTitle: 'પદચ્છેદ અને શબ્દાર્થ (Word-by-word Breakdown)',
+    wordBreakdownDesc: 'Click any Sanskrit word to inspect grammatical meaning',
+    closeWordBreakdown: 'Close',
+    detailedCommentaryTitle: 'અન્વયાર્થ અને શાસ્ત્રીય વિશ્લેષણ (Commentary)',
+    syntaxBreakdown: 'Syntax (અન્વય):',
+    coreSpiritualTeaching: 'Core Teaching:',
+    scriptureCrossRefTitle: 'વચનામૃત & સ્વામીની વાતો સંબંધ',
+    reflectionNoteLabel: 'Reflection Note:',
+    reflectionNotePlaceholder: 'Write your reflection...',
+
+    statusUnlearned: 'Unlearned',
+    statusLearning: 'Learning ⏳',
+    statusMemorized: 'Memorized ✓',
+    statusMastered: 'Mastered ★',
+
+    allShlokas: 'All 315 Shlokas',
+    filterShowingCount: 'Showing:',
+    clearFilter: 'Clear Filter',
+    noShlokasFound: 'No Shlokas Found',
+    noShlokasDesc: 'Try searching with different keywords.',
+
+    settingsTitle: 'Settings & Language Hub',
+    settingsSubtitle: 'Multi-language Purport & Offline Packs',
+    primaryLanguageTitle: 'Primary Language Selection',
+    primaryLanguageDesc: 'Default is Sanskrit to Gujarati with Hindi and English alongside:',
+    secondaryLanguagesTitle: 'Secondary Languages',
+    secondaryLanguagesDesc: 'Show multiple language translations stacked beneath the verse:',
+    offlinePackManagerTitle: 'Offline Language Pack Manager',
+    offlinePackManagerDesc: 'Install language packs for 100% offline use:',
+    offlineReadyBadge: '100% Offline',
+    installedBadge: 'Installed',
+    installButton: 'Install',
+    installingButton: 'Downloading...',
+    dailyReminderTitle: 'Daily Study Reminder',
+    dailyReminderDesc: 'Daily notification at 9:00 PM IST:',
+    reminderTimeLabel: 'Time:',
+    testNotificationButton: 'Test Notification',
+    sanskritScriptTitle: 'Sanskrit Script:',
+    fontSizeTitle: 'Font Size:',
+    themeTitle: 'Theme Mode:',
+    themeLight: 'Light',
+    themeSepia: 'Sepia',
+    themeDark: 'Dark',
+    studyOptionsTitle: 'Display Options:',
+    autoExpandBreakdown: 'Auto-expand breakdown',
+    autoExpandCommentary: 'Auto-expand commentary',
+    offlineSecurityBadge: '100% offline study app with all 315 shlokas and languages.',
+    resetButton: 'Reset',
+    saveCloseButton: 'Save & Close',
+
+    appModeTitle: 'Native Application Mode',
+    appModeDesc: 'Real Android APK / AAB application.',
+    installAppBanner: 'Install as native app on device',
+    installAppBtn: 'Install App',
+    apkAabReadyBadge: 'APK & AAB Ready'
+  }
+};
+
+export function getUIStrings(lang: Language): UIStrings {
+  return I18N_TRANSLATIONS[lang] || I18N_TRANSLATIONS.gujarati;
+}

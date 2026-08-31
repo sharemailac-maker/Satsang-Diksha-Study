@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpen, 
   Sparkles, 
@@ -7,17 +7,20 @@ import {
   ChevronUp, 
   ChevronDown, 
   Award, 
-  Bookmark as BookmarkIcon,
-  Layers,
-  Link2,
-  RefreshCw,
-  Info,
-  CheckCircle,
-  Clock,
-  ExternalLink
+  Bookmark as BookmarkIcon, 
+  Layers, 
+  Link2, 
+  RefreshCw, 
+  Info, 
+  CheckCircle, 
+  Clock, 
+  ExternalLink, 
+  Home,
+  Smartphone
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
+import { HomeView } from './components/HomeView';
 import { ShlokaCard } from './components/ShlokaCard';
 import { MukhpathView } from './components/MukhpathView';
 import { ChapterIndex } from './components/ChapterIndex';
@@ -27,10 +30,13 @@ import { QuizView } from './components/QuizView';
 import { BookmarksView } from './components/BookmarksView';
 import { SettingsModal } from './components/SettingsModal';
 import { QuickJumpModal } from './components/QuickJumpModal';
+import { ApkBuildModal } from './components/ApkBuildModal';
 
 import { SHLOKAS, getAllShlokas } from './data/shlokas';
 import { CHAPTERS } from './data/chapters';
 import { StorageService, DEFAULT_PREFERENCES } from './utils/storage';
+import { NotificationService } from './utils/notificationService';
+import { getUIStrings } from './utils/i18n';
 import { 
   Shloka, 
   UserPreferences, 
@@ -45,14 +51,17 @@ export default function App() {
   const [preferences, setPreferences] = useState<UserPreferences>(() => StorageService.getPreferences());
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => StorageService.getBookmarks());
   const [mukhpathRecords, setMukhpathRecords] = useState<Record<number, { status: MukhpathLevel; recitationCount: number }>>(() => StorageService.getMukhpathRecords());
-  const [activeTab, setActiveTab] = useState<string>('reader');
+  const [activeTab, setActiveTab] = useState<string>('home'); // Default to Home page matching Vachnamrut Study App
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
   
   // Modals state
   const [isQuickJumpOpen, setIsQuickJumpOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [isApkModalOpen, setIsApkModalOpen] = useState<boolean>(false);
   const [activeCrossRef, setActiveCrossRef] = useState<ScriptureReference | null>(null);
+
+  const ui = getUIStrings(preferences.activeLanguage);
 
   // All 315 Shlokas data
   const allShlokas = useMemo(() => getAllShlokas(), []);
@@ -70,6 +79,17 @@ export default function App() {
     }
     StorageService.savePreferences(preferences);
   }, [preferences]);
+
+  // Periodic check for Daily Study Reminder
+  useEffect(() => {
+    const checkReminder = () => {
+      NotificationService.checkAndTriggerReminder(preferences.reminder);
+    };
+
+    checkReminder();
+    const interval = setInterval(checkReminder, 60000); // Check every 60 seconds
+    return () => clearInterval(interval);
+  }, [preferences.reminder]);
 
   const handleUpdatePreferences = (newPrefs: Partial<UserPreferences>) => {
     setPreferences(prev => {
@@ -151,7 +171,7 @@ export default function App() {
   }, [mukhpathRecords]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFBF7] dark:bg-[#171412] text-[#2D241E] dark:text-[#EDE5D8] transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-[#FDFBF7] dark:bg-[#171412] text-[#2D241E] dark:text-[#EDE5D8] transition-colors duration-200 selection:bg-amber-500/30 selection:text-[#8B2500]">
       {/* Header with Search and Language bar */}
       <Header
         preferences={preferences}
@@ -160,12 +180,13 @@ export default function App() {
         onSearchChange={setSearchQuery}
         onOpenQuickJump={() => setIsQuickJumpOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenApkModal={() => setIsApkModalOpen(true)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         totalBookmarks={bookmarks.length}
       />
 
-      {/* Secondary Tab Navigation */}
+      {/* Secondary Tab Navigation (Desktop Top Bar & Mobile Bottom Bar) */}
       <Navigation
         activeTab={activeTab}
         onTabChange={(tab) => {
@@ -174,61 +195,37 @@ export default function App() {
         }}
         mukhpathCount={memorizedTotal}
         totalBookmarks={bookmarks.length}
+        preferences={preferences}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenApkModal={() => setIsApkModalOpen(true)}
       />
 
       {/* Main App Canvas */}
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-24 md:pb-16">
+        {/* TAB 0: HOME PAGE (Vachnamrut Study App Layout) */}
+        {activeTab === 'home' && (
+          <HomeView
+            shlokas={allShlokas}
+            preferences={preferences}
+            onUpdatePreferences={handleUpdatePreferences}
+            mukhpathRecords={mukhpathRecords}
+            totalBookmarks={bookmarks.length}
+            onNavigateTab={(tab, chId) => {
+              if (chId !== undefined && chId !== null) {
+                setSelectedChapterId(chId);
+              }
+              setActiveTab(tab);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onSelectShloka={handleJumpToShloka}
+            onOpenQuickJump={() => setIsQuickJumpOpen(true)}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+          />
+        )}
+
         {/* TAB 1: SCRIPTURE READER */}
         {activeTab === 'reader' && (
           <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
-            {/* Hero Study Header with Holy Scripture Artwork */}
-            {selectedChapterId === null && !searchQuery && (
-              <div className="relative rounded-3xl overflow-hidden shadow-xl border border-amber-400/40 bg-gradient-to-r from-[#8B2500] via-[#A83200] to-[#C4820F] text-white">
-                <div className="relative z-10 p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="space-y-2 max-w-xl text-center md:text-left">
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/25 text-amber-200 text-xs font-semibold border border-amber-300/30">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                      <span>પ્રગટ બ્રહ્મસ્વરૂપ મહંત સ્વામી મહારાજ પ્રણીત</span>
-                    </div>
-                    <h2 className="text-2xl sm:text-3xl font-serif font-bold text-amber-100 leading-tight">
-                      સત્સંગ દીક્ષા અધ્યયન ગ્રંથ
-                    </h2>
-                    <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
-                      અક્ષર-પુરુષોત્તમ ઉપાસના, નિત્ય વિધિ, આહારશુદ્ધિ, સદાચાર અને બ્રહ્મવિદ્યાનું માર્ગદર્શન આપતા ૩૧૫ સંસ્કૃત શ્લોકો ત્રિભાષા (ગુજરાતી, હિન્દી, અંગ્રેજી) અર્થ, પદચ્છેદ અને વચનામૃત-સ્વામીની વાતો સંદર્ભ સાથે.
-                    </p>
-
-                    {/* Quick Action Buttons */}
-                    <div className="pt-3 flex flex-wrap items-center justify-center md:justify-start gap-2.5 text-xs">
-                      <button
-                        onClick={() => setIsQuickJumpOpen(true)}
-                        className="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold shadow-md transition flex items-center gap-1.5"
-                      >
-                        <BookOpen className="w-4 h-4" />
-                        <span>શ્લોક પર જાઓ (1 - 315)</span>
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('mukhpath')}
-                        className="px-4 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold border border-amber-300/40 transition flex items-center gap-1.5"
-                      >
-                        <Sparkles className="w-4 h-4 text-amber-300" />
-                        <span>મુખપાઠ સાધના શરૂ કરો</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Holy Artwork / Icon Banner */}
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shadow-2xl border-4 border-amber-300/70 flex-shrink-0 bg-amber-950">
-                    <img 
-                      src={appIconImg} 
-                      alt="Satsang Diksha Holy Granth Blessing" 
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Chapter Filter Pill Bar */}
             <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
               <button
@@ -239,7 +236,7 @@ export default function App() {
                     : 'bg-white dark:bg-[#221D1A] border border-[#E8DFD1] dark:border-[#3D342C] text-[#6B5E51] dark:text-[#C5B7A8] hover:bg-[#FAF6F0]'
                 }`}
               >
-                સર્વ શ્લોકો (All 315)
+                {ui.allShlokas}
               </button>
               {CHAPTERS.map(ch => (
                 <button
@@ -251,7 +248,7 @@ export default function App() {
                       : 'bg-white dark:bg-[#221D1A] border border-[#E8DFD1] dark:border-[#3D342C] text-[#6B5E51] dark:text-[#C5B7A8] hover:bg-[#FAF6F0]'
                   }`}
                 >
-                  પ્રકરણ {ch.id}: {ch.titleGu}
+                  {ui.chapterPrefix} {ch.id}: {preferences.activeLanguage === 'hindi' ? ch.titleHi : ch.titleGu}
                 </button>
               ))}
             </div>
@@ -259,9 +256,9 @@ export default function App() {
             {/* Showing Count & Reset */}
             <div className="flex items-center justify-between text-xs text-[#7A6B5C] dark:text-[#A89D91]">
               <span>
-                દર્શાવેલ શ્લોકો: <strong>{filteredShlokas.length}</strong> of 315
-                {selectedChapterId !== null && ` (પ્રકરણ ${selectedChapterId})`}
-                {searchQuery && ` (શોધ: "${searchQuery}")`}
+                {ui.filterShowingCount} <strong>{filteredShlokas.length}</strong> / 315
+                {selectedChapterId !== null && ` (${ui.chapterPrefix} ${selectedChapterId})`}
+                {searchQuery && ` (${searchQuery})`}
               </span>
               {(selectedChapterId !== null || searchQuery) && (
                 <button
@@ -271,7 +268,7 @@ export default function App() {
                   }}
                   className="text-[#8B2500] dark:text-amber-400 font-semibold hover:underline"
                 >
-                  ફિલ્ટર હટાવો (Clear Filter)
+                  {ui.clearFilter}
                 </button>
               )}
             </div>
@@ -306,10 +303,10 @@ export default function App() {
               <div className="bg-white dark:bg-[#221D1A] rounded-3xl p-12 text-center border border-[#E8DFD1] dark:border-[#3D342C] space-y-3">
                 <Search className="w-12 h-12 text-amber-500 mx-auto opacity-60" />
                 <h3 className="text-base font-serif font-bold text-[#8B2500] dark:text-amber-300">
-                  કોઈ મેળ ખાતો શ્લોક મળ્યો નથી
+                  {ui.noShlokasFound}
                 </h3>
                 <p className="text-xs text-[#6B5E51] dark:text-[#A89886]">
-                  "{searchQuery}" માટે કોઈ પરિણામ મળ્યું નથી. કૃપા કરીને શ્લોક નંબર (૧ થી ૩૧૫) અથવા અન્ય શબ્દો વડે શોધો.
+                  {ui.noShlokasDesc}
                 </p>
               </div>
             )}
@@ -378,6 +375,12 @@ export default function App() {
         preferences={preferences}
         onUpdatePreferences={handleUpdatePreferences}
         onResetPreferences={handleResetPreferences}
+      />
+
+      <ApkBuildModal
+        isOpen={isApkModalOpen}
+        onClose={() => setIsApkModalOpen(false)}
+        preferences={preferences}
       />
 
       <CrossReferenceModal

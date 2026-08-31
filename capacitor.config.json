@@ -1,0 +1,26 @@
+{
+  "appId": "org.baps.satsangdiksha",
+  "appName": "Satsang Diksha",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#8B2500",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash"
+    },
+    "StatusBar": {
+      "backgroundColor": "#7A1E00",
+      "style": "DARK"
+    }
+  }
+}

@@ -1,110 +1,247 @@
 import React from 'react';
 import { 
+  Home,
   BookOpen, 
   Sparkles, 
   Layers, 
   Link2, 
-  HelpCircle, 
+  Award, 
   Bookmark,
-  Award
+  Settings,
+  Smartphone
 } from 'lucide-react';
+import { Language, UserPreferences } from '../types';
+import { getUIStrings } from '../utils/i18n';
 
 interface NavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   mukhpathCount: number;
   totalBookmarks: number;
+  preferences: UserPreferences;
+  onOpenSettings: () => void;
+  onOpenApkModal: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
   activeTab,
   onTabChange,
   mukhpathCount,
-  totalBookmarks
+  totalBookmarks,
+  preferences,
+  onOpenSettings,
+  onOpenApkModal
 }) => {
+  const ui = getUIStrings(preferences.activeLanguage);
+
   const tabs = [
     {
+      id: 'home',
+      label: ui.tabHome,
+      icon: Home
+    },
+    {
       id: 'reader',
-      labelGu: 'શ્લોક અધ્યયન',
-      labelHi: 'श्लोक अध्ययन',
-      labelEn: 'Shlokas 1-315',
+      label: ui.tabReader,
       icon: BookOpen,
       badge: '315'
     },
     {
       id: 'mukhpath',
-      labelGu: 'મુખપાઠ સાધના',
-      labelHi: 'मुखपाठ साधना',
-      labelEn: 'Mukhpath Tool',
+      label: ui.tabMukhpath,
       icon: Sparkles,
       badge: `${mukhpathCount}/315`
     },
     {
       id: 'chapters',
-      labelGu: 'પ્રકરણ સૂચિ',
-      labelHi: 'प्रकरण सूची',
-      labelEn: 'Chapters',
+      label: ui.tabChapters,
       icon: Layers
     },
     {
       id: 'crossref',
-      labelGu: 'વચનામૃત-વાતો સંબંધ',
-      labelHi: 'वचनामृत-वातो संबंध',
-      labelEn: 'Vachnamrut & Vato',
+      label: ui.tabCrossref,
       icon: Link2
     },
     {
       id: 'quiz',
-      labelGu: 'સ્વાધ્યાય કસોટી',
-      labelHi: 'स्वाध्याय परीक्षा',
-      labelEn: 'Quiz & Test',
+      label: ui.tabQuiz,
       icon: Award
     },
     {
       id: 'bookmarks',
-      labelGu: 'બુકમાર્ક્સ & નોંધો',
-      labelHi: 'बुकमार्क्स & नोट्स',
-      labelEn: 'Bookmarks',
+      label: ui.tabBookmarks,
       icon: Bookmark,
       badge: totalBookmarks > 0 ? totalBookmarks.toString() : undefined
     }
   ];
 
+  const handleTabClick = (tabId: string) => {
+    try {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    } catch {
+      // ignore
+    }
+    onTabChange(tabId);
+  };
+
   return (
-    <nav className="bg-[#FAF6F0] dark:bg-[#1E1916] border-b border-[#E8DFD1] dark:border-[#382F28] sticky top-[98px] sm:top-[106px] z-30 shadow-xs">
-      <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        <div className="flex items-center justify-between sm:justify-start gap-1 sm:gap-2 overflow-x-auto py-1.5 no-scrollbar">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
+    <>
+      {/* Top Desktop/Tablet Navigation Bar */}
+      <nav className="hidden md:block bg-[#FAF6F0] dark:bg-[#1E1916] border-b border-[#E8DFD1] dark:border-[#382F28] sticky top-[68px] sm:top-[74px] z-30 shadow-2xs">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="flex items-center justify-between gap-1.5 overflow-x-auto py-1.5 no-scrollbar">
+            <div className="flex items-center gap-1.5">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    id={`nav-tab-${tab.id}`}
+                    onClick={() => handleTabClick(tab.id)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
+                      isActive
+                        ? 'bg-[#8B2500] text-amber-50 shadow-sm font-semibold'
+                        : 'text-[#6B5E51] dark:text-[#B3A698] hover:bg-[#EDE5D8] dark:hover:bg-[#2C241F] hover:text-[#8B2500] dark:hover:text-amber-300'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'opacity-80'}`} />
+                    <span>{tab.label}</span>
+                    {tab.badge && (
+                      <span className={`ml-1 text-[10px] px-1.5 py-0.5 rounded-full ${
+                        isActive 
+                          ? 'bg-amber-400 text-amber-950 font-bold' 
+                          : 'bg-[#E3D6C3] dark:bg-[#382E26] text-[#7A6B5C] dark:text-[#C5B7A8]'
+                      }`}>
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Quick APK/AAB Native App status button */}
+            <div className="flex items-center gap-1.5 flex-shrink-0">
               <button
-                key={tab.id}
-                id={`nav-tab-${tab.id}`}
-                onClick={() => onTabChange(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap flex-shrink-0 ${
-                  isActive
-                    ? 'bg-[#8B2500] text-amber-50 shadow-sm font-semibold'
-                    : 'text-[#6B5E51] dark:text-[#B3A698] hover:bg-[#EDE5D8] dark:hover:bg-[#2C241F] hover:text-[#8B2500] dark:hover:text-amber-300'
-                }`}
+                onClick={onOpenApkModal}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-[#8B2500] dark:text-amber-300 border border-amber-400/30 text-xs font-semibold transition"
+                title="Android APK & AAB Ready"
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'opacity-80'}`} />
-                <span>{tab.labelGu}</span>
-                <span className="hidden md:inline opacity-75 text-[11px]">({tab.labelEn})</span>
-                {tab.badge && (
-                  <span className={`ml-1 text-[10px] px-1.5 py-0.5 rounded-full ${
-                    isActive 
-                      ? 'bg-amber-400 text-amber-950 font-bold' 
-                      : 'bg-[#E3D6C3] dark:bg-[#382E26] text-[#7A6B5C] dark:text-[#C5B7A8]'
-                  }`}>
-                    {tab.badge}
-                  </span>
-                )}
+                <Smartphone className="w-3.5 h-3.5 text-[#8B2500] dark:text-amber-400" />
+                <span>{ui.tabApk}</span>
               </button>
-            );
-          })}
+            </div>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Real Mobile App Bottom Navigation Bar (Fixed at Bottom for Native Look & Feel) */}
+      <nav 
+        id="native-mobile-bottom-nav" 
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF6F0]/95 dark:bg-[#1C1714]/95 backdrop-blur-md border-t border-[#E8DFD1] dark:border-[#382F28] px-2 py-1.5 shadow-lg safe-area-bottom"
+        style={{ paddingBottom: 'max(6px, env(safe-area-inset-bottom))' }}
+      >
+        <div className="flex items-center justify-around">
+          {/* Home */}
+          <button
+            onClick={() => handleTabClick('home')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
+              activeTab === 'home' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'home' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Home className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabHome}</span>
+          </button>
+
+          {/* Reader 1-315 */}
+          <button
+            onClick={() => handleTabClick('reader')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
+              activeTab === 'reader' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'reader' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabReader}</span>
+          </button>
+
+          {/* Mukhpath Tool */}
+          <button
+            onClick={() => handleTabClick('mukhpath')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition relative ${
+              activeTab === 'mukhpath' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'mukhpath' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabMukhpath}</span>
+            {mukhpathCount > 0 && (
+              <span className="absolute top-0 right-3 w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[9px] flex items-center justify-center">
+                {mukhpathCount}
+              </span>
+            )}
+          </button>
+
+          {/* Chapters */}
+          <button
+            onClick={() => handleTabClick('chapters')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
+              activeTab === 'chapters' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'chapters' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Layers className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabChapters}</span>
+          </button>
+
+          {/* Bookmarks */}
+          <button
+            onClick={() => handleTabClick('bookmarks')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition relative ${
+              activeTab === 'bookmarks' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'bookmarks' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Bookmark className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabBookmarks}</span>
+            {totalBookmarks > 0 && (
+              <span className="absolute top-0 right-3 w-4 h-4 rounded-full bg-[#8B2500] text-amber-50 font-bold text-[9px] flex items-center justify-center">
+                {totalBookmarks}
+              </span>
+            )}
+          </button>
+
+          {/* Settings */}
+          <button
+            onClick={onOpenSettings}
+            className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-[#7A6B5C] dark:text-[#9A8D80] hover:text-[#8B2500] dark:hover:text-amber-400"
+          >
+            <div className="p-1 rounded-full">
+              <Settings className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabSettings}</span>
+          </button>
+        </div>
+      </nav>
+    </>
   );
 };
