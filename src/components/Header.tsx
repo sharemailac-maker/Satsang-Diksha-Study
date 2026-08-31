@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { Language, SanskritScript, ThemeMode, UserPreferences } from '../types';
 import { getUIStrings } from '../utils/i18n';
-import appIconImg from '../assets/images/satsang_diksha_app_icon_1787932968623.jpg';
+import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
 
 interface HeaderProps {
   preferences: UserPreferences;

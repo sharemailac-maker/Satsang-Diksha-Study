@@ -26,8 +26,8 @@ import {
 import { Shloka, UserPreferences, MukhpathLevel, Chapter } from '../types';
 import { CHAPTERS } from '../data/chapters';
 import { NotificationService } from '../utils/notificationService';
-import appIconImg from '../assets/images/satsang_diksha_app_icon_1787932968623.jpg';
-import bannerImg from '../assets/images/satsang_diksha_banner_1787932984420.jpg';
+import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
+import bannerImg from '../assets/images/app_banner_1788180199396.jpg';
 
 interface HomeViewProps {
   shlokas: Shloka[];

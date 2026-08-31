@@ -187,7 +187,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
             {sanskritText}
           </p>
 
-          <div className="mt-2 text-xs text-[#8A7A68] dark:text-[#A89886] font-mono">
+          <div className="mt-2 text-xs text-[#8A7A68] dark:text-[#A89886] font-mono whitespace-pre-line select-text">
             {shloka.sanskritIast}
           </div>
         </div>
@@ -443,28 +443,40 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              {shloka.crossReferences.map((ref, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => onOpenCrossRef(ref)}
-                  className="p-3 rounded-xl bg-gradient-to-r from-amber-50/80 to-stone-50 dark:from-[#261F19] dark:to-[#1F1914] border border-amber-300/50 dark:border-amber-800/40 hover:border-amber-500 cursor-pointer transition flex items-center justify-between"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-serif font-bold text-xs text-[#8B2500] dark:text-amber-300">
-                        {ref.title}
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-200 text-amber-900 font-medium">
-                        {ref.section}
-                      </span>
+              {shloka.crossReferences.map((ref, idx) => {
+                const displayTitle = 
+                  preferences.activeLanguage === 'hindi' ? (ref.titleHi || ref.title) :
+                  preferences.activeLanguage === 'english' ? (ref.titleEn || ref.title) :
+                  (ref.titleGu || ref.title);
+                
+                const displayText = 
+                  preferences.activeLanguage === 'hindi' ? (ref.textHi || ref.textGu) :
+                  preferences.activeLanguage === 'english' ? (ref.textEn || ref.textGu) :
+                  ref.textGu;
+
+                return (
+                  <div
+                    key={idx}
+                    onClick={() => onOpenCrossRef(ref)}
+                    className="p-3 rounded-xl bg-gradient-to-r from-amber-50/90 to-stone-50 dark:from-[#261F19] dark:to-[#1F1914] border border-amber-300/50 dark:border-amber-800/40 hover:border-amber-500 cursor-pointer transition flex items-center justify-between"
+                  >
+                    <div className="space-y-1 pr-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-serif font-bold text-xs text-[#8B2500] dark:text-amber-300">
+                          {displayTitle}
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-medium">
+                          {ref.section}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#4A3E34] dark:text-[#C5B7A8] line-clamp-2 italic">
+                        "{displayText}"
+                      </p>
                     </div>
-                    <p className="text-[11px] text-[#4A3E34] dark:text-[#C5B7A8] line-clamp-1 italic font-gujarati">
-                      "{ref.textGu}"
-                    </p>
+                    <ExternalLink className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
                   </div>
-                  <ExternalLink className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

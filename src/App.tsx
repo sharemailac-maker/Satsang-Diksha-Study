@@ -44,8 +44,8 @@ import {
   MukhpathLevel, 
   ScriptureReference 
 } from './types';
-import heroBannerImg from './assets/images/satsang_diksha_banner_1787932984420.jpg';
-import appIconImg from './assets/images/satsang_diksha_app_icon_1787932968623.jpg';
+import heroBannerImg from './assets/images/app_banner_1788180199396.jpg';
+import appIconImg from './assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
 
 export default function App() {
   const [preferences, setPreferences] = useState<UserPreferences>(() => StorageService.getPreferences());
