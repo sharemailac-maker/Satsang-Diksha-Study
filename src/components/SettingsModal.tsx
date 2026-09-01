@@ -80,7 +80,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setTimeout(() => setTestNotificationStatus(null), 4000);
   };
 
-  const handleToggleSecondaryLanguage = (lang: 'hindi' | 'english' | 'marathi' | 'tamil' | 'telugu' | 'kannada' | 'bengali') => {
+  const handleToggleSecondaryLanguage = (lang: Language) => {
     const current = preferences.secondaryLanguages || [];
     const updated = current.includes(lang)
       ? current.filter(l => l !== lang)
@@ -137,7 +137,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 { id: 'bengali', labelGu: 'বাংলা অনুবাদ', labelEn: 'Bengali', native: 'বাংলা' },
                 { id: 'tamil', labelGu: 'தமிழ் விளக்கம்', labelEn: 'Tamil', native: 'தமிழ்' },
                 { id: 'telugu', labelGu: 'తెలుగు భావార్థం', labelEn: 'Telugu', native: 'తెలుగు' },
-                { id: 'kannada', labelGu: 'ಕನ್ನಡ ಭಾವಾರ್ಥ', labelEn: 'Kannada', native: 'ಕನ್ನಡ' }
+                { id: 'kannada', labelGu: 'ಕನ್ನಡ ಭಾವಾರ್ಥ', labelEn: 'Kannada', native: 'ಕನ್ನಡ' },
+                { id: 'punjabi', labelGu: 'ਪੰਜਾਬੀ ਅਨੁਵਾદ', labelEn: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+                { id: 'spanish', labelGu: 'Español', labelEn: 'Spanish', native: 'Español' },
+                { id: 'french', labelGu: 'Français', labelEn: 'French', native: 'Français' },
+                { id: 'german', labelGu: 'Deutsch', labelEn: 'German', native: 'Deutsch' }
               ].map(langItem => (
                 <button
                   key={langItem.id}
@@ -167,7 +171,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   { id: 'bengali', label: 'বাংলা অনুবাদ' },
                   { id: 'tamil', label: 'தமிழ்' },
                   { id: 'telugu', label: 'తెలుగు' },
-                  { id: 'kannada', label: 'ಕನ್ನಡ' }
+                  { id: 'kannada', label: 'ಕನ್ನಡ' },
+                  { id: 'punjabi', label: 'ਪੰਜਾਬੀ' },
+                  { id: 'spanish', label: 'Español' },
+                  { id: 'french', label: 'Français' },
+                  { id: 'german', label: 'Deutsch' }
                 ].map(sec => {
                   const isChecked = preferences.secondaryLanguages?.includes(sec.id as any);
                   return (
@@ -417,21 +425,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 type="checkbox"
                 checked={preferences.showWordBreakdownDefault}
                 onChange={(e) => onUpdatePreferences({ showWordBreakdownDefault: e.target.checked })}
-                className="w-5 h-5 accent-[#8B2500] rounded cursor-pointer"
-              />
-            </div>
-
-            <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-[#2A221C] border border-amber-300/40 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-                  <FileText className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <span>{ui.autoExpandCommentary}</span>
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                checked={preferences.showCommentaryDefault}
-                onChange={(e) => onUpdatePreferences({ showCommentaryDefault: e.target.checked })}
                 className="w-5 h-5 accent-[#8B2500] rounded cursor-pointer"
               />
             </div>

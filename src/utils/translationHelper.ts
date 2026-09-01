@@ -9,7 +9,7 @@ export const LANGUAGE_METADATA: Record<Language, {
 }> = {
   gujarati: {
     nameGu: 'ગુજરાતી (મૂળ ભાવાર્થ)',
-    nameHi: 'गुजराती',
+    nameHi: 'गुजराती (मूल भावार्थ)',
     nameEn: 'Gujarati (Default Authentic)',
     nativeName: 'ગુજરાતી',
     flagOrCode: 'GU'
@@ -29,7 +29,7 @@ export const LANGUAGE_METADATA: Record<Language, {
     flagOrCode: 'EN'
   },
   all: {
-    nameGu: 'સર્વ ભાષાઓ (All Languages)',
+    nameGu: 'સર્વ ત્રિભાષા (Parallel)',
     nameHi: 'सभी भाषाएँ',
     nameEn: 'All Languages (Parallel)',
     nativeName: 'ત્રિભાષા',
@@ -41,6 +41,13 @@ export const LANGUAGE_METADATA: Record<Language, {
     nameEn: 'Marathi Translation',
     nativeName: 'मराठी',
     flagOrCode: 'MR'
+  },
+  punjabi: {
+    nameGu: 'પંજાબી ભાષાંતર',
+    nameHi: 'पंजाबी अनुवाद',
+    nameEn: 'Punjabi Translation',
+    nativeName: 'ਪੰਜਾਬੀ',
+    flagOrCode: 'PA'
   },
   bengali: {
     nameGu: 'બંગાળી ભાષાંતર',
@@ -69,6 +76,27 @@ export const LANGUAGE_METADATA: Record<Language, {
     nameEn: 'Kannada Translation',
     nativeName: 'ಕನ್ನಡ',
     flagOrCode: 'KN'
+  },
+  spanish: {
+    nameGu: 'સ્પેનિશ અનુવાદ',
+    nameHi: 'स्पैनिश अनुवाद',
+    nameEn: 'Spanish Translation',
+    nativeName: 'Español',
+    flagOrCode: 'ES'
+  },
+  french: {
+    nameGu: 'ફ્રેન્ચ અનુવાદ',
+    nameHi: 'फ्रेंच अनुवाद',
+    nameEn: 'French Translation',
+    nativeName: 'Français',
+    flagOrCode: 'FR'
+  },
+  german: {
+    nameGu: 'જર્મન અનુવાદ',
+    nameHi: 'जर्मन अनुवाद',
+    nameEn: 'German Translation',
+    nativeName: 'Deutsch',
+    flagOrCode: 'DE'
   }
 };
 
@@ -84,15 +112,23 @@ export function getShlokaMeaning(shloka: Shloka, lang: Language): string {
     case 'english':
       return shloka.meaningEn || shloka.meaningGu;
     case 'marathi':
-      return shloka.meaningMr || `[मराठी] ${shloka.meaningHi || shloka.meaningGu}`;
-    case 'tamil':
-      return shloka.meaningTa || `[தமிழ்] ${shloka.meaningEn || shloka.meaningGu}`;
-    case 'telugu':
-      return shloka.meaningTe || `[తెలుగు] ${shloka.meaningEn || shloka.meaningGu}`;
-    case 'kannada':
-      return shloka.meaningKn || `[ಕನ್ನಡ] ${shloka.meaningEn || shloka.meaningGu}`;
+      return shloka.meaningMr || shloka.meaningHi || shloka.meaningGu;
+    case 'punjabi':
+      return shloka.meaningPa || shloka.meaningHi || shloka.meaningGu;
     case 'bengali':
-      return shloka.meaningBn || `[বাংলা] ${shloka.meaningHi || shloka.meaningGu}`;
+      return shloka.meaningBn || shloka.meaningHi || shloka.meaningGu;
+    case 'tamil':
+      return shloka.meaningTa || shloka.meaningEn || shloka.meaningGu;
+    case 'telugu':
+      return shloka.meaningTe || shloka.meaningEn || shloka.meaningGu;
+    case 'kannada':
+      return shloka.meaningKn || shloka.meaningEn || shloka.meaningGu;
+    case 'spanish':
+      return shloka.meaningEs || shloka.meaningEn || shloka.meaningGu;
+    case 'french':
+      return shloka.meaningFr || shloka.meaningEn || shloka.meaningGu;
+    case 'german':
+      return shloka.meaningDe || shloka.meaningEn || shloka.meaningGu;
     default:
       return shloka.meaningGu;
   }
@@ -111,14 +147,22 @@ export function getWordMeaningInLang(word: WordMeaning, lang: Language): string 
       return word.meaningEn || word.meaningGu;
     case 'marathi':
       return word.meaningMr || word.meaningHi || word.meaningGu;
+    case 'punjabi':
+      return word.meaningPa || word.meaningHi || word.meaningGu;
+    case 'bengali':
+      return word.meaningBn || word.meaningHi || word.meaningGu;
     case 'tamil':
       return word.meaningTa || word.meaningEn || word.meaningGu;
     case 'telugu':
       return word.meaningTe || word.meaningEn || word.meaningGu;
     case 'kannada':
       return word.meaningKn || word.meaningEn || word.meaningGu;
-    case 'bengali':
-      return word.meaningBn || word.meaningHi || word.meaningGu;
+    case 'spanish':
+      return word.meaningEs || word.meaningEn || word.meaningGu;
+    case 'french':
+      return word.meaningFr || word.meaningEn || word.meaningGu;
+    case 'german':
+      return word.meaningDe || word.meaningEn || word.meaningGu;
     default:
       return word.meaningGu;
   }

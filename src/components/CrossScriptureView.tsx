@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   BookOpen, 
   Link2, 
-  ExternalLink, 
+  ChevronRight, 
   Sparkles, 
   Filter, 
   Search, 
@@ -241,7 +241,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     className="text-xs px-3 py-1.5 rounded-xl bg-[#8B2500] hover:bg-[#A63000] text-white font-semibold transition shadow-xs flex items-center gap-1"
                   >
                     <span>મૂળ શ્લોક</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <BookOpen className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -346,7 +346,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                             <BookOpen className="w-3.5 h-3.5 text-amber-700 group-hover:text-amber-600 transition" />
                             {ref.title}
                           </span>
-                          <ExternalLink className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 opacity-60 group-hover:opacity-100 transition" />
+                          <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                         </div>
                         <p className="font-gujarati text-xs text-[#3D3227] dark:text-[#E2D7CB] line-clamp-3 leading-relaxed">
                           "{ref.textGu}"

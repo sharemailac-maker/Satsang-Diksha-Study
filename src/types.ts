@@ -1,4 +1,17 @@
-export type Language = 'gujarati' | 'hindi' | 'english' | 'all' | 'marathi' | 'bengali' | 'tamil' | 'telugu' | 'kannada';
+export type Language = 
+  | 'gujarati' 
+  | 'hindi' 
+  | 'english' 
+  | 'all' 
+  | 'marathi' 
+  | 'punjabi' 
+  | 'bengali' 
+  | 'tamil' 
+  | 'telugu' 
+  | 'kannada' 
+  | 'spanish' 
+  | 'french' 
+  | 'german';
 
 export type SanskritScript = 'devanagari' | 'gujarati' | 'iast';
 
@@ -13,10 +26,14 @@ export interface WordMeaning {
   meaningHi: string;
   meaningEn: string;
   meaningMr?: string;
+  meaningPa?: string;
+  meaningBn?: string;
   meaningTa?: string;
   meaningTe?: string;
   meaningKn?: string;
-  meaningBn?: string;
+  meaningEs?: string;
+  meaningFr?: string;
+  meaningDe?: string;
   grammaticalRole?: string;
   scriptureReference?: {
     source: string; // e.g. 'વચનામૃત ગઢડા પ્રથમ ૧' or 'સ્વામીની વાત ૧/૩'
@@ -59,10 +76,18 @@ export interface Shloka {
   meaningHi: string;
   meaningEn: string;
   meaningMr?: string;
+  meaningPa?: string;
+  meaningBn?: string;
   meaningTa?: string;
   meaningTe?: string;
   meaningKn?: string;
-  meaningBn?: string;
+  meaningEs?: string;
+  meaningFr?: string;
+  meaningDe?: string;
+  meaningPl?: string;
+  meaningPt?: string;
+  meaningEl?: string;
+  meaningRu?: string;
   padachheda?: WordMeaning[];
   anwayarthGu?: string;
   anwayarthHi?: string;
@@ -104,7 +129,7 @@ export interface LanguagePack {
 
 export interface UserPreferences {
   activeLanguage: Language; // Primary language (Default: 'gujarati')
-  secondaryLanguages: ('hindi' | 'english' | 'marathi' | 'tamil' | 'telugu' | 'kannada' | 'bengali')[];
+  secondaryLanguages: Language[];
   sanskritScript: SanskritScript;
   theme: ThemeMode;
   fontSize: number; // in px, e.g. 18

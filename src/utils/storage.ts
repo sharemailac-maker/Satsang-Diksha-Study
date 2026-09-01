@@ -10,14 +10,18 @@ const STORAGE_KEYS = {
 };
 
 export const AVAILABLE_LANGUAGE_PACKS: LanguagePack[] = [
-  { id: 'gujarati', nameGu: 'ગુજરાતી ભાષાંતર અને પદચ્છેદ', nameEn: 'Gujarati (Default Authentic)', nativeName: 'ગુજરાતી', sizeMb: 2.4, isDefaultInstalled: true },
+  { id: 'gujarati', nameGu: 'ગુજરાતી ભાષાંતર અને પદચ્છેદ', nameEn: 'Gujarati (Default Core Pack)', nativeName: 'ગુજરાતી', sizeMb: 2.4, isDefaultInstalled: true },
   { id: 'hindi', nameGu: 'હિન્દી ભાવાર્થ અને સંદર્ભ', nameEn: 'Hindi Commentary & Meaning', nativeName: 'हिन्दी', sizeMb: 2.1, isDefaultInstalled: true },
   { id: 'english', nameGu: 'અંગ્રેજી અનુવાદ અને વ્યાખ્યા', nameEn: 'English Translation & Purport', nativeName: 'English', sizeMb: 1.8, isDefaultInstalled: true },
-  { id: 'marathi', nameGu: 'મરાઠી ભાષાંતર', nameEn: 'Marathi Translation Pack', nativeName: 'मराठी', sizeMb: 1.6 },
-  { id: 'bengali', nameGu: 'બંગાળી ભાષાંતર', nameEn: 'Bengali Translation Pack', nativeName: 'বাংলা', sizeMb: 1.5 },
-  { id: 'tamil', nameGu: 'તમિલ ભાષાંતર', nameEn: 'Tamil Translation Pack', nativeName: 'தமிழ்', sizeMb: 1.7 },
-  { id: 'telugu', nameGu: 'તેલુગુ ભાષાંતર', nameEn: 'Telugu Translation Pack', nativeName: 'తెలుగు', sizeMb: 1.7 },
-  { id: 'kannada', nameGu: 'કન્નડ ભાષાંતર', nameEn: 'Kannada Translation Pack', nativeName: 'ಕನ್ನಡ', sizeMb: 1.6 }
+  { id: 'marathi', nameGu: 'મરાઠી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Marathi Regional Language Pack', nativeName: 'मराठी', sizeMb: 1.6 },
+  { id: 'punjabi', nameGu: 'પંજાબી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Punjabi Regional Language Pack', nativeName: 'ਪੰਜਾਬੀ', sizeMb: 1.6 },
+  { id: 'bengali', nameGu: 'બંગાળી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Bengali Regional Language Pack', nativeName: 'বাংলা', sizeMb: 1.5 },
+  { id: 'tamil', nameGu: 'તમિલ પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Tamil Regional Language Pack', nativeName: 'தமிழ்', sizeMb: 1.7 },
+  { id: 'telugu', nameGu: 'તેલુગુ પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Telugu Regional Language Pack', nativeName: 'తెలుగు', sizeMb: 1.7 },
+  { id: 'kannada', nameGu: 'કન્નડ પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Kannada Regional Language Pack', nativeName: 'ಕನ್ನಡ', sizeMb: 1.6 },
+  { id: 'spanish', nameGu: 'સ્પેનિશ ભાષાંતર પેક', nameEn: 'Spanish International Pack', nativeName: 'Español', sizeMb: 1.8 },
+  { id: 'french', nameGu: 'ફ્રેન્ચ ભાષાંતર પેક', nameEn: 'French International Pack', nativeName: 'Français', sizeMb: 1.8 },
+  { id: 'german', nameGu: 'જર્મન ભાષાંતર પેક', nameEn: 'German International Pack', nativeName: 'Deutsch', sizeMb: 1.9 }
 ];
 
 export const DEFAULT_PREFERENCES: UserPreferences = {

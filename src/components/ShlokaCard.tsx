@@ -8,7 +8,6 @@ import {
   ChevronUp, 
   Sparkles, 
   FileText, 
-  ExternalLink,
   BookOpen,
   CheckCircle2,
   Clock,
@@ -50,7 +49,6 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   highlightQuery
 }) => {
   const [showPadachheda, setShowPadachheda] = useState(preferences.showWordBreakdownDefault || false);
-  const [showAnwayarth, setShowAnwayarth] = useState(preferences.showCommentaryDefault || false);
   const [noteText, setNoteText] = useState(bookmarkNote);
   const [copied, setCopied] = useState(false);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
@@ -245,29 +243,47 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                     )}
                   </div>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">
-                    પદ અર્થ & વ્યાકરણ
+                    {selectedWordData.grammaticalRole || 'પદચ્છેદ & વ્યાકરણ'}
                   </span>
                 </div>
 
+                {/* Primary Selected Language Word Meaning */}
+                <div className="p-3 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 border-2 border-amber-500/40">
+                  <div className="text-[10px] font-bold text-[#8B2500] dark:text-amber-300 flex items-center justify-between">
+                    <span>{primaryLangMeta.nativeName} ({primaryLangMeta.nameGu}) પદ અર્થ (Selected Language Meaning)</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100 font-bold">Active</span>
+                  </div>
+                  <div className="text-sm font-semibold text-[#2D241E] dark:text-[#EDE5D8] mt-1">
+                    {getWordMeaningInLang(selectedWordData, preferences.activeLanguage)}
+                  </div>
+                </div>
+
+                {/* Other Parallel Language Meanings */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                  <div className="p-2.5 rounded-xl bg-amber-50/80 dark:bg-[#2C231C] border border-amber-200/50">
-                    <div className="text-[10px] font-bold text-amber-800 dark:text-amber-400">ગુજરાતી અર્થ</div>
-                    <div className="font-gujarati text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
-                      {selectedWordData.meaningGu}
+                  {preferences.activeLanguage !== 'gujarati' && (
+                    <div className="p-2.5 rounded-xl bg-amber-50/80 dark:bg-[#2C231C] border border-amber-200/50">
+                      <div className="text-[10px] font-bold text-amber-800 dark:text-amber-400">ગુજરાતી પદાર્થ</div>
+                      <div className="font-gujarati text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
+                        {selectedWordData.meaningGu}
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-orange-50/80 dark:bg-[#2C231C] border border-orange-200/50">
-                    <div className="text-[10px] font-bold text-orange-800 dark:text-orange-400">हिन्दी अर्थ</div>
-                    <div className="font-hindi text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
-                      {selectedWordData.meaningHi}
+                  )}
+                  {preferences.activeLanguage !== 'hindi' && (
+                    <div className="p-2.5 rounded-xl bg-orange-50/80 dark:bg-[#2C231C] border border-orange-200/50">
+                      <div className="text-[10px] font-bold text-orange-800 dark:text-orange-400">हिन्दी पद-अर्थ</div>
+                      <div className="font-hindi text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
+                        {selectedWordData.meaningHi}
+                      </div>
                     </div>
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-[#2C231C] border border-stone-200/60">
-                    <div className="text-[10px] font-bold text-stone-700 dark:text-stone-400">English Meaning</div>
-                    <div className="font-english text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
-                      {selectedWordData.meaningEn}
+                  )}
+                  {preferences.activeLanguage !== 'english' && (
+                    <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-[#2C231C] border border-stone-200/60">
+                      <div className="text-[10px] font-bold text-stone-700 dark:text-stone-400">English Word Meaning</div>
+                      <div className="font-english text-[#2D241E] dark:text-[#EDE5D8] mt-0.5 font-medium">
+                        {selectedWordData.meaningEn}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Specific Scripture Reference for this Word if available */}
@@ -352,6 +368,17 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
         )}
 
+        {preferences.secondaryLanguages?.includes('punjabi') && preferences.activeLanguage !== 'punjabi' && (
+          <div className="p-3.5 rounded-xl bg-amber-50/40 dark:bg-[#251F1A] border-l-4 border-amber-600">
+            <div className="flex items-center gap-1.5 mb-1 text-xs font-bold text-amber-900 dark:text-amber-300">
+              <span>ਪੰਜਾਬੀ ਅਨੁਵਾਦ (Punjabi)</span>
+            </div>
+            <p className="text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
+              {getShlokaMeaning(shloka, 'punjabi')}
+            </p>
+          </div>
+        )}
+
         {preferences.secondaryLanguages?.includes('bengali') && preferences.activeLanguage !== 'bengali' && (
           <div className="p-3.5 rounded-xl bg-emerald-50/40 dark:bg-[#251F1A] border-l-4 border-emerald-700">
             <div className="flex items-center gap-1.5 mb-1 text-xs font-bold text-emerald-900 dark:text-emerald-300">
@@ -396,43 +423,38 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
         )}
 
-        {/* Collapsible Anwayarth and Philosophical Meaning */}
-        <div className="pt-2">
-          <button
-            onClick={() => setShowAnwayarth(!showAnwayarth)}
-            className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-stone-100 dark:bg-[#27211C] hover:bg-amber-100/50 dark:hover:bg-[#332A24] transition text-xs font-bold text-[#4A3E34] dark:text-[#D1C5B7]"
-          >
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <span>{ui.detailedCommentaryTitle}</span>
+        {preferences.secondaryLanguages?.includes('spanish') && preferences.activeLanguage !== 'spanish' && (
+          <div className="p-3.5 rounded-xl bg-sky-50/40 dark:bg-[#251F1A] border-l-4 border-sky-600">
+            <div className="flex items-center gap-1.5 mb-1 text-xs font-bold text-sky-900 dark:text-sky-300">
+              <span>Español (Spanish Translation)</span>
             </div>
-            {showAnwayarth ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-          </button>
+            <p className="text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
+              {getShlokaMeaning(shloka, 'spanish')}
+            </p>
+          </div>
+        )}
 
-          {showAnwayarth && (
-            <div className="mt-2.5 p-4 rounded-xl bg-amber-50/40 dark:bg-[#221A15] border border-amber-200 dark:border-amber-900/40 space-y-2.5 text-xs animate-fadeIn">
-              {shloka.anwayarthGu && (
-                <div className="space-y-1">
-                  <span className="font-bold text-[#8B2500] dark:text-amber-400">{ui.syntaxBreakdown}</span>
-                  <p className="font-gujarati text-[#3D3228] dark:text-[#EDE5D8] leading-relaxed">
-                    {shloka.anwayarthGu}
-                  </p>
-                </div>
-              )}
-
-              {shloka.keyTeaching && (
-                <div className="p-2.5 rounded-lg bg-amber-100/60 dark:bg-amber-950/50 border border-amber-300/40">
-                  <span className="font-bold text-[#8B2500] dark:text-amber-300 block mb-0.5">
-                    {ui.coreSpiritualTeaching}
-                  </span>
-                  <p className="font-gujarati text-[#4A3E34] dark:text-[#D5C7B7]">
-                    {shloka.keyTeaching}
-                  </p>
-                </div>
-              )}
+        {preferences.secondaryLanguages?.includes('french') && preferences.activeLanguage !== 'french' && (
+          <div className="p-3.5 rounded-xl bg-indigo-50/40 dark:bg-[#251F1A] border-l-4 border-indigo-600">
+            <div className="flex items-center gap-1.5 mb-1 text-xs font-bold text-indigo-900 dark:text-indigo-300">
+              <span>Français (French Translation)</span>
             </div>
-          )}
-        </div>
+            <p className="text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
+              {getShlokaMeaning(shloka, 'french')}
+            </p>
+          </div>
+        )}
+
+        {preferences.secondaryLanguages?.includes('german') && preferences.activeLanguage !== 'german' && (
+          <div className="p-3.5 rounded-xl bg-teal-50/40 dark:bg-[#251F1A] border-l-4 border-teal-600">
+            <div className="flex items-center gap-1.5 mb-1 text-xs font-bold text-teal-900 dark:text-teal-300">
+              <span>Deutsch (German Translation)</span>
+            </div>
+            <p className="text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
+              {getShlokaMeaning(shloka, 'german')}
+            </p>
+          </div>
+        )}
 
         {/* Scriptural Cross-References (Vachnamrut / Swami ni Vato) */}
         {shloka.crossReferences && shloka.crossReferences.length > 0 && (
@@ -454,26 +476,40 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                   preferences.activeLanguage === 'english' ? (ref.textEn || ref.textGu) :
                   ref.textGu;
 
+                const isVachnamrut = ref.type === 'vachnamrut';
+
                 return (
                   <div
                     key={idx}
                     onClick={() => onOpenCrossRef(ref)}
-                    className="p-3 rounded-xl bg-gradient-to-r from-amber-50/90 to-stone-50 dark:from-[#261F19] dark:to-[#1F1914] border border-amber-300/50 dark:border-amber-800/40 hover:border-amber-500 cursor-pointer transition flex items-center justify-between"
+                    className="p-3 rounded-xl bg-gradient-to-r from-amber-50/90 to-stone-50 dark:from-[#261F19] dark:to-[#1F1914] border border-amber-300/50 dark:border-amber-800/40 hover:border-amber-500 cursor-pointer transition flex items-center justify-between group"
                   >
                     <div className="space-y-1 pr-2">
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="font-serif font-bold text-xs text-[#8B2500] dark:text-amber-300">
                           {displayTitle}
                         </span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-medium">
+                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold">
                           {ref.section}
                         </span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                          ઓફલાઇન પ્રમાણ
+                        </span>
                       </div>
-                      <p className="text-[11px] text-[#4A3E34] dark:text-[#C5B7A8] line-clamp-2 italic">
+                      <p className="text-xs text-[#4A3E34] dark:text-[#C5B7A8] leading-relaxed italic">
                         "{displayText}"
                       </p>
+                      {ref.correlationNote && (
+                        <p className="text-[11px] text-amber-900 dark:text-amber-300/90 font-medium pt-0.5 border-t border-amber-200/40 dark:border-amber-900/30">
+                          {ref.correlationNote}
+                        </p>
+                      )}
                     </div>
-                    <ExternalLink className="w-4 h-4 text-amber-700 dark:text-amber-400 flex-shrink-0" />
+                    <div className="flex flex-col items-center justify-center pl-1 text-amber-700 dark:text-amber-400 group-hover:translate-x-0.5 transition-transform flex-shrink-0">
+                      <BookOpen className="w-4 h-4" />
+                      <span className="text-[9px] font-bold mt-0.5">વાંચો</span>
+                    </div>
                   </div>
                 );
               })}
