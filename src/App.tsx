@@ -1,22 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-  BookOpen, 
-  Sparkles, 
   Search, 
-  SlidersHorizontal, 
-  ChevronUp, 
-  ChevronDown, 
-  Award, 
-  Bookmark as BookmarkIcon, 
-  Layers, 
-  Link2, 
   RefreshCw, 
-  Info, 
-  CheckCircle, 
-  Clock, 
-  ExternalLink, 
-  Home,
-  Smartphone
+  Sparkles,
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -33,28 +21,26 @@ import { SettingsModal } from './components/SettingsModal';
 import { QuickJumpModal } from './components/QuickJumpModal';
 import { ApkBuildModal } from './components/ApkBuildModal';
 
-import { SHLOKAS, getAllShlokas } from './data/shlokas';
+import { getAllShlokas } from './data/shlokas';
 import { CHAPTERS } from './data/chapters';
 import { StorageService, DEFAULT_PREFERENCES } from './utils/storage';
 import { NotificationService } from './utils/notificationService';
 import { getUIStrings } from './utils/i18n';
 import { 
-  Shloka, 
   UserPreferences, 
   Bookmark, 
   MukhpathLevel, 
   ScriptureReference 
 } from './types';
-import heroBannerImg from './assets/images/app_banner_1788180199396.jpg';
-import appIconImg from './assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
 
 export default function App() {
   const [preferences, setPreferences] = useState<UserPreferences>(() => StorageService.getPreferences());
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => StorageService.getBookmarks());
   const [mukhpathRecords, setMukhpathRecords] = useState<Record<number, { status: MukhpathLevel; recitationCount: number }>>(() => StorageService.getMukhpathRecords());
-  const [activeTab, setActiveTab] = useState<string>('home'); // Default to Home page matching Vachnamrut Study App
+  const [activeTab, setActiveTab] = useState<string>('home');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
+  const [hasUpdate, setHasUpdate] = useState<boolean>(false);
   
   // Modals state
   const [isQuickJumpOpen, setIsQuickJumpOpen] = useState<boolean>(false);
@@ -66,6 +52,17 @@ export default function App() {
 
   // All 315 Shlokas data
   const allShlokas = useMemo(() => getAllShlokas(), []);
+
+  // Listen for PWA updates
+  useEffect(() => {
+    const handleUpdateAvailable = () => {
+      setHasUpdate(true);
+    };
+    window.addEventListener('pwa-update-available', handleUpdateAvailable);
+    return () => {
+      window.removeEventListener('pwa-update-available', handleUpdateAvailable);
+    };
+  }, []);
 
   // Sync theme changes with DOM root
   useEffect(() => {
@@ -88,7 +85,7 @@ export default function App() {
     };
 
     checkReminder();
-    const interval = setInterval(checkReminder, 60000); // Check every 60 seconds
+    const interval = setInterval(checkReminder, 60000);
     return () => clearInterval(interval);
   }, [preferences.reminder]);
 
@@ -132,6 +129,19 @@ export default function App() {
     }, 150);
   };
 
+  const handleReloadAppUpdate = () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        for (const r of regs) {
+          if (r.waiting) {
+            r.waiting.postMessage({ action: 'SKIP_WAITING' });
+          }
+        }
+      });
+    }
+    window.location.reload();
+  };
+
   // Filter shlokas based on search and chapter selection
   const filteredShlokas = useMemo(() => {
     let result = allShlokas;
@@ -173,6 +183,33 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FDFBF7] dark:bg-[#171412] text-[#2D241E] dark:text-[#EDE5D8] transition-colors duration-200 selection:bg-amber-500/30 selection:text-[#8B2500]">
+      {/* Update Available Notification Banner */}
+      {hasUpdate && (
+        <div className="bg-emerald-700 text-white px-4 py-2 text-xs flex items-center justify-between gap-3 sticky top-0 z-50 shadow-md animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-emerald-200" />
+            <span className="font-semibold">
+              સત્સંગ દીક્ષા એપનું નવું વર્ઝન ઉપલબ્ધ છે! (New version available)
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleReloadAppUpdate}
+              className="px-3 py-1 rounded-lg bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition shadow-xs flex items-center gap-1.5"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>અપડેટ કરો (Update Now)</span>
+            </button>
+            <button
+              onClick={() => setHasUpdate(false)}
+              className="p-1 text-white/80 hover:text-white"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header with Search and Language bar */}
       <Header
         preferences={preferences}
@@ -203,7 +240,7 @@ export default function App() {
 
       {/* Main App Canvas */}
       <main className="flex-1 pb-24 md:pb-16">
-        {/* TAB 0: HOME PAGE (Vachnamrut Study App Layout) */}
+        {/* TAB 0: HOME PAGE */}
         {activeTab === 'home' && (
           <HomeView
             shlokas={allShlokas}

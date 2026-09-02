@@ -1,13 +1,11 @@
 {
   "name": "Satsang Diksha",
-  "short_name": "Satsang Diksha",
-  "description": "Authentic Satsang Diksha scripture study app with all 316 Sanskrit shlokas, multi-language translations, word-by-word padachheda, Mukhpath practice, and cross-references.",
-  "id": "org.baps.satsangdiksha",
-  "start_url": "/?source=pwa",
+  "short_name": "SatsangDiksha",
+  "description": "Authentic Satsang Diksha scripture study app with all 315 Sanskrit shlokas, multi-language translations, word-by-word padachheda, Mukhpath practice, Udgaan Vedic chanting, and cross-references.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay", "minimal-ui"],
-  "background_color": "#F8F5EE",
+  "background_color": "#FAF6F0",
   "theme_color": "#8B2500",
   "orientation": "any",
   "dir": "ltr",
@@ -15,6 +13,18 @@
   "categories": ["education", "books", "lifestyle"],
   "prefer_related_applications": false,
   "icons": [
+    {
+      "src": "/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
@@ -38,38 +48,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshot-mobile.png",
-      "sizes": "720x1280",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Satsang Diksha Shloka Study & Mukhpath"
-    },
-    {
-      "src": "/screenshot-desktop.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Satsang Diksha Study on Desktop & Tablets"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Mukhpath Practice",
-      "short_name": "Mukhpath",
-      "description": "Practice memorizing Satsang Diksha shlokas",
-      "url": "/?view=mukhpath",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Scriptural Cross References",
-      "short_name": "Vachnamrut Links",
-      "description": "Explore Vachnamrut & Swami ni Vato references",
-      "url": "/?view=cross_references",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }

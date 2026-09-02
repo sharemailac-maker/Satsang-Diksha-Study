@@ -6,9 +6,9 @@ import {
   Moon, 
   Hash,
   Languages,
-  X
+  Smartphone
 } from 'lucide-react';
-import { Language, SanskritScript, ThemeMode, UserPreferences } from '../types';
+import { ThemeMode, UserPreferences } from '../types';
 import { getUIStrings } from '../utils/i18n';
 import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
 
@@ -32,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSearchChange,
   onOpenQuickJump,
   onOpenSettings,
+  onOpenApkModal,
   activeTab,
   setActiveTab
 }) => {
@@ -70,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          {/* Bigger App Image-Icon */}
+          {/* App Image-Icon */}
           <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-amber-300 bg-amber-950 flex-shrink-0">
             <img 
               src={appIconImg} 
@@ -96,8 +97,19 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Action Icons Row (Search, # Quick Jump, Language, Theme, Settings) */}
+        {/* Action Icons Row (APK Modal, Search, # Quick Jump, Language, Theme, Settings) */}
         <div className="flex items-center justify-end gap-1.5 sm:gap-2 self-end sm:self-center">
+          {/* APK / Install App Button */}
+          <button
+            id="header-apk-btn"
+            onClick={onOpenApkModal}
+            title="Download APK / Install App"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border border-amber-400/40 text-xs font-semibold transition"
+          >
+            <Smartphone className="w-4 h-4 text-amber-300" />
+            <span className="hidden sm:inline">APK / App</span>
+          </button>
+
           {/* Quick Jump Button (#) */}
           <button
             id="header-quick-jump-btn"
