@@ -1,6 +1,6 @@
 {
   "name": "Satsang Diksha",
-  "description": "Authentic Satsang Diksha scripture study app with all 315 Sanskrit shlokas, Gujarati, Hindi, and English translations, interactive word-by-word highlighted breakdown, Mukhpath memorization practice, Udgaan Vedic chanting, and comprehensive Vachnamrut & Swami ni Vato scriptural cross-references.",
+  "description": "Authentic Satsang Diksha scripture study app with all 315 Sanskrit shlokas, multilingual translations including Portuguese, Russian, Greek, and Polish, interactive word-by-word highlighted breakdown, Mukhpath memorization practice, Udgaan Vedic chanting, and comprehensive scriptural cross-references.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

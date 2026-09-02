@@ -10,7 +10,11 @@ export type Language =
   | 'kannada' 
   | 'spanish' 
   | 'french' 
-  | 'german';
+  | 'german'
+  | 'portuguese'
+  | 'russian'
+  | 'greek'
+  | 'polish';
 
 export type SanskritScript = 'devanagari' | 'gujarati' | 'iast';
 
@@ -33,6 +37,10 @@ export interface WordMeaning {
   meaningEs?: string;
   meaningFr?: string;
   meaningDe?: string;
+  meaningPt?: string;
+  meaningRu?: string;
+  meaningEl?: string;
+  meaningPl?: string;
   grammaticalRole?: string;
   grammar?: string;
   gujarati?: string;
@@ -135,6 +143,7 @@ export interface LanguagePack {
 
 export interface UserPreferences {
   activeLanguage: Language; // Primary language (Default: 'gujarati')
+  appLanguage?: Language; // Application UI language
   secondaryLanguages: Language[];
   sanskritScript: SanskritScript;
   theme: ThemeMode;
@@ -144,7 +153,16 @@ export interface UserPreferences {
   showGrammarDetails: boolean;
   reminder: ReminderSettings;
   installedLanguagePacks: Language[];
-  dailyGoal: number; // shlokas per day, default 5
+  dailyGoal: number; // shlokas per day, default 1 or 5
+
+  // Reader Screen preferences from settings
+  readerTimeout?: string; // e.g. '5 Minutes', '10 Minutes', '15 Minutes', 'Never'
+  autoSwipeOnRead?: boolean; // Auto Swipe when 'Mark as Read'
+
+  // Audio preferences from settings
+  downloadWifiOnly?: boolean; // Download using Wi-Fi Only
+  playingMethod?: string; // 'Stream and Save' | 'Stream Only' | 'Download All'
+  autoMarkReadWithAudio?: boolean; // Auto 'Mark as Read' with audio
 }
 
 export interface Bookmark {

@@ -46,7 +46,7 @@ export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [activeCrossRef, setActiveCrossRef] = useState<ScriptureReference | null>(null);
 
-  const ui = getUIStrings(preferences.activeLanguage);
+  const ui = getUIStrings(preferences.appLanguage || preferences.activeLanguage);
 
   // All 315 Shlokas data
   const allShlokas = useMemo(() => getAllShlokas(), []);

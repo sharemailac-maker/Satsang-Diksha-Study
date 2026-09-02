@@ -13,6 +13,10 @@ export const AVAILABLE_LANGUAGE_PACKS: LanguagePack[] = [
   { id: 'gujarati', nameGu: 'ગુજરાતી ભાષાંતર અને પદચ્છેદ', nameEn: 'Gujarati (Default Core Pack)', nativeName: 'ગુજરાતી', sizeMb: 2.4, isDefaultInstalled: true },
   { id: 'hindi', nameGu: 'હિન્દી ભાવાર્થ અને સંદર્ભ', nameEn: 'Hindi Commentary & Meaning', nativeName: 'हिन्दी', sizeMb: 2.1, isDefaultInstalled: true },
   { id: 'english', nameGu: 'અંગ્રેજી અનુવાદ અને વ્યાખ્યા', nameEn: 'English Translation & Purport', nativeName: 'English', sizeMb: 1.8, isDefaultInstalled: true },
+  { id: 'portuguese', nameGu: 'પોર્ટુગીઝ ભાષાંતર પેક', nameEn: 'Portuguese Language Pack', nativeName: 'Português', sizeMb: 1.8 },
+  { id: 'russian', nameGu: 'રશિયન ભાષાંતર પેક', nameEn: 'Russian Language Pack', nativeName: 'Русский', sizeMb: 2.1 },
+  { id: 'greek', nameGu: 'ગ્રીક ભાષાંતર પેક', nameEn: 'Greek Language Pack', nativeName: 'Ελληνικά', sizeMb: 1.9 },
+  { id: 'polish', nameGu: 'પોલિશ ભાષાંતર પેક', nameEn: 'Polish Language Pack', nativeName: 'Polski', sizeMb: 1.8 },
   { id: 'marathi', nameGu: 'મરાઠી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Marathi Regional Language Pack', nativeName: 'मराठी', sizeMb: 1.6 },
   { id: 'punjabi', nameGu: 'પંજાબી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Punjabi Regional Language Pack', nativeName: 'ਪੰਜਾਬੀ', sizeMb: 1.6 },
   { id: 'bengali', nameGu: 'બંગાળી પ્રાદેશિક ભાષાંતર પેક', nameEn: 'Bengali Regional Language Pack', nativeName: 'বাংলা', sizeMb: 1.5 },
@@ -25,8 +29,9 @@ export const AVAILABLE_LANGUAGE_PACKS: LanguagePack[] = [
 ];
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  activeLanguage: 'gujarati', // Default is Sanskrit to Gujarati as requested
-  secondaryLanguages: ['hindi', 'english'],
+  activeLanguage: 'english',
+  appLanguage: 'english',
+  secondaryLanguages: ['gujarati', 'hindi'],
   sanskritScript: 'devanagari',
   theme: 'light',
   fontSize: 18,
@@ -35,13 +40,18 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   showGrammarDetails: true,
   reminder: {
     enabled: true,
-    time: '21:00', // 9:00 PM Indian Standard Time default as requested
+    time: '19:40', // 07:40 PM as in user screenshot
     sound: true,
     vibrate: true,
     customMessage: 'સત્સંગ દીક્ષા સ્વાધ્યાય અને મુખપાઠ સાધના કરવાનો સમય થયો છે.'
   },
-  installedLanguagePacks: ['gujarati', 'hindi', 'english'],
-  dailyGoal: 5
+  installedLanguagePacks: ['gujarati', 'hindi', 'english', 'portuguese', 'russian', 'greek', 'polish'],
+  dailyGoal: 1, // 1 Shloka daily reading target
+  readerTimeout: '5 Minutes',
+  autoSwipeOnRead: false,
+  downloadWifiOnly: false,
+  playingMethod: 'Stream and Save',
+  autoMarkReadWithAudio: false
 };
 
 export const StorageService = {
@@ -58,7 +68,13 @@ export const StorageService = {
           ...(parsed.reminder || {})
         },
         installedLanguagePacks: parsed.installedLanguagePacks || DEFAULT_PREFERENCES.installedLanguagePacks,
-        secondaryLanguages: parsed.secondaryLanguages || DEFAULT_PREFERENCES.secondaryLanguages
+        secondaryLanguages: parsed.secondaryLanguages || DEFAULT_PREFERENCES.secondaryLanguages,
+        readerTimeout: parsed.readerTimeout || DEFAULT_PREFERENCES.readerTimeout,
+        autoSwipeOnRead: parsed.autoSwipeOnRead ?? DEFAULT_PREFERENCES.autoSwipeOnRead,
+        downloadWifiOnly: parsed.downloadWifiOnly ?? DEFAULT_PREFERENCES.downloadWifiOnly,
+        playingMethod: parsed.playingMethod || DEFAULT_PREFERENCES.playingMethod,
+        autoMarkReadWithAudio: parsed.autoMarkReadWithAudio ?? DEFAULT_PREFERENCES.autoMarkReadWithAudio,
+        dailyGoal: parsed.dailyGoal || DEFAULT_PREFERENCES.dailyGoal
       };
     } catch {
       return DEFAULT_PREFERENCES;

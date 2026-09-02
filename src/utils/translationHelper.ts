@@ -90,6 +90,34 @@ export const LANGUAGE_METADATA: Record<Language, {
     nameEn: 'German Translation',
     nativeName: 'Deutsch',
     flagOrCode: 'DE'
+  },
+  portuguese: {
+    nameGu: 'પોર્ટુગીઝ અનુવાદ',
+    nameHi: 'पुर्तगाली अनुवाद',
+    nameEn: 'Portuguese Translation',
+    nativeName: 'Português',
+    flagOrCode: 'PT'
+  },
+  russian: {
+    nameGu: 'રશિયન અનુવાદ',
+    nameHi: 'रूसी अनुवाद',
+    nameEn: 'Russian Translation',
+    nativeName: 'Русский',
+    flagOrCode: 'RU'
+  },
+  greek: {
+    nameGu: 'ગ્રીક અનુવાદ',
+    nameHi: 'ग्रीक अनुवाद',
+    nameEn: 'Greek Translation',
+    nativeName: 'Ελληνικά',
+    flagOrCode: 'EL'
+  },
+  polish: {
+    nameGu: 'પોલિશ અનુવાદ',
+    nameHi: 'पोलिश अनुवाद',
+    nameEn: 'Polish Translation',
+    nativeName: 'Polski',
+    flagOrCode: 'PL'
   }
 };
 
@@ -122,6 +150,14 @@ export function getShlokaMeaning(shloka: Shloka, lang: Language): string {
       return shloka.meaningFr || shloka.meaningEn || shloka.meaningGu;
     case 'german':
       return shloka.meaningDe || shloka.meaningEn || shloka.meaningGu;
+    case 'portuguese':
+      return shloka.meaningPt || shloka.meaningEn || shloka.meaningGu;
+    case 'russian':
+      return shloka.meaningRu || shloka.meaningEn || shloka.meaningGu;
+    case 'greek':
+      return shloka.meaningEl || shloka.meaningEn || shloka.meaningGu;
+    case 'polish':
+      return shloka.meaningPl || shloka.meaningEn || shloka.meaningGu;
     default:
       return shloka.meaningGu;
   }
@@ -156,6 +192,14 @@ export function getWordMeaningInLang(word: WordMeaning, lang: Language): string 
       return word.meaningFr || word.meaningEn || word.meaningGu;
     case 'german':
       return word.meaningDe || word.meaningEn || word.meaningGu;
+    case 'portuguese':
+      return word.meaningPt || word.meaningEn || word.meaningGu;
+    case 'russian':
+      return word.meaningRu || word.meaningEn || word.meaningGu;
+    case 'greek':
+      return word.meaningEl || word.meaningEn || word.meaningGu;
+    case 'polish':
+      return word.meaningPl || word.meaningEn || word.meaningGu;
     default:
       return word.meaningGu;
   }
@@ -256,7 +300,7 @@ export function getReferenceTitle(ref: ScriptureReference | { title?: string; ti
         .replace(/આશલોજ/g, 'आशलोज');
       return toHindiDigits(t);
     }
-    if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german') {
+    if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german' || lang === 'portuguese' || lang === 'russian' || lang === 'greek' || lang === 'polish') {
       const westernDigits = normalizeGujDigits(t);
       return westernDigits
         .replace(/વચનામૃત/g, 'Vachnamrut')
@@ -297,7 +341,7 @@ export function getReferenceTitle(ref: ScriptureReference | { title?: string; ti
         .replace(/વાત/g, 'बात');
       return toHindiDigits(t);
     }
-    if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german') {
+    if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german' || lang === 'portuguese' || lang === 'russian' || lang === 'greek' || lang === 'polish') {
       const westernDigits = normalizeGujDigits(t);
       return westernDigits
         .replace(/સ્વામીની વાતો/g, 'Swamini Vato')
@@ -328,7 +372,7 @@ export function getReferenceSection(ref: ScriptureReference | { section?: string
   if (lang === 'hindi' || lang === 'marathi') {
     return toHindiDigits(
       rawSec
-        .replace(/ગઢડા પ્રથમ/g, 'गढ़डा प्रथम')
+        .replace(/ગઢડા પ્રથમ/g, 'गढ़ડા પ્રથમ')
         .replace(/ગઢડા મધ્ય/g, 'गढ़डा मध्य')
         .replace(/ગઢડા અંત્ય/g, 'गढ़ડા अन्त्य')
         .replace(/પ્રકરણ/g, 'प्रकरण')
@@ -336,7 +380,7 @@ export function getReferenceSection(ref: ScriptureReference | { section?: string
     );
   }
 
-  if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german') {
+  if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german' || lang === 'portuguese' || lang === 'russian' || lang === 'greek' || lang === 'polish') {
     const western = normalizeGujDigits(rawSec);
     return western
       .replace(/ગઢડા પ્રથમ/g, 'Gadhada I-')
