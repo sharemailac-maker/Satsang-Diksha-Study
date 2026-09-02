@@ -34,6 +34,7 @@ import {
 import { getUIStrings } from '../utils/i18n';
 import { globalAudio } from '../utils/audioPlayer';
 import { PADACHHEDA_DATA } from '../data/padachhedaData';
+import { ANVAYA_DATA } from '../data/anvayaData';
 
 interface ShlokaCardProps {
   shloka: Shloka;
@@ -61,6 +62,8 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   highlightQuery
 }) => {
   const [showPadachheda, setShowPadachheda] = useState(preferences.showWordBreakdownDefault || false);
+  const [anvayaScript, setAnvayaScript] = useState<'devanagari' | 'gujarati'>(preferences.sanskritScript === 'gujarati' ? 'gujarati' : 'devanagari');
+  const [anvayaViewMode, setAnvayaViewMode] = useState<'table' | 'chips'>('table');
   const [noteText, setNoteText] = useState(bookmarkNote);
   const [copied, setCopied] = useState(false);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
@@ -95,6 +98,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
 
   // Word breakdown data
   const padachhedaList: WordMeaning[] = (PADACHHEDA_DATA && PADACHHEDA_DATA[shloka.id]) || shloka.padachheda || [];
+  const anvaya = ANVAYA_DATA ? ANVAYA_DATA[shloka.id] : null;
 
   // Selected word details
   const selectedWordData: WordMeaning | null = 
@@ -201,42 +205,163 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
         </div>
 
-        {/* Interactive Word by Word (Padachheda) Breakdown Strip */}
+        {/* Interactive Anvaya (Prose Order) & Anvaya-Artha (Word-by-Word Breakdown) Section */}
         {padachhedaList && padachhedaList.length > 0 && (
-          <div className="mt-4 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/25 space-y-2.5">
-            <div className="flex items-center justify-between">
+          <div className="mt-4 p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/25 space-y-3">
+            {/* Section Header & View Controls */}
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/20 pb-2">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B2500] dark:text-amber-300">
-                <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                <span>{ui.wordBreakdownTitle} ({ui.wordBreakdownDesc}):</span>
+                <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <span>અન્વય અને અન્વય-અર્થ (Anvaya & Word Breakdown)</span>
               </div>
-              {selectedWordIndex !== null && (
-                <button
-                  onClick={() => setSelectedWordIndex(null)}
-                  className="text-[11px] text-[#8B2500] dark:text-amber-400 underline hover:opacity-80 font-medium cursor-pointer"
-                >
-                  {ui.closeWordBreakdown}
-                </button>
-              )}
-            </div>
-
-            {/* Word Chips for interactive study */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              {padachhedaList.map((item, idx) => {
-                const isSelected = selectedWordIndex === idx;
-                return (
+              <div className="flex items-center gap-1.5">
+                {/* Script Switcher */}
+                <div className="flex items-center bg-white/80 dark:bg-[#251E18] p-0.5 rounded-lg border border-amber-300/40 text-[10px] font-medium">
                   <button
-                    key={idx}
-                    onClick={() => setSelectedWordIndex(isSelected ? null : idx)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-serif transition-all border cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#8B2500] text-amber-50 border-[#8B2500] shadow-sm font-bold scale-105'
-                        : 'bg-white dark:bg-[#2C241F] text-[#731E00] dark:text-amber-200 border-amber-300/50 dark:border-amber-700/40 hover:bg-amber-100 dark:hover:bg-[#3D322A]'
+                    onClick={() => setAnvayaScript('devanagari')}
+                    className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                      anvayaScript === 'devanagari'
+                        ? 'bg-[#8B2500] text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-amber-900'
                     }`}
                   >
-                    <span>{item.word}</span>
+                    દેવનાગરી
                   </button>
-                );
-              })}
+                  <button
+                    onClick={() => setAnvayaScript('gujarati')}
+                    className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                      anvayaScript === 'gujarati'
+                        ? 'bg-[#8B2500] text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-amber-900'
+                    }`}
+                  >
+                    ગુજરાતી
+                  </button>
+                </div>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-white/80 dark:bg-[#251E18] p-0.5 rounded-lg border border-amber-300/40 text-[10px] font-medium">
+                  <button
+                    onClick={() => setAnvayaViewMode('table')}
+                    className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                      anvayaViewMode === 'table'
+                        ? 'bg-[#8B2500] text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-amber-900'
+                    }`}
+                    title="Attachment Style 2-Column Table View"
+                  >
+                    કોષ્ટક
+                  </button>
+                  <button
+                    onClick={() => setAnvayaViewMode('chips')}
+                    className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                      anvayaViewMode === 'chips'
+                        ? 'bg-[#8B2500] text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-amber-900'
+                    }`}
+                    title="Interactive Word Chips"
+                  >
+                    ચિપ્સ
+                  </button>
+                </div>
+
+                {selectedWordIndex !== null && (
+                  <button
+                    onClick={() => setSelectedWordIndex(null)}
+                    className="text-[11px] text-[#8B2500] dark:text-amber-400 underline hover:opacity-80 font-medium cursor-pointer ml-1"
+                  >
+                    {ui.closeWordBreakdown}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Authentic Sanskrit Anvaya (Prose Order) Card */}
+            {anvaya && (
+              <div className="p-3.5 rounded-xl bg-amber-50/90 dark:bg-[#261F19] border border-amber-300/60 dark:border-amber-800/50 shadow-2xs space-y-1">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B2500] dark:text-amber-400">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>અન્વય (સંસ્કૃત ગદ્ય-ક્રમ - Prose Order):</span>
+                </div>
+                <p className="font-sanskrit text-sm sm:text-base text-[#4A2600] dark:text-amber-200 font-medium leading-relaxed select-text">
+                  {anvayaScript === 'devanagari' ? (anvaya.devanagari || shloka.sanskritDevanagari) : (anvaya.gujarati || shloka.sanskritGujarati)}
+                </p>
+                {anvaya.iast && (
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 font-mono select-text pt-0.5">
+                    {anvaya.iast}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Anvaya-Artha (Contextual Word Meaning in Sanskrit Verse) */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between text-[11px] font-bold text-[#8B2500] dark:text-amber-400">
+                <span>અન્વય-અર્થ (શ્લોકના ભાવ મુજબ પદાર્થ):</span>
+                <span className="text-[10px] text-stone-500 dark:text-stone-400 font-normal">દરેક પદ પર ક્લિક કરીને વ્યાકરણ જુઓ</span>
+              </div>
+
+              {anvayaViewMode === 'table' ? (
+                /* 2-Column Balanced Table Layout matching the user attachment */
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-1.5 p-3 rounded-xl bg-white/80 dark:bg-[#201A15] border border-amber-200/70 dark:border-amber-900/40 shadow-xs">
+                  {padachhedaList.map((item, idx) => {
+                    const wordInScript = anvayaScript === 'devanagari' 
+                      ? (item.wordDevanagari || item.word) 
+                      : (item.wordGujarati || item.word);
+                    const meaning = getWordMeaningInLang(item, preferences.activeLanguage);
+                    const isSelected = selectedWordIndex === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedWordIndex(isSelected ? null : idx)}
+                        className={`w-full text-left flex items-start justify-between py-1.5 px-2.5 rounded-lg border transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-amber-100/90 dark:bg-amber-950/70 border-[#8B2500] dark:border-amber-500 ring-1 ring-[#8B2500]'
+                            : 'border-transparent hover:bg-amber-500/10 dark:hover:bg-amber-500/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0 pr-2">
+                          <span className="font-serif font-bold text-sm text-[#8B2500] dark:text-amber-300">
+                            {wordInScript}
+                          </span>
+                          {item.transliteration && (
+                            <span className="text-[10px] text-stone-400 dark:text-stone-500 font-mono hidden sm:inline">
+                              ({item.transliteration})
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-stone-400 font-bold mx-1">–</span>
+                        <div className="flex-1 text-right text-xs text-[#2D241E] dark:text-[#EDE5D8] font-medium leading-relaxed">
+                          {meaning}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* Word Chips for interactive study */
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {padachhedaList.map((item, idx) => {
+                    const wordInScript = anvayaScript === 'devanagari' 
+                      ? (item.wordDevanagari || item.word) 
+                      : (item.wordGujarati || item.word);
+                    const isSelected = selectedWordIndex === idx;
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => setSelectedWordIndex(isSelected ? null : idx)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-serif transition-all border cursor-pointer ${
+                          isSelected
+                            ? 'bg-[#8B2500] text-amber-50 border-[#8B2500] shadow-sm font-bold scale-105'
+                            : 'bg-white dark:bg-[#2C241F] text-[#731E00] dark:text-amber-200 border-amber-300/50 dark:border-amber-700/40 hover:bg-amber-100 dark:hover:bg-[#3D322A]'
+                        }`}
+                      >
+                        <span>{wordInScript}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Word Highlight Details Box */}
@@ -245,7 +370,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                 <div className="flex items-center justify-between border-b border-amber-200 dark:border-amber-900/40 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-serif font-bold text-base text-[#8B2500] dark:text-amber-300">
-                      {selectedWordData.word}
+                      {anvayaScript === 'devanagari' ? (selectedWordData.wordDevanagari || selectedWordData.word) : (selectedWordData.wordGujarati || selectedWordData.word)}
                     </span>
                     {selectedWordData.transliteration && (
                       <span className="text-stone-500 dark:text-stone-400 font-mono text-[11px]">
@@ -254,14 +379,14 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                     )}
                   </div>
                   <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-bold">
-                    {selectedWordData.grammaticalRole || 'પદચ્છેદ & વ્યાકરણ'}
+                    {selectedWordData.grammaticalRole || selectedWordData.grammar || 'પદચ્છેદ & વ્યાકરણ'}
                   </span>
                 </div>
 
                 {/* Primary Selected Language Word Meaning */}
                 <div className="p-3 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 border-2 border-amber-500/40">
                   <div className="text-[10px] font-bold text-[#8B2500] dark:text-amber-300 flex items-center justify-between">
-                    <span>{primaryLangMeta.nativeName} ({primaryLangMeta.nameGu}) પદ અર્થ (Selected Language Meaning)</span>
+                    <span>{primaryLangMeta.nativeName} ({primaryLangMeta.nameGu}) પદ અર્થ (Context Meaning)</span>
                     <span className="text-[9px] uppercase px-1.5 py-0.2 rounded bg-amber-200 dark:bg-amber-800 text-amber-950 dark:text-amber-100 font-bold">Active</span>
                   </div>
                   <div className="text-sm font-semibold text-[#2D241E] dark:text-[#EDE5D8] mt-1">

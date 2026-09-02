@@ -21,6 +21,7 @@ import {
 import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { StorageService } from '../utils/storage';
 import { NotificationService } from '../utils/notificationService';
+import { getUIStrings } from '../utils/i18n';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -123,6 +124,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [audioCacheCleared, setAudioCacheCleared] = useState(false);
   const [downloadingAllAudio, setDownloadingAllAudio] = useState(false);
 
+  const ui = getUIStrings(preferences.activeLanguage);
+
   if (!isOpen) return null;
 
   // Handle App Update check
@@ -198,10 +201,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
             <div>
               <h2 className="text-[17px] sm:text-[18px] font-bold text-white tracking-tight leading-tight">
-                અધ્યયન & ભાષા સેટિંગ્સ
+                {ui.settingsTitle}
               </h2>
               <p className="text-[11.5px] sm:text-[12px] text-amber-200/95 font-medium leading-tight mt-0.5">
-                ભાષા પસંદગી, ઑફલાઇન પેક & નોટિફિકેશન
+                {ui.settingsSubtitle}
               </p>
             </div>
           </div>
@@ -240,10 +243,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <Languages className="w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0" />
               <div>
                 <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                  મુખ્ય અનુવાદ ભાષા (Primary Meaning Language)
+                  {ui.primaryLanguageTitle}
                 </h3>
                 <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
-                  શ્લોક નીચે દર્શાવાતો મુખ્ય ભાવાર્થ. (પૂર્વ-નિર્ધારિત: સંસ્કૃત થી ગુજરાતી):
+                  {ui.primaryLanguageDesc}
                 </p>
               </div>
             </div>
@@ -298,14 +301,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="flex items-center gap-2 mb-2">
                 <Type className="w-4 h-4 text-[#B85D00]" />
                 <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
-                  સંસ્કૃત શ્લોક લિપિ (Sanskrit Script)
+                  {ui.sanskritScriptTitle}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { id: 'devanagari', label: 'દેવનાગરી', sub: 'Devanagari' },
                   { id: 'gujarati', label: 'ગુજરાતી', sub: 'Gujarati' },
-                  { id: 'iast', label: 'અંગ્રેજી (IAST)', sub: 'Roman Script' }
+                  { id: 'iast', label: 'IAST', sub: 'Roman Script' }
                 ].map((s) => {
                   const isSel = preferences.sanskritScript === s.id;
                   return (
@@ -334,14 +337,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="flex items-center gap-2 mb-2">
                 <Sun className="w-4 h-4 text-[#B85D00]" />
                 <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
-                  વાંચન થીમ (Visual Theme)
+                  {ui.themeTitle}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'light', label: 'પ્રકાશ (Light)', color: 'bg-white border-amber-300 text-stone-900' },
-                  { id: 'sepia', label: 'સેપિયા (Sepia)', color: 'bg-[#FBF0D9] border-amber-400 text-[#4A2D1B]' },
-                  { id: 'dark', label: 'રાત્રિ (Dark)', color: 'bg-[#1E1916] border-stone-600 text-stone-100' }
+                  { id: 'light', label: ui.themeLight, color: 'bg-white border-amber-300 text-stone-900' },
+                  { id: 'sepia', label: ui.themeSepia, color: 'bg-[#FBF0D9] border-amber-400 text-[#4A2D1B]' },
+                  { id: 'dark', label: ui.themeDark, color: 'bg-[#1E1916] border-stone-600 text-stone-100' }
                 ].map((t) => {
                   const isSel = preferences.theme === t.id;
                   return (
@@ -366,10 +369,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800 flex items-center justify-between">
               <div>
                 <span className="font-bold text-[14.5px] text-[#7A1D05] dark:text-amber-300 block">
-                  અક્ષર કદ (Font Size)
+                  {ui.fontSizeTitle}
                 </span>
                 <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  વર્તમાન કદ: {preferences.fontSize || 18} px
+                  {preferences.fontSize || 18} px
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -425,14 +428,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="flex items-center gap-2">
               <BookmarkCheck className="w-5 h-5 text-[#B85D00]" />
               <h3 className="font-bold text-[15.5px] sm:text-[16.5px] text-[#7A1D05] dark:text-amber-300">
-                નિયમ વાંચન & રીમાઇન્ડર (Daily Niyam & Reminder)
+                {ui.dailyReminderTitle}
               </h3>
             </div>
 
             {/* Daily Target Pills */}
             <div>
               <span className="text-xs font-semibold text-[#785E4F] dark:text-stone-300 block mb-1.5">
-                દૈનિક નિયમ લક્ષ્યાંક (Daily Target):
+                {ui.dailyReminderDesc}
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {[1, 2, 3, 5, 11, 21, 315].map((cnt) => {
@@ -448,7 +451,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           : 'bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-200 hover:border-amber-400'
                       }`}
                     >
-                      {cnt === 315 ? 'સંપૂર્ણ (All 315)' : `${cnt} શ્લોક`}
+                      {cnt === 315 ? (ui.allShlokas || '315') : `${cnt} ${ui.shlokaNumberPrefix || 'શ્લોક'}`}
                     </button>
                   );
                 })}
@@ -468,10 +471,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <div>
                   <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                    દૈનિક સ્વાધ્યાય રીમાઇન્ડર (Daily Reminder)
+                    {ui.dailyReminderTitle}
                   </span>
                   <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                    નિયમિત વાંચન માટે આપેલ સમયે સૂચના
+                    {ui.dailyReminderDesc}
                   </span>
                 </div>
                 <WarmToggleSwitch
@@ -492,7 +495,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#7A1D05]" />
                     <span className="text-xs font-medium text-[#4A2D1B] dark:text-stone-200">
-                      સમય: {formatTimeTo12Hour(preferences.reminder?.time)}
+                      {ui.reminderTimeLabel}: {formatTimeTo12Hour(preferences.reminder?.time)}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
@@ -514,7 +517,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       onClick={handleTestNotification}
                       className="px-2.5 py-1 rounded-lg bg-[#7A1D05] hover:bg-[#601503] text-white text-[11px] font-medium transition cursor-pointer"
                     >
-                      ટેસ્ટ
+                      {ui.testNotificationButton}
                     </button>
                   </div>
                 </div>
@@ -537,7 +540,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="flex items-center gap-2">
               <Volume2 className="w-5 h-5 text-[#B85D00]" />
               <h3 className="font-bold text-[15.5px] sm:text-[16.5px] text-[#7A1D05] dark:text-amber-300">
-                ઓડિયો પઠન & ઑફલાઇન સેટિંગ્સ (Audio Settings)
+                {ui.offlinePackManagerTitle}
               </h3>
             </div>
 
@@ -547,10 +550,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <div>
                 <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                  માત્ર Wi-Fi પર ડાઉનલોડ (Wi-Fi Only)
+                  Wi-Fi Only
                 </span>
                 <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  મોબાઇલ ડેટા બચાવવા માટે
+                  {ui.offlinePackManagerDesc}
                 </span>
               </div>
               <WarmToggleSwitch
@@ -575,13 +578,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="flex-1 py-2 px-3 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
               >
                 <Download className="w-3.5 h-3.5" />
-                <span>{downloadingAllAudio ? 'ડાઉનલોડ ચાલુ છે...' : 'બધા ૩૧૫ ઓડિયો ઑફલાઇન સેવ કરો'}</span>
+                <span>{downloadingAllAudio ? (ui.installingButton || 'ડાઉનલોડ...') : (ui.installButton || 'Download Audio')}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
-                  if (confirm('શું તમે સેવ કરેલ ઓડિયો કેશ ક્લિયર કરવા માંગો છો?')) {
+                  if (confirm('Clear audio cache?')) {
                     setAudioCacheCleared(true);
                     setTimeout(() => setAudioCacheCleared(false), 3000);
                   }
@@ -589,7 +592,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="py-2 px-3 rounded-xl bg-white dark:bg-[#181310] border border-[#EADBCC] hover:bg-stone-50 text-red-600 text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>કેશ સાફ કરો</span>
+                <span>{ui.clearFilter || 'Clear'}</span>
               </button>
             </div>
             {audioCacheCleared && (
@@ -611,17 +614,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <RefreshCw className={`w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0 ${updatingApp ? 'animate-spin' : ''}`} />
               <div className="flex-1">
                 <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                  એપ અપડેટ કરો (Update App)
+                  {ui.updateAppTitle || 'એપ અપડેટ કરો (Update App)'}
                 </h3>
                 <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
-                  એપમાં થયેલા તમામ નવા સુધારા અને શ્લોકો મેળવવા માટે અપડેટ કરો.
+                  {ui.updateAppDesc || 'એપમાં થયેલા તમામ નવા સુધારા અને શ્લોકો મેળવવા માટે અપડેટ કરો.'}
                 </p>
               </div>
             </div>
 
             <div className="mt-3.5 pt-3 border-t border-[#F5E6CE] dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="text-xs text-[#7A6250] dark:text-stone-400">
-                વર્તમાન આવૃત્તિ: <span className="font-bold text-[#7A1D05] dark:text-amber-300">v2.4 (Latest)</span>
+                {ui.appVersionLabel || 'આવૃત્તિ'}: <span className="font-bold text-[#7A1D05] dark:text-amber-300">v2.4 (Latest)</span>
               </div>
 
               <button
@@ -632,7 +635,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer disabled:opacity-75"
               >
                 <RefreshCw className={`w-4 h-4 ${updatingApp ? 'animate-spin' : ''}`} />
-                <span>{updatingApp ? 'અપડેટ થઈ રહ્યું છે...' : 'અત્યારે અપડેટ કરો (Check & Update)'}</span>
+                <span>{updatingApp ? (ui.updatingAppButton || 'અપડેટ થઈ રહ્યું છે...') : (ui.updateAppButton || 'અત્યારે અપડેટ કરો (Check & Update)')}</span>
               </button>
             </div>
 
@@ -659,7 +662,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             id="btn-reset-settings"
             type="button"
             onClick={() => {
-              if (confirm('શું તમે તમામ સેટિંગ્સ પૂર્વ-નિર્ધારિત (Default) કરવા માંગો છો?')) {
+              if (confirm('Reset all settings to default?')) {
                 onResetPreferences();
                 onClose();
               }
@@ -667,7 +670,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             className="flex items-center gap-2 text-[#4A2D1B] dark:text-stone-300 hover:text-[#7A1D05] text-sm font-medium transition cursor-pointer py-2 px-1"
           >
             <RotateCcw className="w-4 h-4 text-[#7A1D05] stroke-[2.5]" />
-            <span>મૂળ સેટિંગ્સ (Reset)</span>
+            <span>{ui.resetButton}</span>
           </button>
 
           {/* Right: સાચવો & બંધ કરો */}
@@ -677,7 +680,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             onClick={onClose}
             className="px-6 sm:px-7 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer active:scale-98"
           >
-            સાચવો & બંધ કરો
+            {ui.saveCloseButton}
           </button>
         </div>
 

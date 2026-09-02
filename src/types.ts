@@ -24,6 +24,8 @@ export type MukhpathLevel = 'unlearned' | 'learning' | 'memorized' | 'mastered';
 
 export interface WordMeaning {
   word: string;
+  wordDevanagari?: string;
+  wordGujarati?: string;
   transliteration?: string;
   meaningGu: string;
   meaningHi: string;
