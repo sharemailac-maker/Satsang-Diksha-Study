@@ -1,10 +1,13 @@
 import React from 'react';
 import { Bookmark as BookmarkIcon, BookOpen, Trash2, Edit3, Sparkles } from 'lucide-react';
-import { Shloka, Bookmark } from '../types';
+import { Shloka, Bookmark, UserPreferences } from '../types';
+import { getShlokaTitle, getShlokaChapterName, getShlokaMeaning, LANGUAGE_METADATA } from '../utils/translationHelper';
+import { getUIStrings } from '../utils/i18n';
 
 interface BookmarksViewProps {
   bookmarks: Bookmark[];
   shlokas: Shloka[];
+  preferences?: UserPreferences;
   onRemoveBookmark: (shlokaId: number) => void;
   onSelectShloka: (shlokaId: number) => void;
 }
@@ -12,10 +15,14 @@ interface BookmarksViewProps {
 export const BookmarksView: React.FC<BookmarksViewProps> = ({
   bookmarks,
   shlokas,
+  preferences,
   onRemoveBookmark,
   onSelectShloka
 }) => {
   const shlokaMap = new Map<number, Shloka>(shlokas.map(s => [s.id, s]));
+  const lang = preferences?.activeLanguage || 'gujarati';
+  const ui = getUIStrings(lang);
+  const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
 
   return (
     <div className="max-w-4xl mx-auto px-3 sm:px-6 py-6 space-y-6">
@@ -27,7 +34,7 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
           </div>
           <div>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-50">
-              સાચવેલા શ્લોકો અને અંગત નોંધો
+              {lang === 'hindi' ? 'सहेजे गए श्लोक एवं व्यक्तिगत टिप्पणियाँ' : lang === 'english' ? 'Saved Shlokas & Personal Notes' : 'સાચવેલા શ્લોકો અને અંગત નોંધો'}
             </h2>
             <p className="text-xs sm:text-sm text-amber-100/80">
               Saved Shlokas & Personal Study Reflections ({bookmarks.length} saved)
@@ -55,10 +62,10 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                     </div>
                     <div>
                       <h4 className="font-serif font-bold text-sm sm:text-base text-[#8B2500] dark:text-amber-300">
-                        {shloka.titleGu}
+                        {getShlokaTitle(shloka, lang)}
                       </h4>
                       <span className="text-xs text-[#8A7A68] dark:text-[#A89886]">
-                        પ્રકરણ {shloka.chapterId}: {shloka.chapterGu}
+                        {ui.chapterPrefix} {shloka.chapterId}: {getShlokaChapterName(shloka, lang)}
                       </span>
                     </div>
                   </div>
@@ -66,29 +73,29 @@ export const BookmarksView: React.FC<BookmarksViewProps> = ({
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => onSelectShloka(shloka.id)}
-                      className="px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 text-xs font-semibold hover:bg-amber-200 transition flex items-center gap-1"
+                      className="px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 text-xs font-semibold hover:bg-amber-200 transition flex items-center gap-1 cursor-pointer"
                     >
                       <BookOpen className="w-3.5 h-3.5" />
-                      <span>વાંચો ➔</span>
+                      <span>{ui.tabReader} ➔</span>
                     </button>
                     <button
                       onClick={() => onRemoveBookmark(shloka.id)}
                       title="Remove Bookmark"
-                      className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+                      className="p-1.5 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
 
-                {/* Sanskrit text */}
+                {/* Sanskrit text (Untouched) */}
                 <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#2A231D] text-xs font-sanskrit text-[#731E00] dark:text-[#F39C38] whitespace-pre-line font-bold">
                   {shloka.sanskritDevanagari}
                 </div>
 
-                {/* Meaning */}
-                <p className="text-xs font-gujarati text-[#4A3E34] dark:text-[#D1C5B7]">
-                  {shloka.meaningGu}
+                {/* Meaning in active language */}
+                <p className="text-xs text-[#4A3E34] dark:text-[#D1C5B7]">
+                  <strong className="text-[#8B2500] dark:text-amber-400">{langMeta.nativeName}:</strong> {getShlokaMeaning(shloka, lang)}
                 </p>
 
                 {/* Personal Note if exists */}

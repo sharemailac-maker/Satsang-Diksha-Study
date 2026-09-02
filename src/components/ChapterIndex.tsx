@@ -14,10 +14,13 @@ import {
   CheckCircle2,
   Hash
 } from 'lucide-react';
-import { Chapter, MukhpathLevel } from '../types';
+import { Chapter, MukhpathLevel, UserPreferences } from '../types';
+import { getChapterTitle, getChapterDescription } from '../utils/translationHelper';
+import { getUIStrings } from '../utils/i18n';
 
 interface ChapterIndexProps {
   chapters: Chapter[];
+  preferences?: UserPreferences;
   mukhpathRecords: Record<number, { status: MukhpathLevel }>;
   onSelectChapter: (chapterId: number) => void;
   onSelectShloka: (shlokaId: number) => void;
@@ -25,10 +28,14 @@ interface ChapterIndexProps {
 
 export const ChapterIndex: React.FC<ChapterIndexProps> = ({
   chapters,
+  preferences,
   mukhpathRecords,
   onSelectChapter,
   onSelectShloka
 }) => {
+  const lang = preferences?.activeLanguage || 'gujarati';
+  const ui = getUIStrings(lang);
+
   const getIcon = (name: string) => {
     switch (name) {
       case 'Sparkles': return Sparkles;
@@ -50,10 +57,10 @@ export const ChapterIndex: React.FC<ChapterIndexProps> = ({
       {/* Index Title Banner */}
       <div className="text-center space-y-2 mb-8">
         <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#8B2500] dark:text-amber-300">
-          સત્સંગ દીક્ષા પ્રકરણ અનુક્રમણિકા
+          {lang === 'hindi' ? 'सत्संग दीक्षा अध्याय अनुक्रमणिका' : lang === 'english' ? 'Satsang Diksha Chapter Index' : 'સત્સંગ દીક્ષા પ્રકરણ અનુક્રમણિકા'}
         </h2>
         <p className="text-xs sm:text-sm text-[#6B5E51] dark:text-[#C5B7A8] max-w-xl mx-auto">
-          ૧૦ મુખ્ય પ્રકરણોમાં વિભાજિત ૩૧૫ દિવ્ય શ્લોકોનું વિષયવાર અધ્યયન અને માર્ગદર્શન
+          {lang === 'hindi' ? '१० मुख्य अध्यायों में विभाजित ३१५ दिव्य श्लोकों का विषयवार अध्ययन' : lang === 'english' ? 'Subject-wise study of 315 verses organized across 10 main chapters' : '૧૦ મુખ્ય પ્રકરણોમાં વિભાજિત ૩૧૫ દિવ્ય શ્લોકોનું વિષયવાર અધ્યયન અને માર્ગદર્શન'}
         </p>
       </div>
 
@@ -90,25 +97,25 @@ export const ChapterIndex: React.FC<ChapterIndexProps> = ({
                     </div>
                     <div>
                       <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                        પ્રકરણ {chapter.id}
+                        {ui.chapterPrefix} {chapter.id}
                       </span>
                       <h3 className="text-base font-serif font-bold text-[#2D241E] dark:text-[#F3ECE1] group-hover:text-[#8B2500] dark:group-hover:text-amber-300 transition">
-                        {chapter.titleGu}
+                        {getChapterTitle(chapter, lang)}
                       </h3>
                       <span className="text-xs text-[#8A7A68] dark:text-[#A89886] font-normal block">
-                        {chapter.titleHi} • {chapter.titleEn}
+                        {lang === 'gujarati' ? `${chapter.titleHi} • ${chapter.titleEn}` : `${chapter.titleGu} • ${chapter.titleEn}`}
                       </span>
                     </div>
                   </div>
 
                   <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 font-mono font-bold whitespace-nowrap">
-                    શ્લોક {start} - {end}
+                    {ui.shlokaNumberPrefix} {start} - {end}
                   </span>
                 </div>
 
                 {/* Chapter Description */}
                 <p className="text-xs text-[#54473C] dark:text-[#C5B7A8] leading-relaxed line-clamp-2">
-                  {chapter.descriptionGu}
+                  {getChapterDescription(chapter, lang)}
                 </p>
               </div>
 
@@ -116,10 +123,10 @@ export const ChapterIndex: React.FC<ChapterIndexProps> = ({
               <div className="mt-4 pt-3 border-t border-[#F2EADB] dark:border-[#332A23] space-y-2">
                 <div className="flex items-center justify-between text-[11px]">
                   <span className="text-[#7A6B5C] dark:text-[#A89D91]">
-                    મુખપાઠ પ્રગતિ: {memorizedInChapter}/{totalInChapter} શ્લોકો ({percent}%)
+                    {ui.tabMukhpath}: {memorizedInChapter}/{totalInChapter} ({percent}%)
                   </span>
                   <div className="flex items-center text-amber-700 dark:text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
-                    <span>અધ્યયન કરો</span>
+                    <span>{ui.tabReader}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </div>
                 </div>

@@ -19,6 +19,14 @@ import {
   Bookmark
 } from 'lucide-react';
 import { Shloka, MukhpathLevel, UserPreferences } from '../types';
+import { 
+  getShlokaTitle, 
+  getShlokaChapterName, 
+  getShlokaMeaning, 
+  getWordMeaningInLang,
+  LANGUAGE_METADATA 
+} from '../utils/translationHelper';
+import { getUIStrings } from '../utils/i18n';
 
 interface MukhpathViewProps {
   shlokas: Shloka[];
@@ -80,6 +88,10 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
     }
   };
 
+  const lang = preferences?.activeLanguage || 'gujarati';
+  const ui = getUIStrings(lang);
+  const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
+
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
       {/* Mukhpath Overview Dashboard Banner */}
@@ -89,14 +101,14 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-amber-300 animate-spin-slow" />
               <span className="text-xs font-bold tracking-wider uppercase text-amber-200">
-                સત્સંગ દીક્ષા મુખપાઠ સાધના
+                {lang === 'hindi' ? 'सत्संग दीक्षा मुखपाठ साधना' : lang === 'english' ? 'Satsang Diksha Mukhpath Sadhana' : 'સત્સંગ દીક્ષા મુખપાઠ સાધના'}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-50">
-              Mukhpath Memorization Mastery
+              {lang === 'hindi' ? 'मुखपाठ एवं कंठस्थ अभ्यास' : lang === 'english' ? 'Mukhpath Memorization Mastery' : 'મુખપાઠ સાધના અને કંઠસ્થ અભ્યાસ'}
             </h2>
             <p className="text-xs sm:text-sm text-amber-100/80 max-w-xl">
-              Learn, memorize, and master all 315 Sanskrit Shlokas through line-by-line reveal, flashcard testing, and word-by-word recall.
+              {lang === 'hindi' ? 'सभी ३૧૫ संस्कृत श्लोकों को पंक्तिबद्ध स्मरण, फ्लैशकार्ड और शब्दार्थ द्वारा कंठस्थ करें।' : lang === 'english' ? 'Learn, memorize, and master all 315 Sanskrit Shlokas through line-by-line reveal, flashcard testing, and word-by-word recall.' : '૩૧૫ દિવ્ય સંસ્કૃત શ્લોકોનું પદચ્છેદ, શબ્દાર્થ અને ક્રમબદ્ધ પઠન દ્વારા સંપૂર્ણ મુખપાઠ કરો.'}
             </p>
           </div>
 
@@ -106,14 +118,14 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-mono">
                 {memorizedCount}<span className="text-sm font-normal text-amber-200/80">/315</span>
               </div>
-              <div className="text-[11px] text-amber-200">કંઠસ્થ શ્લોક (Memorized)</div>
+              <div className="text-[11px] text-amber-200">{lang === 'hindi' ? 'कंठस्थ श्लोक' : lang === 'english' ? 'Memorized' : 'કંઠસ્થ શ્લોક'}</div>
             </div>
             <div className="h-10 w-px bg-amber-400/30" />
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-mono">
                 {progressPercent}%
               </div>
-              <div className="text-[11px] text-amber-200">સિદ્ધિ (Completed)</div>
+              <div className="text-[11px] text-amber-200">{lang === 'hindi' ? 'प्रगति' : lang === 'english' ? 'Completed' : 'સિદ્ધિ'}</div>
             </div>
           </div>
         </div>
@@ -128,11 +140,11 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
           </div>
           <div className="flex justify-between text-[11px] text-amber-200 font-mono">
             <span>0</span>
-            <span>25 (પ્રથમ સિદ્ધિ)</span>
+            <span>25</span>
             <span>50</span>
-            <span>100 (શતાબ્દી)</span>
+            <span>100</span>
             <span>200</span>
-            <span>315 (સંપૂર્ણ મુખપાઠ)</span>
+            <span>315</span>
           </div>
         </div>
 
@@ -241,20 +253,20 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               </div>
               <div>
                 <h3 className="font-serif font-bold text-lg text-[#8B2500] dark:text-amber-300">
-                  {activeShloka.titleGu}
+                  {getShlokaTitle(activeShloka, lang)}
                 </h3>
                 <span className="text-xs text-[#8A7A68] dark:text-[#A89886]">
-                  પ્રકરણ {activeShloka.chapterId}: {activeShloka.chapterGu}
+                  {ui.chapterPrefix} {activeShloka.chapterId}: {getShlokaChapterName(activeShloka, lang)}
                 </span>
               </div>
             </div>
 
             <button
               onClick={() => onSelectShloka(activeShloka.id)}
-              className="text-xs px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 hover:bg-amber-200 transition font-medium flex items-center gap-1"
+              className="text-xs px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 hover:bg-amber-200 transition font-medium flex items-center gap-1 cursor-pointer"
             >
               <BookOpen className="w-3.5 h-3.5" />
-              <span>સંપૂર્ણ અર્થ જુઓ (Full View)</span>
+              <span>{ui.tabReader}</span>
             </button>
           </div>
 
@@ -274,32 +286,35 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               </div>
 
               {/* Translations display */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-xl bg-amber-50/70 dark:bg-[#28201B] border-l-4 border-amber-600">
-                  <div className="font-bold text-amber-900 dark:text-amber-300 mb-1">ગુજરાતી ભાવાર્થ:</div>
-                  <p className="font-gujarati text-sm text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
-                    {activeShloka.meaningGu}
+              <div className="space-y-3">
+                <div className="p-4 rounded-xl bg-amber-50/90 dark:bg-[#28201B] border-l-4 border-amber-600">
+                  <div className="font-bold text-xs text-amber-900 dark:text-amber-300 mb-1">
+                    {langMeta.nativeName} ({langMeta.nameEn}) {ui.primaryMeaningTitle}:
+                  </div>
+                  <p className="text-sm sm:text-base text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
+                    {getShlokaMeaning(activeShloka, lang)}
                   </p>
                 </div>
-                <div className="p-3.5 rounded-xl bg-orange-50/70 dark:bg-[#28201B] border-l-4 border-orange-600">
-                  <div className="font-bold text-orange-900 dark:text-orange-300 mb-1">हिन्दी भावार्थ:</div>
-                  <p className="font-hindi text-sm text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
-                    {activeShloka.meaningHi}
-                  </p>
-                </div>
+
+                {lang !== 'gujarati' && (
+                  <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#201B17] border border-amber-200/60 dark:border-[#352D26] text-xs">
+                    <span className="font-bold text-[#8B2500] dark:text-amber-400">મૂળ ગુજરાતી ભાવાર્થ: </span>
+                    <span className="font-gujarati text-[#4A3D31] dark:text-[#D1C5B7]">{activeShloka.meaningGu}</span>
+                  </div>
+                )}
               </div>
 
               {/* Padachheda words list for quick study */}
               {activeShloka.padachheda && activeShloka.padachheda.length > 0 && (
                 <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/20">
                   <div className="text-xs font-bold text-[#8B2500] dark:text-amber-300 mb-2">
-                    પદચ્છેદ અને શબ્દાર્થ (Word Meanings):
+                    {ui.wordBreakdownTitle}:
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     {activeShloka.padachheda.map((item, idx) => (
-                      <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between">
+                      <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between gap-2">
                         <span className="font-sanskrit font-bold text-[#8B2500] dark:text-amber-300">{item.word}</span>
-                        <span className="font-gujarati text-stone-700 dark:text-stone-300 text-right">{item.meaningGu}</span>
+                        <span className="text-stone-700 dark:text-stone-300 text-right font-medium">{getWordMeaningInLang(item, lang)}</span>
                       </div>
                     ))}
                   </div>
@@ -312,9 +327,9 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
           {practiceMode === 'hide_sanskrit' && (
             <div className="space-y-6">
               <div className="p-4 rounded-xl bg-amber-50 dark:bg-[#28201B] border-l-4 border-amber-600 text-xs">
-                <span className="font-bold text-amber-900 dark:text-amber-200">ગુજરાતી અર્થ:</span>
-                <p className="font-gujarati text-sm sm:text-base mt-1 text-[#2D241E] dark:text-[#EDE5D8]">
-                  {activeShloka.meaningGu}
+                <span className="font-bold text-amber-900 dark:text-amber-200">{langMeta.nativeName} {ui.primaryMeaningTitle}:</span>
+                <p className="text-sm sm:text-base mt-1 text-[#2D241E] dark:text-[#EDE5D8]">
+                  {getShlokaMeaning(activeShloka, lang)}
                 </p>
               </div>
 
@@ -322,14 +337,14 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                 {hideState ? (
                   <div className="space-y-3">
                     <p className="text-sm font-semibold text-[#8A7A68] dark:text-[#A89886]">
-                      🙈 સંસ્કૃત શ્લોક છુપાયેલ છે. મનમાં અથવા મોટેથી પઠન કરો!
+                      🙈 {lang === 'hindi' ? 'संस्कृत श्लोक छिपा हुआ है। स्मरण कर पाठ करें!' : lang === 'english' ? 'Sanskrit verse hidden. Recite from memory!' : 'સંસ્કૃત શ્લોક છુપાયેલ છે. મનમાં અથવા મોટેથી પઠન કરો!'}
                     </p>
                     <button
                       onClick={() => setHideState(false)}
                       className="px-4 py-2 rounded-xl bg-[#8B2500] text-amber-100 text-xs font-bold hover:bg-[#A63000] transition flex items-center gap-1.5 shadow-sm mx-auto cursor-pointer"
                     >
                       <Eye className="w-4 h-4" />
-                      <span>શ્લોક તપાસો (Reveal Shloka)</span>
+                      <span>{lang === 'hindi' ? 'श्लोक देखें (Reveal Shloka)' : lang === 'english' ? 'Reveal Shloka' : 'શ્લોક તપાસો (Reveal Shloka)'}</span>
                     </button>
                   </div>
                 ) : (
@@ -342,7 +357,7 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                       className="px-3 py-1 rounded-lg bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium hover:bg-stone-300 transition flex items-center gap-1 mx-auto cursor-pointer"
                     >
                       <EyeOff className="w-3.5 h-3.5" />
-                      <span>ફરી છુપાવો (Hide)</span>
+                      <span>{lang === 'hindi' ? 'फिर छिपाएं (Hide)' : lang === 'english' ? 'Hide Again' : 'ફરી છુપાવો (Hide)'}</span>
                     </button>
                   </div>
                 )}
@@ -363,32 +378,34 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                 {hideState ? (
                   <div className="space-y-3">
                     <p className="text-sm font-semibold text-[#8A7A68] dark:text-[#A89886]">
-                      🧐 આ સંસ્કૃત શ્લોકનો ગુજરાતી/હિન્દી/અંગ્રેજી અર્થ યાદ કરો.
+                      🧐 {lang === 'hindi' ? 'इस श्लोक का अर्थ स्मरण करें।' : lang === 'english' ? 'Recall the meaning of this verse.' : 'આ સંસ્કૃત શ્લોકનો અર્થ યાદ કરો.'}
                     </p>
                     <button
                       onClick={() => setHideState(false)}
                       className="px-4 py-2 rounded-xl bg-[#8B2500] text-amber-100 text-xs font-bold hover:bg-[#A63000] transition flex items-center gap-1.5 shadow-sm mx-auto cursor-pointer"
                     >
                       <Eye className="w-4 h-4" />
-                      <span>અર્થ તપાસો (Reveal Meaning)</span>
+                      <span>{lang === 'hindi' ? 'अर्थ देखें (Reveal Meaning)' : lang === 'english' ? 'Reveal Meaning' : 'અર્થ તપાસો (Reveal Meaning)'}</span>
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-3 text-left">
-                    <div className="p-3 bg-white dark:bg-[#201B17] rounded-xl border border-amber-200">
-                      <span className="font-bold text-xs text-amber-900 dark:text-amber-200">ગુજરાતી અર્થ:</span>
-                      <p className="font-gujarati text-sm mt-1">{activeShloka.meaningGu}</p>
+                    <div className="p-3.5 bg-white dark:bg-[#201B17] rounded-xl border border-amber-200">
+                      <span className="font-bold text-xs text-amber-900 dark:text-amber-200">{langMeta.nativeName} {ui.primaryMeaningTitle}:</span>
+                      <p className="text-sm mt-1 text-[#2D241E] dark:text-[#EDE5D8]">{getShlokaMeaning(activeShloka, lang)}</p>
                     </div>
-                    <div className="p-3 bg-white dark:bg-[#201B17] rounded-xl border border-orange-200">
-                      <span className="font-bold text-xs text-orange-900 dark:text-orange-200">हिन्दी भावार्थ:</span>
-                      <p className="font-hindi text-sm mt-1">{activeShloka.meaningHi}</p>
-                    </div>
+                    {lang !== 'gujarati' && (
+                      <div className="p-3 bg-white/80 dark:bg-[#201B17] rounded-xl border border-amber-100 text-xs">
+                        <span className="font-bold text-stone-600 dark:text-stone-400">ગુજરાતી અર્થ:</span>
+                        <p className="font-gujarati text-xs mt-1 text-stone-700 dark:text-stone-300">{activeShloka.meaningGu}</p>
+                      </div>
+                    )}
                     <button
                       onClick={() => setHideState(true)}
                       className="px-3 py-1 rounded-lg bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-medium hover:bg-stone-300 transition flex items-center gap-1 mx-auto cursor-pointer"
                     >
                       <EyeOff className="w-3.5 h-3.5" />
-                      <span>ફરી છુપાવો (Hide)</span>
+                      <span>{lang === 'hindi' ? 'फिर छिपाएं (Hide)' : lang === 'english' ? 'Hide Again' : 'ફરી છુપાવો (Hide)'}</span>
                     </button>
                   </div>
                 )}
@@ -456,13 +473,15 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                   </div>
                 ) : (
                   <div className="space-y-3 max-w-xl text-left">
-                    <span className="text-xs text-amber-700 dark:text-amber-400 font-bold block text-center">॥ ભાવાર્થ ॥</span>
-                    <p className="font-gujarati text-base text-[#2D241E] dark:text-[#EDE5D8]">
-                      {activeShloka.meaningGu}
+                    <span className="text-xs text-amber-700 dark:text-amber-400 font-bold block text-center">॥ {langMeta.nativeName} ({langMeta.nameEn}) ભાવાર્થ ॥</span>
+                    <p className="text-base text-[#2D241E] dark:text-[#EDE5D8]">
+                      {getShlokaMeaning(activeShloka, lang)}
                     </p>
-                    <p className="font-english text-xs text-[#6B5E51] dark:text-[#BDB0A0]">
-                      {activeShloka.meaningEn}
-                    </p>
+                    {lang !== 'gujarati' && (
+                      <p className="font-gujarati text-xs text-[#6B5E51] dark:text-[#BDB0A0]">
+                        (મૂળ ગુજરાતી: {activeShloka.meaningGu})
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

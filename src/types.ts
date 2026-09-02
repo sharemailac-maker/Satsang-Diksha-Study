@@ -2,7 +2,6 @@ export type Language =
   | 'gujarati' 
   | 'hindi' 
   | 'english' 
-  | 'all' 
   | 'marathi' 
   | 'punjabi' 
   | 'bengali' 
@@ -35,6 +34,10 @@ export interface WordMeaning {
   meaningFr?: string;
   meaningDe?: string;
   grammaticalRole?: string;
+  grammar?: string;
+  gujarati?: string;
+  hindi?: string;
+  english?: string;
   scriptureReference?: {
     source: string; // e.g. 'વચનામૃત ગઢડા પ્રથમ ૧' or 'સ્વામીની વાત ૧/૩'
     quoteGu: string;
@@ -95,6 +98,9 @@ export interface Shloka {
   tags: string[];
   crossReferences?: ScriptureReference[];
   keyTeaching?: string;
+  commentaryGu?: string;
+  commentaryHi?: string;
+  commentaryEn?: string;
 }
 
 export interface Chapter {

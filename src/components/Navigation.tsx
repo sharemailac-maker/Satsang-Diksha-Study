@@ -8,7 +8,8 @@ import {
   Award, 
   Bookmark,
   Settings,
-  Smartphone
+  Smartphone,
+  Radio
 } from 'lucide-react';
 import { Language, UserPreferences } from '../types';
 import { getUIStrings } from '../utils/i18n';
@@ -45,6 +46,12 @@ export const Navigation: React.FC<NavigationProps> = ({
       label: ui.tabReader,
       icon: BookOpen,
       badge: '315'
+    },
+    {
+      id: 'udgaan',
+      label: ui.tabUdgaan || 'ઉદ્ગાન શ્રવણ',
+      icon: Radio,
+      badge: 'Audio'
     },
     {
       id: 'mukhpath',
@@ -141,104 +148,99 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* Real Mobile App Bottom Navigation Bar (Fixed at Bottom for Native Look & Feel) */}
       <nav 
         id="native-mobile-bottom-nav" 
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF6F0]/95 dark:bg-[#1C1714]/95 backdrop-blur-md border-t border-[#E8DFD1] dark:border-[#382F28] px-2 py-1.5 shadow-lg safe-area-bottom"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF6F0]/95 dark:bg-[#1C1714]/95 backdrop-blur-md border-t border-[#E8DFD1] dark:border-[#382F28] px-1 py-1.5 shadow-lg safe-area-bottom"
         style={{ paddingBottom: 'max(6px, env(safe-area-inset-bottom))' }}
       >
-        <div className="flex items-center justify-around">
+        <div className="flex items-center justify-around gap-0.5">
           {/* Home */}
           <button
             onClick={() => handleTabClick('home')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition ${
               activeTab === 'home' 
                 ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
                 : 'text-[#7A6B5C] dark:text-[#9A8D80]'
             }`}
           >
             <div className={`p-1 rounded-full ${activeTab === 'home' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
-              <Home className="w-5 h-5" />
+              <Home className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabHome}</span>
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabHome}</span>
           </button>
 
           {/* Reader 1-315 */}
           <button
             onClick={() => handleTabClick('reader')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition ${
               activeTab === 'reader' 
                 ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
                 : 'text-[#7A6B5C] dark:text-[#9A8D80]'
             }`}
           >
             <div className={`p-1 rounded-full ${activeTab === 'reader' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
-              <BookOpen className="w-5 h-5" />
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabReader}</span>
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabReader}</span>
+          </button>
+
+          {/* Udgaan Chanting */}
+          <button
+            onClick={() => handleTabClick('udgaan')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition ${
+              activeTab === 'udgaan' 
+                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
+                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
+            }`}
+          >
+            <div className={`p-1 rounded-full ${activeTab === 'udgaan' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Radio className="w-4 h-4 sm:w-5 sm:h-5" />
+            </div>
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabUdgaan || 'ઉદ્ગાન'}</span>
           </button>
 
           {/* Mukhpath Tool */}
           <button
             onClick={() => handleTabClick('mukhpath')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition relative ${
               activeTab === 'mukhpath' 
                 ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
                 : 'text-[#7A6B5C] dark:text-[#9A8D80]'
             }`}
           >
             <div className={`p-1 rounded-full ${activeTab === 'mukhpath' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabMukhpath}</span>
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabMukhpath}</span>
             {mukhpathCount > 0 && (
-              <span className="absolute top-0 right-3 w-4 h-4 rounded-full bg-amber-500 text-white font-bold text-[9px] flex items-center justify-center">
+              <span className="absolute top-0 right-1 w-3.5 h-3.5 rounded-full bg-amber-500 text-white font-bold text-[8px] flex items-center justify-center">
                 {mukhpathCount}
               </span>
             )}
           </button>
 
-          {/* Chapters */}
+          {/* Cross References (વચનામૃત-વાતો) */}
           <button
-            onClick={() => handleTabClick('chapters')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition ${
-              activeTab === 'chapters' 
+            onClick={() => handleTabClick('crossref')}
+            className={`flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition ${
+              activeTab === 'crossref' 
                 ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
                 : 'text-[#7A6B5C] dark:text-[#9A8D80]'
             }`}
           >
-            <div className={`p-1 rounded-full ${activeTab === 'chapters' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
-              <Layers className="w-5 h-5" />
+            <div className={`p-1 rounded-full ${activeTab === 'crossref' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
+              <Link2 className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabChapters}</span>
-          </button>
-
-          {/* Bookmarks */}
-          <button
-            onClick={() => handleTabClick('bookmarks')}
-            className={`flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition relative ${
-              activeTab === 'bookmarks' 
-                ? 'text-[#8B2500] dark:text-amber-400 font-bold' 
-                : 'text-[#7A6B5C] dark:text-[#9A8D80]'
-            }`}
-          >
-            <div className={`p-1 rounded-full ${activeTab === 'bookmarks' ? 'bg-[#8B2500]/15 dark:bg-amber-400/20' : ''}`}>
-              <Bookmark className="w-5 h-5" />
-            </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabBookmarks}</span>
-            {totalBookmarks > 0 && (
-              <span className="absolute top-0 right-3 w-4 h-4 rounded-full bg-[#8B2500] text-amber-50 font-bold text-[9px] flex items-center justify-center">
-                {totalBookmarks}
-              </span>
-            )}
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabCrossref}</span>
           </button>
 
           {/* Settings */}
           <button
             onClick={onOpenSettings}
-            className="flex flex-col items-center justify-center flex-1 py-1 px-1 rounded-xl transition text-[#7A6B5C] dark:text-[#9A8D80] hover:text-[#8B2500] dark:hover:text-amber-400"
+            className="flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-xl transition text-[#7A6B5C] dark:text-[#9A8D80] hover:text-[#8B2500] dark:hover:text-amber-400"
           >
             <div className="p-1 rounded-full">
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-[65px]">{ui.tabSettings}</span>
+            <span className="text-[9px] sm:text-[10px] tracking-tight mt-0.5 truncate max-w-[55px]">{ui.tabSettings}</span>
           </button>
         </div>
       </nav>

@@ -20,7 +20,17 @@ import {
   Languages
 } from 'lucide-react';
 import { Shloka, UserPreferences, MukhpathLevel, ScriptureReference, WordMeaning } from '../types';
-import { getShlokaMeaning, getWordMeaningInLang, LANGUAGE_METADATA } from '../utils/translationHelper';
+import { 
+  getShlokaMeaning, 
+  getWordMeaningInLang, 
+  getShlokaTitle, 
+  getShlokaChapterName,
+  getReferenceTitle,
+  getReferenceText,
+  getReferenceSection,
+  getReferenceCorrelation,
+  LANGUAGE_METADATA 
+} from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
 
 interface ShlokaCardProps {
@@ -111,13 +121,16 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
           <div>
             <h3 className="font-serif font-bold text-sm sm:text-base text-amber-100 flex items-center gap-1.5">
-              <span>{preferences.activeLanguage === 'hindi' ? shloka.titleHi : shloka.titleGu}</span>
-              {preferences.activeLanguage !== 'hindi' && (
+              <span>{getShlokaTitle(shloka, preferences.activeLanguage)}</span>
+              {preferences.activeLanguage === 'gujarati' && (
                 <span className="opacity-75 text-xs font-normal">| {shloka.titleHi}</span>
+              )}
+              {preferences.activeLanguage !== 'gujarati' && (
+                <span className="opacity-75 text-xs font-normal">| {shloka.titleGu}</span>
               )}
             </h3>
             <span className="text-[11px] text-amber-200/80 font-sans">
-              {ui.chapterPrefix} {shloka.chapterId}: {preferences.activeLanguage === 'hindi' ? shloka.chapterHi : shloka.chapterGu}
+              {ui.chapterPrefix} {shloka.chapterId}: {getShlokaChapterName(shloka, preferences.activeLanguage)}
             </span>
           </div>
         </div>
@@ -466,17 +479,12 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
 
             <div className="grid grid-cols-1 gap-2">
               {shloka.crossReferences.map((ref, idx) => {
-                const displayTitle = 
-                  preferences.activeLanguage === 'hindi' ? (ref.titleHi || ref.title) :
-                  preferences.activeLanguage === 'english' ? (ref.titleEn || ref.title) :
-                  (ref.titleGu || ref.title);
-                
-                const displayText = 
-                  preferences.activeLanguage === 'hindi' ? (ref.textHi || ref.textGu) :
-                  preferences.activeLanguage === 'english' ? (ref.textEn || ref.textGu) :
-                  ref.textGu;
-
+                const displayTitle = getReferenceTitle(ref, preferences.activeLanguage);
+                const displaySection = getReferenceSection(ref, preferences.activeLanguage);
+                const displayText = getReferenceText(ref, preferences.activeLanguage);
+                const displayCorrelation = getReferenceCorrelation(ref, preferences.activeLanguage);
                 const isVachnamrut = ref.type === 'vachnamrut';
+                const readLabel = preferences.activeLanguage === 'hindi' ? 'पढ़ें' : preferences.activeLanguage === 'english' ? 'Read' : 'વાંચો';
 
                 return (
                   <div
@@ -489,26 +497,24 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                         <span className="font-serif font-bold text-xs text-[#8B2500] dark:text-amber-300">
                           {displayTitle}
                         </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold">
-                          {ref.section}
-                        </span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-medium flex items-center gap-1">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                          ઓફલાઇન પ્રમાણ
-                        </span>
+                        {displaySection && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold">
+                            {displaySection}
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-[#4A3E34] dark:text-[#C5B7A8] leading-relaxed italic">
                         "{displayText}"
                       </p>
-                      {ref.correlationNote && (
+                      {displayCorrelation && (
                         <p className="text-[11px] text-amber-900 dark:text-amber-300/90 font-medium pt-0.5 border-t border-amber-200/40 dark:border-amber-900/30">
-                          {ref.correlationNote}
+                          {displayCorrelation}
                         </p>
                       )}
                     </div>
                     <div className="flex flex-col items-center justify-center pl-1 text-amber-700 dark:text-amber-400 group-hover:translate-x-0.5 transition-transform flex-shrink-0">
                       <BookOpen className="w-4 h-4" />
-                      <span className="text-[9px] font-bold mt-0.5">વાંચો</span>
+                      <span className="text-[9px] font-bold mt-0.5">{readLabel}</span>
                     </div>
                   </div>
                 );

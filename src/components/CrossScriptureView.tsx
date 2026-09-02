@@ -10,18 +10,32 @@ import {
   ChevronUp, 
   Layers, 
   CheckCircle2, 
-  Quote
+  Quote,
+  Languages
 } from 'lucide-react';
-import { Shloka, ScriptureReference, WordMeaning } from '../types';
+import { Shloka, ScriptureReference, WordMeaning, UserPreferences } from '../types';
+import { 
+  getShlokaMeaning, 
+  getWordMeaningInLang, 
+  getShlokaTitle, 
+  getShlokaChapterName,
+  getReferenceTitle, 
+  getReferenceText,
+  getReferenceCorrelation,
+  LANGUAGE_METADATA 
+} from '../utils/translationHelper';
+import { getUIStrings } from '../utils/i18n';
 
 interface CrossScriptureViewProps {
   shlokas: Shloka[];
+  preferences?: UserPreferences;
   onOpenCrossRef: (ref: ScriptureReference) => void;
   onSelectShloka: (id: number) => void;
 }
 
 export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
   shlokas,
+  preferences,
   onOpenCrossRef,
   onSelectShloka
 }) => {
@@ -30,6 +44,10 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedWordShlokaId, setExpandedWordShlokaId] = useState<number | null>(null);
   const [activeWordIndex, setActiveWordIndex] = useState<{ [shlokaId: number]: number }>({});
+
+  const lang = preferences?.activeLanguage || 'gujarati';
+  const ui = getUIStrings(lang);
+  const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
 
   const filteredItems = useMemo(() => {
     return shlokas.filter(s => {
@@ -53,20 +71,29 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
           s.titleHi.toLowerCase().includes(query) ||
           s.titleEn.toLowerCase().includes(query) ||
           s.sanskritDevanagari.toLowerCase().includes(query) ||
+          s.sanskritGujarati.toLowerCase().includes(query) ||
           s.meaningGu.toLowerCase().includes(query) ||
+          s.meaningHi.toLowerCase().includes(query) ||
           s.meaningEn.toLowerCase().includes(query);
         
         const refMatch = s.crossReferences?.some(r => 
-          r.title.toLowerCase().includes(query) ||
-          r.section.toLowerCase().includes(query) ||
-          r.textGu.toLowerCase().includes(query) ||
-          r.correlationNote.toLowerCase().includes(query)
+          (r.title && r.title.toLowerCase().includes(query)) ||
+          (r.titleGu && r.titleGu.toLowerCase().includes(query)) ||
+          (r.titleHi && r.titleHi.toLowerCase().includes(query)) ||
+          (r.titleEn && r.titleEn.toLowerCase().includes(query)) ||
+          (r.section && r.section.toLowerCase().includes(query)) ||
+          (r.textGu && r.textGu.toLowerCase().includes(query)) ||
+          (r.textHi && r.textHi.toLowerCase().includes(query)) ||
+          (r.textEn && r.textEn.toLowerCase().includes(query)) ||
+          (r.correlationNote && r.correlationNote.toLowerCase().includes(query))
         );
 
         const wordMatch = s.padachheda?.some(p => 
           p.word.toLowerCase().includes(query) ||
           p.meaningGu.toLowerCase().includes(query) ||
-          p.scriptureReference?.source.toLowerCase().includes(query)
+          p.meaningHi.toLowerCase().includes(query) ||
+          p.meaningEn.toLowerCase().includes(query) ||
+          (p.scriptureReference?.source && p.scriptureReference.source.toLowerCase().includes(query))
         );
 
         return idMatch || textMatch || refMatch || wordMatch;
@@ -143,9 +170,9 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       : 'bg-black/25 text-amber-100 hover:bg-black/40'
                   }`}
                 >
-                  {t === 'all' && 'તમામ ૩૧૫ શ્લોક'}
-                  {t === 'vachnamrut' && '📖 વચનામૃત'}
-                  {t === 'swamini_vato' && '📿 સ્વામીની વાતો'}
+                  {t === 'all' && (lang === 'gujarati' ? 'તમામ ૩૧૫ શ્લોક' : lang === 'hindi' ? 'समस्त ३१५ श्लोक' : 'All 315 Verses')}
+                  {t === 'vachnamrut' && (lang === 'gujarati' ? '📖 વચનામૃત' : lang === 'hindi' ? '📖 वचनामृत' : '📖 Vachnamrut')}
+                  {t === 'swamini_vato' && (lang === 'gujarati' ? '📿 સ્વામીની વાતો' : lang === 'hindi' ? '📿 स्वामीनी बातें' : '📿 Swamini Vato')}
                 </button>
               ))}
             </div>
@@ -153,7 +180,9 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
 
           {/* Chapter Selector Chips */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-            <span className="text-amber-200/80 font-medium whitespace-nowrap mr-1">પ્રકરણ:</span>
+            <span className="text-amber-200/80 font-medium whitespace-nowrap mr-1">
+              {ui.chapterPrefix}:
+            </span>
             <button
               onClick={() => setSelectedChapter('all')}
               className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
@@ -162,7 +191,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                   : 'bg-white/10 text-amber-100 hover:bg-white/20'
               }`}
             >
-              બધાં પ્રકરણો
+              {lang === 'gujarati' ? 'બધાં પ્રકરણો' : lang === 'hindi' ? 'सभी प्रकरण' : 'All Chapters'}
             </button>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ch) => (
               <button
@@ -174,7 +203,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     : 'bg-white/10 text-amber-100 hover:bg-white/20'
                 }`}
               >
-                પ્રકરણ {ch}
+                {ui.chapterPrefix} {ch}
               </button>
             ))}
           </div>
@@ -214,10 +243,10 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                   </div>
                   <div>
                     <h3 className="font-serif font-bold text-base text-[#8B2500] dark:text-amber-300">
-                      {shloka.titleGu}
+                      {getShlokaTitle(shloka, lang)}
                     </h3>
                     <span className="text-xs text-[#8A7A68] dark:text-[#A89886]">
-                      પ્રકરણ {shloka.chapterId}: {shloka.chapterGu}
+                      {ui.chapterPrefix} {shloka.chapterId}: {getShlokaChapterName(shloka, lang)}
                     </span>
                   </div>
                 </div>
@@ -232,7 +261,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     }`}
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>પદ-પ્રમાણ સંબંધ</span>
+                    <span>{ui.wordBreakdownTitle}</span>
                     {isWordExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
 
@@ -240,7 +269,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     onClick={() => onSelectShloka(shloka.id)}
                     className="text-xs px-3 py-1.5 rounded-xl bg-[#8B2500] hover:bg-[#A63000] text-white font-semibold transition shadow-xs flex items-center gap-1"
                   >
-                    <span>મૂળ શ્લોક</span>
+                    <span>{ui.tabReader}</span>
                     <BookOpen className="w-3 h-3" />
                   </button>
                 </div>
@@ -253,15 +282,22 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     સત્સંગ દીક્ષા સૂત્ર વાણી
                   </span>
                   <span className="text-[11px] text-[#8A7A68] dark:text-[#A89886]">
-                    શ્લોક {shloka.id} / ૩૧૫
+                    {ui.shlokaNumberPrefix} {shloka.id} / ૩૧૫
                   </span>
                 </div>
                 <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed">
                   {shloka.sanskritDevanagari}
                 </p>
-                <p className="font-gujarati text-xs sm:text-sm text-[#4A3D31] dark:text-[#DCD1C3] leading-relaxed pt-1 border-t border-amber-200/40 dark:border-[#352D26]">
-                  <strong>ગુજરાતી અર્થ:</strong> {shloka.meaningGu}
-                </p>
+                <div className="pt-1 border-t border-amber-200/40 dark:border-[#352D26] space-y-1">
+                  <p className="text-xs sm:text-sm text-[#4A3D31] dark:text-[#DCD1C3] leading-relaxed">
+                    <strong className="text-[#8B2500] dark:text-amber-400">{langMeta.nativeName} ({langMeta.nameEn}):</strong> {getShlokaMeaning(shloka, lang)}
+                  </p>
+                  {lang !== 'gujarati' && (
+                    <p className="font-gujarati text-[11px] text-[#6B5E51] dark:text-[#A89886] leading-relaxed">
+                      <strong>મૂળ ગુજરાતી:</strong> {shloka.meaningGu}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Word-by-Word Vachnamrut & Swami ni Vato Breakdown (Expandable) */}
@@ -270,10 +306,10 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
                       <Sparkles className="w-4 h-4 text-amber-600" />
-                      પદચ્છેદ અને વચનામૃત-સ્વામીની વાતો શબ્દશઃ સમન્વય:
+                      {ui.wordBreakdownTitle}:
                     </span>
                     <span className="text-[11px] text-[#7A6B5C] dark:text-[#B5A595]">
-                      (પદ પર ક્લિક કરી વિગતવાર પ્રમાણ જુઓ)
+                      ({ui.wordBreakdownDesc})
                     </span>
                   </div>
 
@@ -299,13 +335,18 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                   {selectedWord && (
                     <div className="p-3.5 rounded-xl bg-white dark:bg-[#1E1916] border border-amber-300/80 dark:border-amber-900/40 space-y-2 shadow-xs">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                           <span className="font-sanskrit text-sm font-bold text-[#8B2500] dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-md">
                             પદ: {selectedWord.word}
                           </span>
-                          <span className="text-xs text-[#54473C] dark:text-[#D1C5B7] font-medium">
-                            {selectedWord.meaningGu}
+                          <span className="text-xs text-[#2D241E] dark:text-[#EDE5D8] font-semibold">
+                            {getWordMeaningInLang(selectedWord, lang)}
                           </span>
+                          {lang !== 'gujarati' && (
+                            <span className="text-xs text-[#6B5E51] dark:text-[#A89886]">
+                              (ગુજરાતી: {selectedWord.meaningGu})
+                            </span>
+                          )}
                         </div>
                       </div>
 
@@ -331,7 +372,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
               {/* Referenced Scriptures List (Vachnamrut & Swami ni Vato) */}
               <div className="space-y-3 pt-1">
                 <span className="text-xs font-bold text-[#8B2500] dark:text-amber-400 block">
-                  આ શ્લોકના આધારરૂપ વચનામૃત અને સ્વામીની વાતો સંદર્ભો:
+                  {ui.scriptureCrossRefTitle}:
                 </span>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {shloka.crossReferences?.map((ref, idx) => (
@@ -344,22 +385,22 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
                             <BookOpen className="w-3.5 h-3.5 text-amber-700 group-hover:text-amber-600 transition" />
-                            {ref.title}
+                            {getReferenceTitle(ref, lang)}
                           </span>
                           <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
                         </div>
-                        <p className="font-gujarati text-xs text-[#3D3227] dark:text-[#E2D7CB] line-clamp-3 leading-relaxed">
-                          "{ref.textGu}"
+                        <p className="text-xs text-[#3D3227] dark:text-[#E2D7CB] line-clamp-3 leading-relaxed">
+                          "{getReferenceText(ref, lang)}"
                         </p>
                         {ref.correlationNote && (
                           <p className="text-[11px] text-[#7A6B5C] dark:text-[#A89886] line-clamp-2 italic pt-1 border-t border-amber-200/50 dark:border-[#352D26]">
-                            {ref.correlationNote}
+                            {getReferenceCorrelation(ref, lang)}
                           </p>
                         )}
                       </div>
 
                       <div className="mt-3 pt-2 border-t border-amber-200/60 dark:border-amber-900/30 text-[11px] text-amber-800 dark:text-amber-300 font-semibold flex items-center justify-between">
-                        <span>સંપૂર્ણ સંદર્ભ & અનુવાદ વાંચો</span>
+                        <span>સંપૂર્ણ સંદર્ભ વાંચો</span>
                         <span>➔</span>
                       </div>
                     </div>

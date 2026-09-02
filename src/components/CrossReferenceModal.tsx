@@ -1,26 +1,74 @@
 import React, { useState } from 'react';
-import { X, BookOpen, Sparkles, Copy, Check, ShieldCheck } from 'lucide-react';
-import { ScriptureReference } from '../types';
+import { X, BookOpen, Sparkles, Copy, Check, ShieldCheck, Languages } from 'lucide-react';
+import { ScriptureReference, UserPreferences } from '../types';
+import { getReferenceTitle, getReferenceSection, getReferenceText, getReferenceCorrelation, LANGUAGE_METADATA } from '../utils/translationHelper';
+import { getUIStrings } from '../utils/i18n';
 
 interface CrossReferenceModalProps {
   reference: ScriptureReference | null;
+  preferences?: UserPreferences;
   onClose: () => void;
 }
 
 export const CrossReferenceModal: React.FC<CrossReferenceModalProps> = ({
   reference,
+  preferences,
   onClose
 }) => {
   const [copied, setCopied] = useState(false);
   if (!reference) return null;
 
+  const lang = preferences?.activeLanguage || 'gujarati';
+  const ui = getUIStrings(lang);
   const isVachnamrut = reference.type === 'vachnamrut';
+  const displayTitle = getReferenceTitle(reference, lang);
+  const displaySection = getReferenceSection(reference, lang);
+  const activeLangText = getReferenceText(reference, lang);
+  const displayCorrelation = getReferenceCorrelation(reference, lang);
+  const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
 
   const handleCopy = () => {
-    const textToCopy = `${reference.title} (${reference.section})\n\n"${reference.textGu}"\n\nસંબંધ: ${reference.correlationNote}`;
+    const textToCopy = `${displayTitle} ${displaySection ? `(${displaySection})` : ''}\n\n"${activeLangText}"\n\n${displayCorrelation ? `${displayCorrelation}` : ''}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getRefTypeBadge = () => {
+    if (isVachnamrut) {
+      if (lang === 'hindi') return 'वचनामृत संदर्भ';
+      if (lang === 'english') return 'Vachnamrut Reference';
+      if (lang === 'marathi') return 'वचनामृत संदर्भ';
+      return 'વચનામૃત સંદર્ભ';
+    }
+    if (lang === 'hindi') return 'स्वामीनी बातें संदर्भ';
+    if (lang === 'english') return 'Swamini Vato Reference';
+    if (lang === 'marathi') return 'स्वामींची बातें संदर्भ';
+    return 'સ્વામીની વાતો સંદર્ભ';
+  };
+
+  const getCorrelationTitle = () => {
+    if (lang === 'hindi') return 'सत्सङ्गदीक्षा श्लोक के साथ शास्त्रीय संबंध:';
+    if (lang === 'english') return 'Scriptural Correlation with Satsang Diksha Shloka:';
+    if (lang === 'marathi') return 'सत्सङ्गदीक्षा श्लोकाशी शास्त्रीय संबंध:';
+    return 'સત્સંગ દીક્ષા શ્લોક સાથે શાસ્ત્રીય સંબંધ:';
+  };
+
+  const getOriginalTextHeading = () => {
+    if (lang === 'gujarati') return 'મૂળ ગ્રંથ વાણી (ગુજરાતી મૂળ પાઠ):';
+    if (lang === 'hindi') return 'मूल ग्रंथ पाठ (Original Gujarati):';
+    return 'Original Scripture Passage (Gujarati):';
+  };
+
+  const getCopyBtnLabel = () => {
+    if (copied) {
+      if (lang === 'hindi') return 'कॉपी हो गया';
+      if (lang === 'english') return 'Copied!';
+      return 'કૉપિ થઈ ગયું';
+    }
+    if (lang === 'hindi') return 'संदर्भ कॉपी करें';
+    if (lang === 'english') return 'Copy Reference';
+    return 'સંદર્ભ કૉપિ';
   };
 
   return (
@@ -33,12 +81,11 @@ export const CrossReferenceModal: React.FC<CrossReferenceModalProps> = ({
               <BookOpen className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200 flex items-center gap-1.5">
-                <span>{isVachnamrut ? 'વચનામૃત સંદર્ભ' : 'સ્વામીની વાતો સંદર્ભ'}</span>
-                <span className="px-1.5 py-0.2 rounded bg-amber-900/60 text-amber-200 text-[10px]">ઓફલાઇન ડેટા</span>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200 block">
+                {getRefTypeBadge()}
               </span>
               <h3 className="font-serif font-bold text-lg text-amber-50">
-                {reference.title}
+                {displayTitle} {displaySection ? `• ${displaySection}` : ''}
               </h3>
             </div>
           </div>
@@ -53,25 +100,49 @@ export const CrossReferenceModal: React.FC<CrossReferenceModalProps> = ({
         {/* Modal Content */}
         <div className="p-6 overflow-y-auto space-y-4">
           {/* Correlation Note */}
-          <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-[#29211B] border-l-4 border-amber-600">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-300 mb-1">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>સત્સંગ દીક્ષા શ્લોક સાથે શાસ્ત્રીય સંબંધ:</span>
+          {displayCorrelation && (
+            <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-[#29211B] border-l-4 border-amber-600">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-300 mb-1">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>{getCorrelationTitle()}</span>
+              </div>
+              <p className="text-xs text-[#54473C] dark:text-[#D1C5B7] leading-relaxed">
+                {displayCorrelation}
+              </p>
             </div>
-            <p className="text-xs text-[#54473C] dark:text-[#D1C5B7] leading-relaxed">
-              {reference.correlationNote}
-            </p>
-          </div>
+          )}
 
-          {/* Scripture Passage in Gujarati */}
+          {/* Active User Language Display Card */}
+          {lang !== 'gujarati' && (
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#8B2500] dark:text-amber-400 flex items-center gap-1.5">
+                  <Languages className="w-3.5 h-3.5" />
+                  <span>{langMeta.nativeName} ({langMeta.nameEn}):</span>
+                </span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-900/80 text-amber-950 dark:text-amber-200 font-bold">
+                  {lang.toUpperCase()}
+                </span>
+              </div>
+              <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-[#281F18] border-2 border-amber-400/70 shadow-xs">
+                <p className="text-sm sm:text-base text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed font-medium">
+                  "{activeLangText}"
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Scripture Passage in Gujarati (Authentic Original Text) */}
           <div className="space-y-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#8B2500] dark:text-amber-400">
-                મૂળ ગ્રંથ વાણી (ગુજરાતી મૂળ પાઠ):
+                {getOriginalTextHeading()}
               </span>
-              <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 font-semibold">
-                {reference.section}
-              </span>
+              {displaySection && (
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-200 font-semibold">
+                  {displaySection}
+                </span>
+              )}
             </div>
             <div className="p-4 rounded-xl bg-[#FAF6F0] dark:bg-[#1C1714] border border-[#E8DFD1] dark:border-[#352D26]">
               <p className="font-gujarati text-sm sm:text-base text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
@@ -79,41 +150,15 @@ export const CrossReferenceModal: React.FC<CrossReferenceModalProps> = ({
               </p>
             </div>
           </div>
-
-          {/* Scripture Passage in Hindi */}
-          {reference.textHi && (
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-orange-700 dark:text-orange-400">
-                हिन्दी अनुवाद:
-              </span>
-              <div className="p-3.5 rounded-xl bg-[#FAF6F0] dark:bg-[#1C1714] border border-[#E8DFD1] dark:border-[#352D26]">
-                <p className="font-hindi text-sm text-[#2D241E] dark:text-[#EDE5D8] leading-relaxed">
-                  "{reference.textHi}"
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Scripture Passage in English */}
-          {reference.textEn && (
-            <div className="space-y-1">
-              <span className="text-xs font-bold text-stone-700 dark:text-stone-300">
-                English Translation:
-              </span>
-              <div className="p-3.5 rounded-xl bg-[#FAF6F0] dark:bg-[#1C1714] border border-[#E8DFD1] dark:border-[#352D26]">
-                <p className="font-english text-xs sm:text-sm text-[#4A3E34] dark:text-[#D1C5B7] leading-relaxed">
-                  "{reference.textEn}"
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Modal Footer */}
         <div className="p-4 bg-[#FAF6F0] dark:bg-[#1E1916] border-t border-[#E8DFD1] dark:border-[#352D26] flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="hidden sm:inline">૧૦૦% ઓફલાઇન સંગ્રહિત</span>
+          <div className="flex items-center gap-2 text-xs text-amber-900 dark:text-amber-300 font-medium">
+            <ShieldCheck className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <span className="hidden sm:inline">
+              {lang === 'hindi' ? 'शास्त्रीय प्रमाण संदर्भ' : lang === 'english' ? 'Scriptural Concordance' : lang === 'marathi' ? 'शास्त्रीय संदर्भ' : 'શાસ્ત્રીય પ્રમાણ સંદર્ભ'}
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -122,13 +167,13 @@ export const CrossReferenceModal: React.FC<CrossReferenceModalProps> = ({
               className="px-4 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-[#2F251E] dark:hover:bg-[#3D3027] text-[#8B2500] dark:text-amber-300 text-xs font-bold transition flex items-center gap-1.5"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'કૉપિ થઈ ગયું' : 'સંદર્ભ કૉપિ'}</span>
+              <span>{getCopyBtnLabel()}</span>
             </button>
             <button
               onClick={onClose}
               className="px-5 py-2 rounded-xl bg-[#8B2500] hover:bg-[#A63000] text-white text-xs font-bold transition shadow-sm"
             >
-              બંધ કરો
+              {ui.closeWordBreakdown || 'બંધ કરો'}
             </button>
           </div>
         </div>

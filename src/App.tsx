@@ -25,6 +25,7 @@ import { ShlokaCard } from './components/ShlokaCard';
 import { MukhpathView } from './components/MukhpathView';
 import { ChapterIndex } from './components/ChapterIndex';
 import { CrossScriptureView } from './components/CrossScriptureView';
+import { UdgaanView } from './components/UdgaanView';
 import { CrossReferenceModal } from './components/CrossReferenceModal';
 import { QuizView } from './components/QuizView';
 import { BookmarksView } from './components/BookmarksView';
@@ -313,6 +314,15 @@ export default function App() {
           </div>
         )}
 
+        {/* TAB: UDGAAN AUDIO (BAPS VEDIC CHANTING) */}
+        {activeTab === 'udgaan' && (
+          <UdgaanView
+            shlokas={allShlokas}
+            preferences={preferences}
+            onSelectShloka={handleJumpToShloka}
+          />
+        )}
+
         {/* TAB 2: MUKHPATH STUDY */}
         {activeTab === 'mukhpath' && (
           <MukhpathView
@@ -328,6 +338,7 @@ export default function App() {
         {activeTab === 'chapters' && (
           <ChapterIndex
             chapters={CHAPTERS}
+            preferences={preferences}
             mukhpathRecords={mukhpathRecords}
             onSelectChapter={(chId) => {
               setSelectedChapterId(chId);
@@ -341,6 +352,7 @@ export default function App() {
         {activeTab === 'crossref' && (
           <CrossScriptureView
             shlokas={allShlokas}
+            preferences={preferences}
             onOpenCrossRef={(ref) => setActiveCrossRef(ref)}
             onSelectShloka={handleJumpToShloka}
           />
@@ -356,6 +368,7 @@ export default function App() {
           <BookmarksView
             bookmarks={bookmarks}
             shlokas={allShlokas}
+            preferences={preferences}
             onRemoveBookmark={handleToggleBookmark}
             onSelectShloka={handleJumpToShloka}
           />
@@ -385,6 +398,7 @@ export default function App() {
 
       <CrossReferenceModal
         reference={activeCrossRef}
+        preferences={preferences}
         onClose={() => setActiveCrossRef(null)}
       />
     </div>

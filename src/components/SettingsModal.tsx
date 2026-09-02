@@ -7,21 +7,17 @@ import {
   RotateCcw, 
   Sliders, 
   Shield, 
-  BookOpen, 
   Sparkles, 
-  FileText, 
-  Globe, 
-  Bell, 
-  Clock, 
   Download, 
   CheckCircle2, 
-  Volume2, 
   Smartphone,
   Trash2,
-  Layers,
-  Languages
+  Languages,
+  Bell,
+  Clock,
+  RefreshCw
 } from 'lucide-react';
-import { UserPreferences, ThemeMode, SanskritScript, Language, LanguagePack } from '../types';
+import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { AVAILABLE_LANGUAGE_PACKS, StorageService } from '../utils/storage';
 import { NotificationService } from '../utils/notificationService';
 import { getUIStrings } from '../utils/i18n';
@@ -43,6 +39,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [downloadingPack, setDownloadingPack] = useState<Language | null>(null);
   const [testNotificationStatus, setTestNotificationStatus] = useState<string | null>(null);
+  const [updatingApp, setUpdatingApp] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -80,13 +78,53 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setTimeout(() => setTestNotificationStatus(null), 4000);
   };
 
-  const handleToggleSecondaryLanguage = (lang: Language) => {
-    const current = preferences.secondaryLanguages || [];
-    const updated = current.includes(lang)
-      ? current.filter(l => l !== lang)
-      : [...current, lang];
-    onUpdatePreferences({ secondaryLanguages: updated });
+  // Update App handler
+  const handleUpdateApp = async () => {
+    setUpdatingApp(true);
+    try {
+      // Clear cache if service worker is present
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const reg of registrations) {
+          await reg.update();
+        }
+      }
+      if ('caches' in window) {
+        const cacheKeys = await caches.keys();
+        await Promise.all(cacheKeys.map(key => caches.delete(key)));
+      }
+      setUpdateSuccess(
+        preferences.activeLanguage === 'hindi'
+          ? 'ऐप नवीनतम संस्करण में सफलतापूर्वक अपडेट हो गया है! ✓'
+          : preferences.activeLanguage === 'english'
+          ? 'App successfully updated to the latest version! ✓'
+          : 'એપ સફળતાપૂર્વક નવીનતમ આવૃત્તિમાં અપડેટ થઈ ગઈ છે! ✓'
+      );
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      window.location.reload();
+    } finally {
+      setUpdatingApp(false);
+    }
   };
+
+  const singleLanguages: { id: Language; labelGu: string; labelEn: string; native: string }[] = [
+    { id: 'gujarati', labelGu: 'ગુજરાતી (મૂળ)', labelEn: 'Gujarati (Default)', native: 'ગુજરાતી' },
+    { id: 'hindi', labelGu: 'हिन्दी भावार्थ', labelEn: 'Hindi', native: 'हिन्दी' },
+    { id: 'english', labelGu: 'English Meaning', labelEn: 'English', native: 'English' },
+    { id: 'marathi', labelGu: 'मराठी अनुवाद', labelEn: 'Marathi', native: 'मराठी' },
+    { id: 'bengali', labelGu: 'বাংলা অনুবাদ', labelEn: 'Bengali', native: 'বাংলা' },
+    { id: 'tamil', labelGu: 'தமிழ் விளக்கம்', labelEn: 'Tamil', native: 'தமிழ்' },
+    { id: 'telugu', labelGu: 'తెలుగు భావార్థం', labelEn: 'Telugu', native: 'తెలుగు' },
+    { id: 'kannada', labelGu: 'ಕನ್ನಡ ಭಾವಾರ್ಥ', labelEn: 'Kannada', native: 'ಕನ್ನಡ' },
+    { id: 'punjabi', labelGu: 'ਪੰਜਾਬੀ ਅਨੁਵਾਦ', labelEn: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
+    { id: 'spanish', labelGu: 'Español', labelEn: 'Spanish', native: 'Español' },
+    { id: 'french', labelGu: 'Français', labelEn: 'French', native: 'Français' },
+    { id: 'german', labelGu: 'Deutsch', labelEn: 'German', native: 'Deutsch' }
+  ];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/65 backdrop-blur-xs animate-fadeIn">
@@ -117,7 +155,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         {/* Content */}
         <div className="p-5 sm:p-6 overflow-y-auto space-y-6 text-xs text-[#2D241E] dark:text-[#EDE5D8]">
           
-          {/* 1. PRIMARY LANGUAGE SELECTION (Default: Sanskrit to Gujarati) */}
+          {/* 1. SINGLE LANGUAGE SELECTION */}
           <div className="space-y-3 p-4 rounded-2xl bg-amber-50/70 dark:bg-[#2A221C] border-2 border-amber-300/50 dark:border-amber-700/40">
             <div className="flex items-center gap-2 text-sm font-serif font-bold text-[#8B2500] dark:text-amber-300">
               <Languages className="w-5 h-5 text-amber-600" />
@@ -128,24 +166,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {[
-                { id: 'gujarati', labelGu: 'ગુજરાતી (મૂળ)', labelEn: 'Gujarati (Default)', native: 'ગુજરાતી' },
-                { id: 'hindi', labelGu: 'हिन्दी भावार्थ', labelEn: 'Hindi', native: 'हिन्दी' },
-                { id: 'english', labelGu: 'English Meaning', labelEn: 'English', native: 'English' },
-                { id: 'all', labelGu: 'સર્વ ત્રિભાષા', labelEn: 'All Languages', native: 'ગુજરાતી+हिन्दी+EN' },
-                { id: 'marathi', labelGu: 'मराठी अनुवाद', labelEn: 'Marathi', native: 'मराठी' },
-                { id: 'bengali', labelGu: 'বাংলা অনুবাদ', labelEn: 'Bengali', native: 'বাংলা' },
-                { id: 'tamil', labelGu: 'தமிழ் விளக்கம்', labelEn: 'Tamil', native: 'தமிழ்' },
-                { id: 'telugu', labelGu: 'తెలుగు భావార్థం', labelEn: 'Telugu', native: 'తెలుగు' },
-                { id: 'kannada', labelGu: 'ಕನ್ನಡ ಭಾವಾರ್ಥ', labelEn: 'Kannada', native: 'ಕನ್ನಡ' },
-                { id: 'punjabi', labelGu: 'ਪੰਜਾਬੀ ਅਨੁਵਾદ', labelEn: 'Punjabi', native: 'ਪੰਜਾਬੀ' },
-                { id: 'spanish', labelGu: 'Español', labelEn: 'Spanish', native: 'Español' },
-                { id: 'french', labelGu: 'Français', labelEn: 'French', native: 'Français' },
-                { id: 'german', labelGu: 'Deutsch', labelEn: 'German', native: 'Deutsch' }
-              ].map(langItem => (
+              {singleLanguages.map(langItem => (
                 <button
                   key={langItem.id}
-                  onClick={() => onUpdatePreferences({ activeLanguage: langItem.id as Language })}
+                  onClick={() => onUpdatePreferences({ activeLanguage: langItem.id, secondaryLanguages: [] })}
                   className={`p-2.5 rounded-xl border text-left transition ${
                     preferences.activeLanguage === langItem.id
                       ? 'bg-[#8B2500] text-amber-50 border-[#8B2500] font-bold shadow-xs'
@@ -157,115 +181,43 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
-
-            {/* Additional Secondary Languages to Show Beneath Verse */}
-            <div className="pt-3 border-t border-amber-200/50 dark:border-amber-900/40 space-y-2">
-              <label className="font-bold text-[#8B2500] dark:text-amber-300 block text-xs">
-                {ui.secondaryLanguagesTitle}:
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { id: 'hindi', label: 'हिन्दी भावार्थ' },
-                  { id: 'english', label: 'English Meaning' },
-                  { id: 'marathi', label: 'मराठी अनुवाद' },
-                  { id: 'bengali', label: 'বাংলা অনুবাদ' },
-                  { id: 'tamil', label: 'தமிழ்' },
-                  { id: 'telugu', label: 'తెలుగు' },
-                  { id: 'kannada', label: 'ಕನ್ನಡ' },
-                  { id: 'punjabi', label: 'ਪੰਜਾਬੀ' },
-                  { id: 'spanish', label: 'Español' },
-                  { id: 'french', label: 'Français' },
-                  { id: 'german', label: 'Deutsch' }
-                ].map(sec => {
-                  const isChecked = preferences.secondaryLanguages?.includes(sec.id as any);
-                  return (
-                    <button
-                      key={sec.id}
-                      onClick={() => handleToggleSecondaryLanguage(sec.id as any)}
-                      className={`px-3 py-1.5 rounded-lg border text-xs transition flex items-center gap-1.5 ${
-                        isChecked
-                          ? 'bg-amber-600 text-white border-amber-700 font-bold'
-                          : 'bg-white dark:bg-[#201A16] text-[#55473B] dark:text-[#B5A799] border-amber-200 dark:border-amber-800/40'
-                      }`}
-                    >
-                      <CheckCircle2 className={`w-3.5 h-3.5 ${isChecked ? 'text-white' : 'opacity-30'}`} />
-                      <span>{sec.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
 
-          {/* 2. OFFLINE LANGUAGE PACKS MANAGER */}
-          <div className="space-y-3 p-4 rounded-2xl bg-stone-50 dark:bg-[#26201B] border border-stone-200 dark:border-stone-700/50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-sm font-serif font-bold text-[#8B2500] dark:text-amber-300">
-                <Download className="w-5 h-5 text-emerald-600" />
-                <span>{ui.offlinePackManagerTitle}</span>
+          {/* 2. UPDATE APP / એપ અપડેટ કરો */}
+          <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-950/30 border-2 border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#8B2500] dark:text-amber-300">
+                <RefreshCw className={`w-4 h-4 text-amber-600 ${updatingApp ? 'animate-spin' : ''}`} />
+                <span>
+                  {preferences.activeLanguage === 'hindi' ? 'ऐप अपडेट करें (Update App)' : preferences.activeLanguage === 'english' ? 'Update App' : 'એપ અપડેટ કરો (Update App)'}
+                </span>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
-                {ui.offlineReadyBadge}
+              <p className="text-[11px] text-[#6B5E51] dark:text-[#A89886]">
+                {preferences.activeLanguage === 'hindi' 
+                  ? 'ऐप के नवीनतम सुधार और श्लोक तुरंत लोड करने के लिए अपडेट करें।' 
+                  : preferences.activeLanguage === 'english'
+                  ? 'Reload app to fetch the latest shlokas and updates immediately.'
+                  : 'એપમાં થયેલા તમામ નવા સુધારા અને શ્લોકો મેળવવા માટે અપડેટ કરો.'}
+              </p>
+              {updateSuccess && (
+                <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                  {updateSuccess}
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={handleUpdateApp}
+              disabled={updatingApp}
+              className="px-4 py-2.5 rounded-xl bg-[#8B2500] hover:bg-[#A83200] text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-1.5 flex-shrink-0"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${updatingApp ? 'animate-spin' : ''}`} />
+              <span>
+                {updatingApp 
+                  ? (preferences.activeLanguage === 'hindi' ? 'अपडेट हो रहा है...' : 'અપડેટ થઈ રહ્યું છે...') 
+                  : (preferences.activeLanguage === 'hindi' ? 'अपडेट करें' : preferences.activeLanguage === 'english' ? 'Update Now' : 'એપ અપડેટ કરો')}
               </span>
-            </div>
-            <p className="text-[11px] text-[#6B5E51] dark:text-[#A89886]">
-              {ui.offlinePackManagerDesc}
-            </p>
-
-            <div className="space-y-2">
-              {AVAILABLE_LANGUAGE_PACKS.map(pack => {
-                const isInstalled = preferences.installedLanguagePacks?.includes(pack.id);
-                const isDownloading = downloadingPack === pack.id;
-
-                return (
-                  <div 
-                    key={pack.id}
-                    className="p-3 rounded-xl bg-white dark:bg-[#1E1916] border border-stone-200 dark:border-stone-800 flex items-center justify-between gap-3"
-                  >
-                    <div>
-                      <div className="font-bold text-xs text-[#2D241E] dark:text-[#EDE5D8] flex items-center gap-2">
-                        <span>{pack.nativeName} ({pack.nameEn})</span>
-                        {pack.isDefaultInstalled && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-900 font-normal">
-                            Core
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[10px] text-[#7A6B5C] dark:text-[#A89886]">
-                        {pack.nameGu} • {pack.sizeMb} MB
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      {isInstalled ? (
-                        <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span>{ui.installedBadge}</span>
-                          {!pack.isDefaultInstalled && (
-                            <button
-                              onClick={() => handleUninstallPack(pack.id)}
-                              title="Uninstall pack"
-                              className="ml-2 p-1 text-stone-400 hover:text-red-500 rounded"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => handleInstallPack(pack.id)}
-                          disabled={isDownloading}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>{isDownloading ? ui.installingButton : ui.installButton}</span>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            </button>
           </div>
 
           {/* 3. DAILY REMINDER NOTIFICATION SETTINGS */}
@@ -310,7 +262,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               />
             </div>
 
-            {/* Test Notification and Permission Button */}
+            {/* Test Notification Button */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
               <button
                 onClick={handleTestNotification}
@@ -353,7 +305,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
-          {/* 5. FONT SIZE SLIDER */}
+          {/* 5. THEME SELECTION */}
+          <div className="space-y-2">
+            <label className="font-bold text-[#8B2500] dark:text-amber-400 block">
+              {ui.themeTitle}
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'light', label: ui.themeLight, desc: 'Warm Ivory' },
+                { id: 'sepia', label: ui.themeSepia, desc: 'Palm Leaf' },
+                { id: 'dark', label: ui.themeDark, desc: 'Night Comfort' }
+              ].map((th) => (
+                <button
+                  key={th.id}
+                  onClick={() => onUpdatePreferences({ theme: th.id as ThemeMode })}
+                  className={`p-3 rounded-2xl border-2 text-center transition ${
+                    preferences.theme === th.id
+                      ? 'border-[#8B2500] dark:border-amber-400 bg-amber-50 dark:bg-amber-950/40 font-bold text-[#8B2500] dark:text-amber-300'
+                      : 'border-[#E8DFD1] dark:border-[#3D342C] bg-[#FAF6F0] dark:bg-[#2C241F]'
+                  }`}
+                >
+                  <div className="font-semibold text-xs">{th.label}</div>
+                  <div className="text-[10px] opacity-75">{th.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 6. FONT SIZE SLIDER */}
           <div className="space-y-2">
             <div className="flex items-center justify-between font-bold text-[#8B2500] dark:text-amber-400">
               <span className="flex items-center gap-1.5">
@@ -371,66 +350,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               onChange={(e) => onUpdatePreferences({ fontSize: parseInt(e.target.value, 10) })}
               className="w-full accent-[#8B2500] cursor-pointer"
             />
-            <div className="p-3 bg-[#FAF6F0] dark:bg-[#2A221C] rounded-xl border border-amber-300/30 text-center">
-              <span style={{ fontSize: `${preferences.fontSize}px` }} className="font-sanskrit text-[#8B2500] dark:text-amber-300 block">
-                श्रीमत्परब्रह्मगुरुं स्वामिनारायणं हरिम्
-              </span>
-              <span style={{ fontSize: `${preferences.fontSize - 2}px` }} className="font-gujarati text-[#4A3E34] dark:text-[#D1C5B7] block mt-1">
-                શ્રીમત્પરબ્રહ્મગુરું સ્વામિનારાયણં હરિમ્ (Live Preview)
-              </span>
-            </div>
           </div>
 
-          {/* 6. THEME SELECTION */}
-          <div className="space-y-2">
-            <label className="font-bold text-[#8B2500] dark:text-amber-400 block">
-              {ui.themeTitle}
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { id: 'light', label: ui.themeLight, desc: 'Warm Ivory' },
-                { id: 'sepia', label: ui.themeSepia, desc: 'Palm Leaf' },
-                { id: 'dark', label: ui.themeDark, desc: 'Night Comfort' }
-              ].map((th) => (
-                <button
-                  key={th.id}
-                  onClick={() => onUpdatePreferences({ theme: th.id as ThemeMode })}
-                  className={`p-3 rounded-2xl border-2 text-center transition ${
-                    preferences.theme === th.id
-                      ? 'border-[#8B2500] dark:border-amber-400 bg-amber-50 dark:bg-amber-950/40 font-bold'
-                      : 'border-[#E8DFD1] dark:border-[#3D342C] bg-[#FAF6F0] dark:bg-[#2C241F]'
-                  }`}
-                >
-                  <div className="font-semibold text-xs">{th.label}</div>
-                  <div className="text-[10px] opacity-75">{th.desc}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 7. STUDY EXPANSION TOGGLES */}
-          <div className="space-y-3">
-            <label className="font-bold text-[#8B2500] dark:text-amber-400 block">
-              {ui.studyOptionsTitle}
-            </label>
-            
-            <div className="p-3 rounded-2xl bg-amber-50/60 dark:bg-[#2A221C] border border-amber-300/40 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 font-bold text-amber-900 dark:text-amber-200">
-                  <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <span>{ui.autoExpandBreakdown}</span>
-                </div>
-              </div>
-              <input
-                type="checkbox"
-                checked={preferences.showWordBreakdownDefault}
-                onChange={(e) => onUpdatePreferences({ showWordBreakdownDefault: e.target.checked })}
-                className="w-5 h-5 accent-[#8B2500] rounded cursor-pointer"
-              />
-            </div>
-          </div>
-
-          {/* 8. OFFLINE SECURITY GUARANTEE */}
+          {/* 7. OFFLINE SECURITY GUARANTEE */}
           <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-300/40 flex items-center gap-2.5 text-[11px] text-emerald-900 dark:text-emerald-200">
             <Shield className="w-5 h-5 text-emerald-600 flex-shrink-0" />
             <span>{ui.offlineSecurityBadge}</span>
