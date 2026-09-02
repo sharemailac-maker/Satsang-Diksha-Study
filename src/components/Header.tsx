@@ -5,8 +5,7 @@ import {
   Sun, 
   Moon, 
   Hash,
-  Languages,
-  Smartphone
+  Languages
 } from 'lucide-react';
 import { ThemeMode, UserPreferences } from '../types';
 import { getUIStrings } from '../utils/i18n';
@@ -19,7 +18,6 @@ interface HeaderProps {
   onSearchChange: (q: string) => void;
   onOpenQuickJump: () => void;
   onOpenSettings: () => void;
-  onOpenApkModal: () => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   totalBookmarks: number;
@@ -32,7 +30,6 @@ export const Header: React.FC<HeaderProps> = ({
   onSearchChange,
   onOpenQuickJump,
   onOpenSettings,
-  onOpenApkModal,
   activeTab,
   setActiveTab
 }) => {
@@ -97,19 +94,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* Action Icons Row (APK Modal, Search, # Quick Jump, Language, Theme, Settings) */}
+        {/* Action Icons Row (Search, # Quick Jump, Language, Theme, Settings) */}
         <div className="flex items-center justify-end gap-1.5 sm:gap-2 self-end sm:self-center">
-          {/* APK / Install App Button */}
-          <button
-            id="header-apk-btn"
-            onClick={onOpenApkModal}
-            title="Download APK / Install App"
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border border-amber-400/40 text-xs font-semibold transition"
-          >
-            <Smartphone className="w-4 h-4 text-amber-300" />
-            <span className="hidden sm:inline">APK / App</span>
-          </button>
-
           {/* Quick Jump Button (#) */}
           <button
             id="header-quick-jump-btn"

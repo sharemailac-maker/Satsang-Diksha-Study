@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   RotateCcw, 
@@ -16,7 +16,9 @@ import {
   Trophy,
   Layers,
   HelpCircle,
-  Bookmark
+  Bookmark,
+  Volume2,
+  VolumeX
 } from 'lucide-react';
 import { Shloka, MukhpathLevel, UserPreferences } from '../types';
 import { 
@@ -27,6 +29,8 @@ import {
   LANGUAGE_METADATA 
 } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
+import { globalAudio } from '../utils/audioPlayer';
+import { PADACHHEDA_DATA } from '../data/padachhedaData';
 
 interface MukhpathViewProps {
   shlokas: Shloka[];
@@ -49,6 +53,7 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
   const [padaRevealStep, setPadaRevealStep] = useState(0);
   const [statusFilter, setStatusFilter] = useState<'all' | MukhpathLevel>('all');
   const [chapterFilter, setChapterFilter] = useState<number | 'all'>('all');
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   // Filtered shlokas list
   const filteredShlokas = shlokas.filter(s => {
@@ -62,6 +67,14 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
   const activeShloka = filteredShlokas[currentIdx] || shlokas[0];
   const activeRecord = activeShloka ? mukhpathRecords[activeShloka.id] : undefined;
   const currentStatus = activeRecord?.status || 'unlearned';
+
+  // Audio subscription for Mukhpath active shloka
+  useEffect(() => {
+    if (!activeShloka) return;
+    return globalAudio.subscribe((state) => {
+      setIsPlayingAudio(state.isPlaying && state.shlokaId === activeShloka.id);
+    });
+  }, [activeShloka?.id]);
 
   // Stats calculation
   const totalShlokas = 315;
@@ -261,13 +274,28 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               </div>
             </div>
 
-            <button
-              onClick={() => onSelectShloka(activeShloka.id)}
-              className="text-xs px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 hover:bg-amber-200 transition font-medium flex items-center gap-1 cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>{ui.tabReader}</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => globalAudio.play(activeShloka.id, 'sanskrit')}
+                title={isPlayingAudio ? ui.listenAudioStop : ui.listenAudio}
+                className={`text-xs px-3 py-1.5 rounded-xl transition font-medium flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                  isPlayingAudio 
+                    ? 'bg-amber-500 text-amber-950 font-bold animate-pulse' 
+                    : 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 hover:bg-amber-200'
+                }`}
+              >
+                {isPlayingAudio ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                <span>{isPlayingAudio ? 'વિરામ' : 'શ્રવણ'}</span>
+              </button>
+
+              <button
+                onClick={() => onSelectShloka(activeShloka.id)}
+                className="text-xs px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 hover:bg-amber-200 transition font-medium flex items-center gap-1 cursor-pointer"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>{ui.tabReader}</span>
+              </button>
+            </div>
           </div>
 
           {/* Mode 1: Recite & Study */}
@@ -305,21 +333,25 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               </div>
 
               {/* Padachheda words list for quick study */}
-              {activeShloka.padachheda && activeShloka.padachheda.length > 0 && (
-                <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/20">
-                  <div className="text-xs font-bold text-[#8B2500] dark:text-amber-300 mb-2">
-                    {ui.wordBreakdownTitle}:
+              {(() => {
+                const padachhedaList = (PADACHHEDA_DATA && PADACHHEDA_DATA[activeShloka.id]) || activeShloka.padachheda || [];
+                if (!padachhedaList || padachhedaList.length === 0) return null;
+                return (
+                  <div className="p-3.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/20">
+                    <div className="text-xs font-bold text-[#8B2500] dark:text-amber-300 mb-2">
+                      {ui.wordBreakdownTitle}:
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      {padachhedaList.map((item, idx) => (
+                        <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between gap-2">
+                          <span className="font-sanskrit font-bold text-[#8B2500] dark:text-amber-300">{item.word}</span>
+                          <span className="text-stone-700 dark:text-stone-300 text-right font-medium">{getWordMeaningInLang(item, lang)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    {activeShloka.padachheda.map((item, idx) => (
-                      <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between gap-2">
-                        <span className="font-sanskrit font-bold text-[#8B2500] dark:text-amber-300">{item.word}</span>
-                        <span className="text-stone-700 dark:text-stone-300 text-right font-medium">{getWordMeaningInLang(item, lang)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
           )}
 

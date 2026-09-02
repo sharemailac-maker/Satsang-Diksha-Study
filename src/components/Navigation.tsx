@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  Home,
+  Home, 
   BookOpen, 
   Sparkles, 
   Layers, 
@@ -8,7 +8,6 @@ import {
   Award, 
   Bookmark,
   Settings,
-  Smartphone,
   Radio
 } from 'lucide-react';
 import { Language, UserPreferences } from '../types';
@@ -21,7 +20,6 @@ interface NavigationProps {
   totalBookmarks: number;
   preferences: UserPreferences;
   onOpenSettings: () => void;
-  onOpenApkModal: () => void;
 }
 
 export const Navigation: React.FC<NavigationProps> = ({
@@ -30,8 +28,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   mukhpathCount,
   totalBookmarks,
   preferences,
-  onOpenSettings,
-  onOpenApkModal
+  onOpenSettings
 }) => {
   const ui = getUIStrings(preferences.activeLanguage);
 
@@ -128,18 +125,6 @@ export const Navigation: React.FC<NavigationProps> = ({
                   </button>
                 );
               })}
-            </div>
-
-            {/* Quick APK/AAB Native App status button */}
-            <div className="flex items-center gap-1.5 flex-shrink-0">
-              <button
-                onClick={onOpenApkModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-[#8B2500] dark:text-amber-300 border border-amber-400/30 text-xs font-semibold transition"
-                title="Android APK & AAB Ready"
-              >
-                <Smartphone className="w-3.5 h-3.5 text-[#8B2500] dark:text-amber-400" />
-                <span>{ui.tabApk}</span>
-              </button>
             </div>
           </div>
         </div>

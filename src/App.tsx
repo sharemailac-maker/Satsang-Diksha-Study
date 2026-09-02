@@ -19,7 +19,6 @@ import { QuizView } from './components/QuizView';
 import { BookmarksView } from './components/BookmarksView';
 import { SettingsModal } from './components/SettingsModal';
 import { QuickJumpModal } from './components/QuickJumpModal';
-import { ApkBuildModal } from './components/ApkBuildModal';
 
 import { getAllShlokas } from './data/shlokas';
 import { CHAPTERS } from './data/chapters';
@@ -45,7 +44,6 @@ export default function App() {
   // Modals state
   const [isQuickJumpOpen, setIsQuickJumpOpen] = useState<boolean>(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
-  const [isApkModalOpen, setIsApkModalOpen] = useState<boolean>(false);
   const [activeCrossRef, setActiveCrossRef] = useState<ScriptureReference | null>(null);
 
   const ui = getUIStrings(preferences.activeLanguage);
@@ -218,7 +216,6 @@ export default function App() {
         onSearchChange={setSearchQuery}
         onOpenQuickJump={() => setIsQuickJumpOpen(true)}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenApkModal={() => setIsApkModalOpen(true)}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         totalBookmarks={bookmarks.length}
@@ -235,7 +232,6 @@ export default function App() {
         totalBookmarks={bookmarks.length}
         preferences={preferences}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onOpenApkModal={() => setIsApkModalOpen(true)}
       />
 
       {/* Main App Canvas */}
@@ -425,12 +421,6 @@ export default function App() {
         preferences={preferences}
         onUpdatePreferences={handleUpdatePreferences}
         onResetPreferences={handleResetPreferences}
-      />
-
-      <ApkBuildModal
-        isOpen={isApkModalOpen}
-        onClose={() => setIsApkModalOpen(false)}
-        preferences={preferences}
       />
 
       <CrossReferenceModal

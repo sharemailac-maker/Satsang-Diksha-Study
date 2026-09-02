@@ -32,6 +32,8 @@ import {
   LANGUAGE_METADATA 
 } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
+import { globalAudio } from '../utils/audioPlayer';
+import { PADACHHEDA_DATA } from '../data/padachhedaData';
 
 interface ShlokaCardProps {
   shloka: Shloka;
@@ -64,6 +66,13 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
+  // Subscribe to global audio state for active recitation status
+  React.useEffect(() => {
+    return globalAudio.subscribe((state) => {
+      setIsPlayingAudio(state.isPlaying && state.shlokaId === shloka.id);
+    });
+  }, [shloka.id]);
+
   const ui = getUIStrings(preferences.activeLanguage);
 
   // Choose which Sanskrit script to render
@@ -80,28 +89,17 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   };
 
   const handleAudioRecitation = () => {
-    if (!('speechSynthesis' in window)) return;
-    if (isPlayingAudio) {
-      window.speechSynthesis.cancel();
-      setIsPlayingAudio(false);
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(shloka.sanskritDevanagari);
-    utterance.rate = 0.85;
-    utterance.pitch = 1.0;
-    utterance.lang = 'hi-IN';
-    utterance.onend = () => setIsPlayingAudio(false);
-    utterance.onerror = () => setIsPlayingAudio(false);
-    setIsPlayingAudio(true);
-    window.speechSynthesis.speak(utterance);
+    // Play authentic Vedic chanting in male voice with background music
+    globalAudio.play(shloka.id, 'sanskrit');
   };
+
+  // Word breakdown data
+  const padachhedaList: WordMeaning[] = (PADACHHEDA_DATA && PADACHHEDA_DATA[shloka.id]) || shloka.padachheda || [];
 
   // Selected word details
   const selectedWordData: WordMeaning | null = 
-    (shloka.padachheda && selectedWordIndex !== null && shloka.padachheda[selectedWordIndex]) 
-      ? shloka.padachheda[selectedWordIndex] 
+    (selectedWordIndex !== null && padachhedaList[selectedWordIndex]) 
+      ? padachhedaList[selectedWordIndex] 
       : null;
 
   // Primary Meaning Text
@@ -204,7 +202,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
         </div>
 
         {/* Interactive Word by Word (Padachheda) Breakdown Strip */}
-        {shloka.padachheda && shloka.padachheda.length > 0 && (
+        {padachhedaList && padachhedaList.length > 0 && (
           <div className="mt-4 p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-500/5 border border-amber-500/25 space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B2500] dark:text-amber-300">
@@ -214,7 +212,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
               {selectedWordIndex !== null && (
                 <button
                   onClick={() => setSelectedWordIndex(null)}
-                  className="text-[11px] text-[#8B2500] dark:text-amber-400 underline hover:opacity-80 font-medium"
+                  className="text-[11px] text-[#8B2500] dark:text-amber-400 underline hover:opacity-80 font-medium cursor-pointer"
                 >
                   {ui.closeWordBreakdown}
                 </button>
@@ -223,13 +221,13 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
 
             {/* Word Chips for interactive study */}
             <div className="flex flex-wrap items-center gap-1.5">
-              {shloka.padachheda.map((item, idx) => {
+              {padachhedaList.map((item, idx) => {
                 const isSelected = selectedWordIndex === idx;
                 return (
                   <button
                     key={idx}
                     onClick={() => setSelectedWordIndex(isSelected ? null : idx)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-serif transition-all border ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-serif transition-all border cursor-pointer ${
                       isSelected
                         ? 'bg-[#8B2500] text-amber-50 border-[#8B2500] shadow-sm font-bold scale-105'
                         : 'bg-white dark:bg-[#2C241F] text-[#731E00] dark:text-amber-200 border-amber-300/50 dark:border-amber-700/40 hover:bg-amber-100 dark:hover:bg-[#3D322A]'

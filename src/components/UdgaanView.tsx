@@ -15,9 +15,11 @@ import {
   Check,
   Headphones,
   Sliders,
-  Sparkles
+  Sparkles,
+  AlertCircle
 } from 'lucide-react';
 import { Shloka, UserPreferences } from '../types';
+import { AudioFormat, AUDIO_FORMAT_OPTIONS, getAudioUrls } from '../utils/audioPlayer';
 
 interface UdgaanViewProps {
   shlokas: Shloka[];
@@ -35,58 +37,59 @@ interface UdgaanSection {
   descriptionEn: string;
 }
 
+// Exact 6 Udgaan verse ranges per BAPS Satsang Diksha official publication
 const UDGAAN_SECTIONS: UdgaanSection[] = [
   {
     id: 1,
     titleGu: 'ઉદ્ગાન ૧ (Udgaan 1)',
-    titleEn: 'Udgaan 1 (Verses 1–53)',
-    titleDeva: 'उद्गानम् १ (श्लोकाः १–५३)',
-    range: [1, 53],
-    descriptionGu: 'મંગલાચરણ, શાસ્ત્ર હેતુ, પ્રાતઃપૂજા અને નિત્ય આહ્નિક વિધિ',
-    descriptionEn: 'Invocation, purpose of scripture, morning puja, and daily rites'
+    titleEn: 'Udgaan 1 (Verses 1–50)',
+    titleDeva: 'उद्गानम् १ (श्लोकाः १–५०)',
+    range: [1, 50],
+    descriptionGu: 'મંગલાચરણ, શાસ્ત્ર પ્રયોજન, નિત્ય પ્રાતઃપૂજા વિધિ અને આહ્નિક નિયમ',
+    descriptionEn: 'Invocation, purpose of scripture, morning puja ritual, and daily practices'
   },
   {
     id: 2,
     titleGu: 'ઉદ્ગાન ૨ (Udgaan 2)',
-    titleEn: 'Udgaan 2 (Verses 54–105)',
-    titleDeva: 'उद्गानम् २ (श्लोकाः ५४–१०५)',
-    range: [54, 105],
-    descriptionGu: 'તિલક-ચાંદલો, કંઠી ધારણ, આહાર શુદ્ધિ અને સદાચાર નિયમો',
-    descriptionEn: 'Tilak-chandlo, kanthi, dietary purity, and moral conduct'
+    titleEn: 'Udgaan 2 (Verses 51–115)',
+    titleDeva: 'उद्गानम् २ (श्लोकाः ५१–११५)',
+    range: [51, 115],
+    descriptionGu: 'તિલક-ચાંદલો, કંઠી ધારણ, આહાર શુદ્ધિ, ઉપવાસ અને સદાચાર નિયમો',
+    descriptionEn: 'Tilak-chandlo, kanthi, dietary purity, fasting, and moral conduct'
   },
   {
     id: 3,
     titleGu: 'ઉદ્ગાન ૩ (Udgaan 3)',
-    titleEn: 'Udgaan 3 (Verses 106–158)',
-    titleDeva: 'उद्गानम् ३ (श्लोकाः १०६–१५८)',
-    range: [106, 158],
+    titleEn: 'Udgaan 3 (Verses 116–158)',
+    titleDeva: 'उद्गानम् ३ (श्लोકાः ११६–१५८)',
+    range: [116, 158],
     descriptionGu: 'નિર્વ્યસની જીવન, અહિંસા, સત્સંગ સભા અને ઘરસભા મર્યાદા',
     descriptionEn: 'Addiction-free living, non-violence, satsang assembly, and home assembly'
   },
   {
     id: 4,
     titleGu: 'ઉદ્ગાન ૪ (Udgaan 4)',
-    titleEn: 'Udgaan 4 (Verses 159–210)',
-    titleDeva: 'उद्गानम् ४ (श्लोकाः १५૯–२१०)',
-    range: [159, 210],
-    descriptionGu: 'પારિવારિક સંવાદિતા, માતા-પિતા ભક્તિ અને વ્યવહાર શુદ્ધિ',
-    descriptionEn: 'Family harmony, devotion to parents, and social integrity'
+    titleEn: 'Udgaan 4 (Verses 159–208)',
+    titleDeva: 'उद्गानम् ४ (श्लोकाः १५९–२०८)',
+    range: [159, 208],
+    descriptionGu: 'પારિવારિક સંવાદિતા, માતા-પિતા ભક્તિ, સંપ અને વ્યવહાર શુદ્ધિ',
+    descriptionEn: 'Family harmony, devotion to parents, unity, and social integrity'
   },
   {
     id: 5,
     titleGu: 'ઉદ્ગાન ૫ (Udgaan 5)',
-    titleEn: 'Udgaan 5 (Verses 211–263)',
-    titleDeva: 'उद्गानम् ५ (श्लोकाः २११–२६३)',
-    range: [211, 263],
-    descriptionGu: 'અંતઃશત્રુ વિજય, નિર્દોષબુદ્ધિ, મહિમા ચિંતન અને દિવ્યભાવ',
-    descriptionEn: 'Overcoming inner enemies, faultlessness, divine glory, and spiritual vision'
+    titleEn: 'Udgaan 5 (Verses 209–257)',
+    titleDeva: 'उद्गानम् ५ (श्लोકાः २०९–२५७)',
+    range: [209, 257],
+    descriptionGu: 'અંતઃશત્રુ વિજય, નિર્દોષબુદ્ધિ, મહિમા ચિંતન અને દિવ્યભાવ સાધના',
+    descriptionEn: 'Overcoming inner enemies, seeing virtues, divine glory, and spiritual vision'
   },
   {
     id: 6,
     titleGu: 'ઉદ્ગાન ૬ (Udgaan 6)',
-    titleEn: 'Udgaan 6 (Verses 264–315)',
-    titleDeva: 'उद्गानम् ६ (श्लोकाः २६४–३१५)',
-    range: [264, 315],
+    titleEn: 'Udgaan 6 (Verses 258–315)',
+    titleDeva: 'उद्गानम् ६ (श्लोકાः २५८–३१५)',
+    range: [258, 315],
     descriptionGu: 'અક્ષરપુરુષોત્તમ દાર્શનિક સિદ્ધાંત, ગુરુભક્તિ, આશીર્વાદ અને ફલશ્રુતિ',
     descriptionEn: 'Akshar-Purushottam philosophy, devotion to Guru, blessings, and fruits'
   }
@@ -94,8 +97,8 @@ const UDGAAN_SECTIONS: UdgaanSection[] = [
 
 export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, onSelectShloka }) => {
   const [selectedUdgaanId, setSelectedUdgaanId] = useState<number>(1);
-  const [groupingMode, setGroupingMode] = useState<'udgaan' | '5' | '10' | '25' | 'all' | 'custom'>('udgaan');
-  const [customRange, setCustomRange] = useState<[number, number]>([1, 10]);
+  const [groupingMode, setGroupingMode] = useState<'udgaan' | '5' | '10' | '25' | 'all'>('udgaan');
+  const [audioFormat, setAudioFormat] = useState<AudioFormat>('sanskrit');
   
   const [currentShlokaId, setCurrentShlokaId] = useState<number>(1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -132,11 +135,8 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
       const end = Math.min(315, start + 24);
       return [start, end];
     }
-    if (groupingMode === 'all') {
-      return [1, 315];
-    }
-    return customRange;
-  }, [groupingMode, selectedUdgaanId, currentShlokaId, customRange]);
+    return [1, 315];
+  }, [groupingMode, selectedUdgaanId, currentShlokaId]);
 
   // List of shlokas in active range
   const activeShlokas = useMemo(() => {
@@ -149,33 +149,49 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     return shlokas.find(s => s.id === currentShlokaId) || shlokas[0];
   }, [shlokas, currentShlokaId]);
 
-  // Build audio URL for the given shloka ID
-  const getAudioUrl = (id: number) => {
-    const numStr = id < 10 ? `00${id}` : id < 100 ? `0${id}` : `${id}`;
-    return `https://ia601703.us.archive.org/35/items/satsang_diksha/sanskrit_${numStr}.mp3`;
-  };
-
-  // Switch to a specific shloka
-  const playShloka = (shlokaId: number, autoPlay: boolean = true) => {
+  // Switch to a specific shloka with automatic mirror fallback
+  const playShloka = (shlokaId: number, autoPlay: boolean = true, formatToUse: AudioFormat = audioFormat) => {
     setCurrentShlokaId(shlokaId);
     setHasError(false);
-    if (audioRef.current) {
-      audioRef.current.src = getAudioUrl(shlokaId);
+    
+    if (!audioRef.current) return;
+
+    const urls = getAudioUrls(shlokaId, formatToUse);
+    let mirrorIndex = 0;
+
+    const loadAndPlayMirror = (idx: number) => {
+      if (idx >= urls.length) {
+        setIsLoadingAudio(false);
+        setIsPlaying(false);
+        setHasError(true);
+        return;
+      }
+
+      if (!audioRef.current) return;
+      audioRef.current.src = urls[idx];
       audioRef.current.playbackRate = playbackSpeed;
       audioRef.current.muted = isMuted;
+
       if (autoPlay) {
         setIsLoadingAudio(true);
         audioRef.current.play().then(() => {
           setIsPlaying(true);
           setIsLoadingAudio(false);
-        }).catch(err => {
-          console.error("Audio playback error:", err);
-          setIsPlaying(false);
-          setIsLoadingAudio(false);
-          setHasError(true);
+          setHasError(false);
+        }).catch(() => {
+          // If first mirror failed, try next mirror
+          if (idx + 1 < urls.length) {
+            loadAndPlayMirror(idx + 1);
+          } else {
+            setIsLoadingAudio(false);
+            setIsPlaying(false);
+            setHasError(true);
+          }
         });
       }
-    }
+    };
+
+    loadAndPlayMirror(mirrorIndex);
   };
 
   // Toggle Play / Pause
@@ -185,16 +201,16 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
       audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      if (!audioRef.current.src || audioRef.current.src === '') {
-        playShloka(currentShlokaId, true);
+      if (!audioRef.current.src || audioRef.current.src === '' || hasError) {
+        playShloka(currentShlokaId, true, audioFormat);
       } else {
         setIsLoadingAudio(true);
         audioRef.current.play().then(() => {
           setIsPlaying(true);
           setIsLoadingAudio(false);
         }).catch(() => {
-          setIsPlaying(false);
-          setIsLoadingAudio(false);
+          // Retry loading from fresh URL
+          playShloka(currentShlokaId, true, audioFormat);
         });
       }
     }
@@ -207,7 +223,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     if (nextId < start) {
       nextId = end;
     }
-    playShloka(nextId, isPlaying);
+    playShloka(nextId, isPlaying, audioFormat);
   };
 
   // Next Shloka
@@ -217,7 +233,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     if (nextId > end) {
       nextId = start;
     }
-    playShloka(nextId, isPlaying);
+    playShloka(nextId, isPlaying, audioFormat);
   };
 
   // On audio ended
@@ -233,10 +249,10 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     if (isAutoAdvance) {
       const [start, end] = activeRange;
       if (currentShlokaId < end) {
-        playShloka(currentShlokaId + 1, true);
+        playShloka(currentShlokaId + 1, true, audioFormat);
       } else {
         // At the end of range, loop back to start
-        playShloka(start, true);
+        playShloka(start, true, audioFormat);
       }
     } else {
       setIsPlaying(false);
@@ -255,7 +271,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   const handleSelectUdgaan = (section: UdgaanSection) => {
     setSelectedUdgaanId(section.id);
     setGroupingMode('udgaan');
-    playShloka(section.range[0], isPlaying);
+    playShloka(section.range[0], isPlaying, audioFormat);
   };
 
   // Format seconds to mm:ss
@@ -270,7 +286,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-    audio.src = getAudioUrl(currentShlokaId);
+    audio.src = getAudioUrls(currentShlokaId, audioFormat)[0];
     audio.playbackRate = playbackSpeed;
 
     const onTimeUpdate = () => {
@@ -326,7 +342,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               સત્સંગ દીક્ષા ઉદ્ગાન શ્રવણ
             </h2>
             <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
-              ભગવાન સ્વામિનારાયણ પ્રબોધિત ૩૧૫ સંસ્કૃત શ્લોકોનું પવિત્ર કૃષ્ણ યજુર્વેદીય ઉદ્ગાન શ્રવણ. ૧ થી ૬ ઉદ્ગાન અથવા જૂથવાર અવિરત મંગલ ગાન.
+              પ્રગટ બ્રહ્મસ્વરૂપ મહંત સ્વામી મહારાજ પ્રબોધિત ૩૧૫ સંસ્કૃત શ્લોકોનું પવિત્ર કૃષ્ણ યજુર્વેદીય ઉદ્ગાન શ્રવણ. પુરૂષ સ્વરમાં મધુર બેકગ્રાઉન્ડ સંગીત સાથે અવિરત મંગલ ગાન.
             </p>
           </div>
 
@@ -339,6 +355,47 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
             <span>BAPS સત્તાવાર પ્રકાશન</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
+        </div>
+      </div>
+
+      {/* AUDIO FORMAT SELECTOR (Vedic Chanting / Simple Raag / Gujarati / Hindi) */}
+      <div className="bg-white dark:bg-[#221D1A] rounded-2xl p-4 border border-[#E8DFD1] dark:border-[#3D342C] shadow-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#8B2500] dark:text-amber-300">
+            <Music className="w-4 h-4 text-amber-500" />
+            <span>સ્વર અને ગાન શૈલી (Audio Voice & Raag):</span>
+          </div>
+          <span className="text-[11px] text-[#7A6B5C] dark:text-[#A89886]">
+            સંગીત સાથે મૂળ પુરૂષ સ્વર (Male Voice with Background Music)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {AUDIO_FORMAT_OPTIONS.map((opt) => {
+            const isSelected = audioFormat === opt.id;
+            return (
+              <button
+                key={opt.id}
+                onClick={() => {
+                  setAudioFormat(opt.id);
+                  playShloka(currentShlokaId, isPlaying, opt.id);
+                }}
+                className={`p-3 rounded-xl border text-left transition flex flex-col justify-between ${
+                  isSelected
+                    ? 'bg-gradient-to-br from-[#8B2500] to-[#B33900] text-amber-50 border-amber-400 shadow-sm ring-1 ring-amber-400'
+                    : 'bg-[#FAF6F0] dark:bg-[#2A221C] text-[#4A3E34] dark:text-[#C5B7A8] border-[#E8DFD1] dark:border-[#3D342C] hover:border-amber-400'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs">{opt.labelGu}</span>
+                  {isSelected && <Check className="w-3.5 h-3.5 text-amber-300" />}
+                </div>
+                <p className={`text-[10px] mt-1 line-clamp-2 ${isSelected ? 'text-amber-200/90' : 'text-[#7A6B5C] dark:text-[#A89886]'}`}>
+                  {opt.descriptionGu}
+                </p>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -394,7 +451,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
         </div>
       </div>
 
-      {/* GROUPING & CUSTOM RANGE CONTROLS */}
+      {/* GROUPING CONTROLS */}
       <div className="p-4 bg-white dark:bg-[#221D1A] rounded-2xl border border-[#E8DFD1] dark:border-[#3D342C] flex flex-wrap items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center gap-2 text-xs font-semibold text-[#8B2500] dark:text-amber-300">
           <Sliders className="w-4 h-4" />
@@ -414,7 +471,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               onClick={() => {
                 setGroupingMode(mode.id as any);
                 if (mode.id === 'all') {
-                  playShloka(1, isPlaying);
+                  playShloka(1, isPlaying, audioFormat);
                 }
               }}
               className={`px-3 py-1.5 rounded-xl font-medium transition ${
@@ -499,13 +556,29 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
         {/* Audio Scrubber & Controls */}
         <div className="space-y-4 pt-2 border-t border-[#F0E8DC] dark:border-[#352C24]">
+          {hasError && (
+            <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-xs flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>ઓડિયો કનેક્ટ થઈ રહ્યું છે, કૃપા કરીને Play બટન ફરી દબાવો.</span>
+            </div>
+          )}
+
           {/* Progress bar */}
           <div className="space-y-1">
             <div className="flex items-center justify-between text-[11px] text-[#7A6B5C] dark:text-[#A89886] font-mono">
               <span>{formatTime(currentTime)}</span>
               <span>{isLoadingAudio ? 'લોડ થઈ રહ્યું છે...' : formatTime(duration)}</span>
             </div>
-            <div className="w-full bg-[#E8DFD1] dark:bg-[#3D342C] h-2 rounded-full overflow-hidden cursor-pointer">
+            <div 
+              className="w-full bg-[#E8DFD1] dark:bg-[#3D342C] h-2 rounded-full overflow-hidden cursor-pointer"
+              onClick={(e) => {
+                if (audioRef.current && duration > 0) {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const pos = (e.clientX - rect.left) / rect.width;
+                  audioRef.current.currentTime = pos * duration;
+                }
+              }}
+            >
               <div 
                 className="bg-gradient-to-r from-amber-500 to-[#8B2500] h-full rounded-full transition-all"
                 style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
@@ -549,7 +622,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               <button
                 onClick={handlePrevious}
                 title="પાછલો શ્લોક (Previous Shloka)"
-                className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#2E241E] text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 transition shadow-xs"
+                className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#2E241E] text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 transition shadow-xs cursor-pointer"
               >
                 <SkipBack className="w-5 h-5" />
               </button>
@@ -558,7 +631,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
                 onClick={handleTogglePlay}
                 id="udgaan-play-btn"
                 title={isPlaying ? 'વિરામ (Pause)' : 'શ્રવણ શરૂ કરો (Play)'}
-                className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-[#8B2500] text-amber-950 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
+                className="w-14 h-14 rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-[#8B2500] text-amber-950 flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
               >
                 {isPlaying ? (
                   <Pause className="w-7 h-7 fill-amber-950" />
@@ -570,7 +643,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               <button
                 onClick={handleNext}
                 title="આગલો શ્લોક (Next Shloka)"
-                className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#2E241E] text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 transition shadow-xs"
+                className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#2E241E] text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 transition shadow-xs cursor-pointer"
               >
                 <SkipForward className="w-5 h-5" />
               </button>
@@ -615,7 +688,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               <div
                 key={s.id}
                 ref={isCurrent ? activeVerseRef : undefined}
-                onClick={() => playShloka(s.id, true)}
+                onClick={() => playShloka(s.id, true, audioFormat)}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                   isCurrent
                     ? 'bg-amber-100/80 dark:bg-amber-950/60 border-amber-500 shadow-md ring-2 ring-amber-400/50'

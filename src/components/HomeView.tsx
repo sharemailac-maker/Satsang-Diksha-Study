@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Shloka, UserPreferences, MukhpathLevel } from '../types';
 import { getUIStrings, getShlokaMeaning } from '../utils/i18n';
+import { globalAudio } from '../utils/audioPlayer';
 import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
 
 interface HomeViewProps {
@@ -56,29 +57,21 @@ export const HomeView: React.FC<HomeViewProps> = ({
     return shlokas.find(s => s.id === todayIndex) || shlokas[0];
   }, [shlokas, todayIndex]);
 
+  // Subscribe to global audio state for Daily Shloka
+  React.useEffect(() => {
+    return globalAudio.subscribe((state) => {
+      setIsPlayingAudio(state.isPlaying && state.shlokaId === todayShloka.id);
+    });
+  }, [todayShloka.id]);
+
   // Memorized counts
   const memorizedCount = React.useMemo(() => {
     return Object.values(mukhpathRecords).filter((r: { status: MukhpathLevel; recitationCount: number }) => r.status === 'memorized' || r.status === 'mastered').length;
   }, [mukhpathRecords]);
 
-  // Audio recitation using SpeechSynthesis or direct audio
-  const handlePlayShlokaAudio = (text: string) => {
-    if (!('speechSynthesis' in window)) return;
-    if (isPlayingAudio) {
-      window.speechSynthesis.cancel();
-      setIsPlayingAudio(false);
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.85;
-    utterance.pitch = 1.0;
-    utterance.lang = 'hi-IN';
-    utterance.onend = () => setIsPlayingAudio(false);
-    utterance.onerror = () => setIsPlayingAudio(false);
-    setIsPlayingAudio(true);
-    window.speechSynthesis.speak(utterance);
+  // Audio recitation using authentic male voice Vedic chanting
+  const handlePlayShlokaAudio = (_text?: string) => {
+    globalAudio.play(todayShloka.id, 'sanskrit');
   };
 
   // Primary Study Modules
