@@ -5,9 +5,7 @@ import {
   X, 
   Check,
   Download, 
-  Trash2, 
   RefreshCw, 
-  Volume2, 
   Bell, 
   Clock, 
   Type, 
@@ -15,11 +13,14 @@ import {
   Sun,
   Moon,
   Sparkles,
-  Wifi,
-  BookmarkCheck
+  BookmarkCheck,
+  ChevronDown,
+  CheckCircle2,
+  Minus,
+  Plus
 } from 'lucide-react';
 import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
-import { StorageService } from '../utils/storage';
+import { StorageService, AVAILABLE_LANGUAGE_PACKS } from '../utils/storage';
 import { NotificationService } from '../utils/notificationService';
 import { getUIStrings } from '../utils/i18n';
 
@@ -121,12 +122,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [updatingApp, setUpdatingApp] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
   const [testNotificationStatus, setTestNotificationStatus] = useState<string | null>(null);
-  const [audioCacheCleared, setAudioCacheCleared] = useState(false);
-  const [downloadingAllAudio, setDownloadingAllAudio] = useState(false);
+  const [downloadingPackLang, setDownloadingPackLang] = useState<Language | null>(null);
+  const [packDownloadMessage, setPackDownloadMessage] = useState<string | null>(null);
 
   const ui = getUIStrings(preferences.activeLanguage);
 
   if (!isOpen) return null;
+
+  // Selected language pack details
+  const selectedLangOption = LANGUAGE_GRID_OPTIONS.find(l => l.id === preferences.activeLanguage);
+  const selectedLangPack = AVAILABLE_LANGUAGE_PACKS.find(p => p.id === preferences.activeLanguage);
+  const packSizeMb = selectedLangPack?.sizeMb || 1.8;
+  const isLangPackInstalled = (preferences.installedLanguagePacks || ['gujarati', 'hindi', 'english']).includes(preferences.activeLanguage);
+
+  // Handle language pack download for offline use
+  const handleDownloadPack = (lang: Language) => {
+    setDownloadingPackLang(lang);
+    setPackDownloadMessage(null);
+    setTimeout(() => {
+      const updated = StorageService.installLanguagePack(lang);
+      onUpdatePreferences({ installedLanguagePacks: updated });
+      setDownloadingPackLang(null);
+      const langObj = LANGUAGE_GRID_OPTIONS.find(l => l.id === lang);
+      setPackDownloadMessage(`${langObj?.title || lang} ઑફલાઇન પેક સફળતાપૂર્વક સાચવવામાં આવ્યું છે! ✓`);
+      setTimeout(() => setPackDownloadMessage(null), 4000);
+    }, 700);
+  };
 
   // Handle App Update check
   const handleUpdateApp = async () => {
@@ -180,7 +201,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     >
       <div 
         id="settings-modal-container"
-        className="bg-[#FAF5EC] dark:bg-[#1A1410] w-full max-w-lg rounded-3xl shadow-2xl border border-[#ECD8BE] dark:border-stone-800 overflow-hidden flex flex-col max-h-[92vh] transition-all"
+        className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-all border ${
+          preferences.theme === 'dark'
+            ? 'bg-[#1A1410] border-stone-800 text-stone-100'
+            : preferences.theme === 'sepia'
+              ? 'bg-[#F2E8D2] border-[#DFCFAA] text-[#382513]'
+              : 'bg-[#FAF5EC] border-[#ECD8BE] text-[#2D1A0E]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* =========================================================
@@ -232,60 +259,103 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* =========================================================
               CARD 1: મુખ્ય અનુવાદ ભાષા (Primary Meaning Language)
-              Exact 2-column grid matching the screenshot!
+              Compact Drop-down Selector + Offline Pack Download Option
               ========================================================= */}
           <div 
             id="card-primary-language"
-            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs"
+            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3"
           >
             {/* Header row with Languages icon */}
-            <div className="flex items-start gap-2.5 mb-1.5">
-              <Languages className="w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                  {ui.primaryLanguageTitle}
-                </h3>
-                <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
-                  {ui.primaryLanguageDesc}
-                </p>
+            <div className="flex items-start justify-between gap-2.5">
+              <div className="flex items-start gap-2.5">
+                <Languages className="w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
+                    {ui.primaryLanguageTitle}
+                  </h3>
+                  <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
+                    {ui.primaryLanguageDesc}
+                  </p>
+                </div>
+              </div>
+
+              {/* Active Badge */}
+              <span className="shrink-0 hidden sm:inline-block text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-[#7A1D05] dark:text-amber-300 font-bold border border-amber-300/50">
+                {selectedLangOption?.title || preferences.activeLanguage}
+              </span>
+            </div>
+
+            {/* Compact Dropdown & Offline Download Action Row */}
+            <div className="pt-0.5 flex flex-col sm:flex-row sm:items-center gap-2.5">
+              {/* Dropdown Selector */}
+              <div className="relative flex-1">
+                <select
+                  id="select-primary-language"
+                  value={preferences.activeLanguage}
+                  onChange={(e) => {
+                    const newLang = e.target.value as Language;
+                    onUpdatePreferences({ 
+                      activeLanguage: newLang,
+                      appLanguage: newLang 
+                    });
+                  }}
+                  className="w-full appearance-none px-3.5 py-2.5 pr-10 rounded-xl bg-white dark:bg-[#181310] border-2 border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-100 text-sm font-semibold focus:outline-none focus:border-[#7A1D05] dark:focus:border-amber-500 shadow-2xs cursor-pointer"
+                >
+                  {LANGUAGE_GRID_OPTIONS.map((item) => (
+                    <option key={item.id} value={item.id} className="text-[#2D1A0E] dark:text-stone-100 py-1.5 bg-white dark:bg-[#201915]">
+                      {item.title} — {item.subtitle}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#7A1D05] dark:text-amber-400">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
+              </div>
+
+              {/* Offline Pack Download / Installed Badge Button */}
+              <div className="shrink-0 flex items-center">
+                {isLangPackInstalled ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadPack(preferences.activeLanguage)}
+                    className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition shadow-2xs"
+                    title="ઑફલાઇન પેક તૈયાર છે (Offline Pack Ready)"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>{ui.offlineReadyBadge || 'ઑફલાઇન તૈયાર (Ready)'}</span>
+                    <span className="text-[10.5px] text-emerald-700/80 dark:text-emerald-400/80 font-mono">({packSizeMb} MB)</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={downloadingPackLang === preferences.activeLanguage}
+                    onClick={() => handleDownloadPack(preferences.activeLanguage)}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer transition shadow-2xs disabled:opacity-75"
+                  >
+                    {downloadingPackLang === preferences.activeLanguage ? (
+                      <>
+                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <span>{ui.installingButton || 'ડાઉનલોડ...'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4" />
+                        <span>{ui.installButton || 'ઑફલાઇન ડાઉનલોડ'}</span>
+                        <span className="text-[10.5px] opacity-85 font-mono">({packSizeMb} MB)</span>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
-            {/* 2-Column Grid matching reference screenshot */}
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3 mt-3.5">
-              {LANGUAGE_GRID_OPTIONS.map((item) => {
-                const isSelected = preferences.activeLanguage === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    id={`lang-btn-${item.id}`}
-                    type="button"
-                    onClick={() => {
-                      onUpdatePreferences({ 
-                        activeLanguage: item.id,
-                        appLanguage: item.id 
-                      });
-                    }}
-                    className={`rounded-xl p-3 text-left transition-all duration-150 cursor-pointer ${
-                      isSelected
-                        ? 'bg-[#7A1D05] text-white border-2 border-[#7A1D05] shadow-xs'
-                        : 'bg-white dark:bg-[#181310] border-2 border-[#EADBCC] dark:border-stone-700 hover:border-amber-400 dark:hover:border-amber-600 text-[#2D1A0E] dark:text-stone-100'
-                    }`}
-                  >
-                    <span className={`block font-bold text-[14.5px] sm:text-[15.5px] leading-tight ${
-                      isSelected ? 'text-white' : 'text-[#2D1A0E] dark:text-stone-100'
-                    }`}>
-                      {item.title}
-                    </span>
-                    <span className={`block text-[11.5px] sm:text-[12px] mt-0.5 leading-tight ${
-                      isSelected ? 'text-amber-100/90' : 'text-[#7A6250] dark:text-stone-400'
-                    }`}>
-                      {item.subtitle}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            {/* Notification Banner when pack is downloaded */}
+            {packDownloadMessage && (
+              <div className="flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-in fade-in duration-200">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                <span>{packDownloadMessage}</span>
+              </div>
+            )}
           </div>
 
           {/* =========================================================
@@ -342,9 +412,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
               <div className="grid grid-cols-3 gap-2">
                 {[
-                  { id: 'light', label: ui.themeLight, color: 'bg-white border-amber-300 text-stone-900' },
-                  { id: 'sepia', label: ui.themeSepia, color: 'bg-[#FBF0D9] border-amber-400 text-[#4A2D1B]' },
-                  { id: 'dark', label: ui.themeDark, color: 'bg-[#1E1916] border-stone-600 text-stone-100' }
+                  { id: 'light', label: ui.themeLight, icon: <Sun className="w-4 h-4" />, color: 'bg-white text-stone-900 border-[#EADBCC]' },
+                  { id: 'sepia', label: ui.themeSepia, icon: <Sparkles className="w-4 h-4" />, color: 'bg-[#F4ECD8] text-[#4A2D1B] border-[#DFCFAA]' },
+                  { id: 'dark', label: ui.themeDark, icon: <Moon className="w-4 h-4" />, color: 'bg-[#1E1916] text-stone-100 border-stone-700' }
                 ].map((t) => {
                   const isSel = preferences.theme === t.id;
                   return (
@@ -352,13 +422,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       key={t.id}
                       type="button"
                       onClick={() => onUpdatePreferences({ theme: t.id as ThemeMode })}
-                      className={`p-2.5 rounded-xl text-center border-2 transition cursor-pointer ${
+                      className={`p-2.5 rounded-xl text-center border-2 transition cursor-pointer flex flex-col items-center justify-center gap-1 ${
                         isSel
                           ? 'bg-[#7A1D05] text-white border-[#7A1D05] font-bold shadow-xs'
-                          : `${t.color} border-[#EADBCC] hover:border-amber-400`
+                          : `${t.color} hover:border-amber-400`
                       }`}
                     >
-                      <div className="text-[13px] font-bold">{t.label}</div>
+                      <div className="flex items-center gap-1.5">
+                        {t.icon}
+                        <span className="text-[13px] font-bold">{t.label}</span>
+                      </div>
+                      {isSel && <div className="w-1.5 h-1.5 rounded-full bg-amber-300"></div>}
                     </button>
                   );
                 })}
@@ -419,47 +493,105 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD 3: નિયમ વાચન & રીમાઇન્ડર (Niyam Reading & Reminder)
+              CARD 3: દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)
+              Streamlined, concise, non-repeating
               ========================================================= */}
           <div 
-            id="card-niyam-reminder"
-            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5"
+            id="card-daily-target-reminder"
+            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
           >
+            {/* Unified Card Header */}
             <div className="flex items-center gap-2">
-              <BookmarkCheck className="w-5 h-5 text-[#B85D00]" />
+              <BookmarkCheck className="w-5 h-5 text-[#B85D00] flex-shrink-0" />
               <h3 className="font-bold text-[15.5px] sm:text-[16.5px] text-[#7A1D05] dark:text-amber-300">
-                {ui.dailyReminderTitle}
+                દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)
               </h3>
             </div>
 
-            {/* Daily Target Pills */}
-            <div>
-              <span className="text-xs font-semibold text-[#785E4F] dark:text-stone-300 block mb-1.5">
-                {ui.dailyReminderDesc}
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {[1, 2, 3, 5, 11, 21, 315].map((cnt) => {
-                  const isSel = (preferences.dailyGoal || 1) === cnt;
-                  return (
+            {/* Shloka Target Selection: 1/315 Stepper, Slider & Input */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-[#785E4F] dark:text-stone-300">
+                  શ્લોક લક્ષ્યાંક (Study Goal):
+                </span>
+                <span className="text-xs font-bold text-[#7A1D05] dark:text-amber-400 font-mono bg-amber-100/70 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-md border border-amber-300/60 dark:border-amber-800">
+                  {preferences.dailyGoal || 1} / 315 શ્લોક
+                </span>
+              </div>
+
+              {/* Stepper + Range Slider + Number Input in 1/315 style */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => onUpdatePreferences({ dailyGoal: Math.max(1, (preferences.dailyGoal || 1) - 1) })}
+                  className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 dark:hover:bg-stone-800 cursor-pointer flex items-center justify-center transition shadow-2xs"
+                  title="Previous Shloka"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+
+                <div className="relative flex-1 flex items-center">
+                  <input
+                    type="range"
+                    min={1}
+                    max={315}
+                    value={preferences.dailyGoal || 1}
+                    onChange={(e) => onUpdatePreferences({ dailyGoal: parseInt(e.target.value, 10) || 1 })}
+                    className="w-full h-2 bg-amber-200/60 dark:bg-stone-700 rounded-lg appearance-none cursor-pointer accent-[#7A1D05]"
+                  />
+                </div>
+
+                <div className="flex items-center bg-white dark:bg-[#181310] border-2 border-[#EADBCC] dark:border-stone-700 rounded-lg px-2 py-0.5 shadow-2xs focus-within:border-[#7A1D05]">
+                  <input
+                    type="number"
+                    min={1}
+                    max={315}
+                    value={preferences.dailyGoal || 1}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      if (!isNaN(val)) {
+                        onUpdatePreferences({ dailyGoal: Math.min(315, Math.max(1, val)) });
+                      }
+                    }}
+                    className="w-10 text-center text-xs font-bold text-[#7A1D05] dark:text-amber-300 bg-transparent focus:outline-none"
+                  />
+                  <span className="text-[11px] font-semibold text-stone-400 dark:text-stone-500 font-mono">/ 315</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onUpdatePreferences({ dailyGoal: Math.min(315, (preferences.dailyGoal || 1) + 1) })}
+                  className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 dark:hover:bg-stone-800 cursor-pointer flex items-center justify-center transition shadow-2xs"
+                  title="Next Shloka"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Quick Preset Shortcuts */}
+              <div className="flex items-center justify-between text-[11px] text-[#785E4F] dark:text-stone-400 pt-0.5">
+                <span className="text-[10.5px]">ઝડપી લક્ષ્યાંક:</span>
+                <div className="flex items-center gap-1">
+                  {[1, 5, 11, 21, 315].map((preset) => (
                     <button
-                      key={cnt}
+                      key={preset}
                       type="button"
-                      onClick={() => onUpdatePreferences({ dailyGoal: cnt })}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                        isSel
-                          ? 'bg-[#7A1D05] text-white shadow-xs'
-                          : 'bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-200 hover:border-amber-400'
+                      onClick={() => onUpdatePreferences({ dailyGoal: preset })}
+                      className={`px-2 py-0.5 rounded text-[10.5px] font-medium transition cursor-pointer ${
+                        (preferences.dailyGoal || 1) === preset
+                          ? 'bg-[#7A1D05] text-white font-bold shadow-2xs'
+                          : 'bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-300 hover:border-amber-400'
                       }`}
                     >
-                      {cnt === 315 ? (ui.allShlokas || '315') : `${cnt} ${ui.shlokaNumberPrefix || 'શ્લોક'}`}
+                      {preset === 315 ? '315 (સંપૂર્ણ)' : `${preset} શ્લોક`}
                     </button>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Daily Reminder Toggle & Time */}
-            <div className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800 space-y-2.5">
+            {/* Daily Reminder Toggle & Time Settings */}
+            <div className="pt-3 border-t border-[#F5E6CE] dark:border-stone-800 space-y-2.5">
               <div 
                 className="flex items-center justify-between cursor-pointer"
                 onClick={() => onUpdatePreferences({
@@ -471,10 +603,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <div>
                   <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                    {ui.dailyReminderTitle}
+                    રોજિંદી સૂચના (Daily Reminder)
                   </span>
                   <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                    {ui.dailyReminderDesc}
+                    નિયત સમયે સ્વાધ્યાયનું રીમાઇન્ડર મેળવો
                   </span>
                 </div>
                 <WarmToggleSwitch
@@ -493,12 +625,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               {preferences.reminder?.enabled && (
                 <div className="flex items-center justify-between bg-amber-50/70 dark:bg-stone-900/60 p-2.5 rounded-xl border border-amber-200/80 dark:border-stone-700">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#7A1D05]" />
-                    <span className="text-xs font-medium text-[#4A2D1B] dark:text-stone-200">
-                      {ui.reminderTimeLabel}: {formatTimeTo12Hour(preferences.reminder?.time)}
+                    <Clock className="w-4 h-4 text-[#7A1D05] dark:text-amber-400" />
+                    <span className="text-xs font-semibold text-[#4A2D1B] dark:text-stone-200">
+                      સમય (Time):
                     </span>
-                  </div>
-                  <div className="flex items-center gap-2">
                     <input
                       type="time"
                       value={convertTo24Hour(preferences.reminder?.time || '07:40 PM')}
@@ -510,20 +640,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           }
                         });
                       }}
-                      className="px-2 py-1 rounded-lg border border-[#EADBCC] bg-white dark:bg-[#1A1410] text-xs text-[#2D1A0E] dark:text-stone-100 focus:outline-none"
+                      className="px-2 py-1 rounded-lg border border-[#EADBCC] dark:border-stone-700 bg-white dark:bg-[#1A1410] text-xs font-bold text-[#2D1A0E] dark:text-stone-100 focus:outline-none focus:border-[#7A1D05]"
                     />
-                    <button
-                      type="button"
-                      onClick={handleTestNotification}
-                      className="px-2.5 py-1 rounded-lg bg-[#7A1D05] hover:bg-[#601503] text-white text-[11px] font-medium transition cursor-pointer"
-                    >
-                      {ui.testNotificationButton}
-                    </button>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={handleTestNotification}
+                    className="px-2.5 py-1.5 rounded-lg bg-[#7A1D05] hover:bg-[#601503] text-white text-[11px] font-semibold transition cursor-pointer shadow-2xs"
+                  >
+                    {ui.testNotificationButton || 'ટેસ્ટ સૂચના'}
+                  </button>
                 </div>
               )}
+
               {testNotificationStatus && (
-                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium">
+                <p className="text-xs text-emerald-700 dark:text-emerald-400 font-medium bg-emerald-50 dark:bg-emerald-950/40 p-2 rounded-lg border border-emerald-200 dark:border-emerald-800">
                   {testNotificationStatus}
                 </p>
               )}
@@ -531,80 +663,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD 4: ઓડિયો સેટિંગ્સ (Audio Settings & Offline Download)
-              ========================================================= */}
-          <div 
-            id="card-audio-settings"
-            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3"
-          >
-            <div className="flex items-center gap-2">
-              <Volume2 className="w-5 h-5 text-[#B85D00]" />
-              <h3 className="font-bold text-[15.5px] sm:text-[16.5px] text-[#7A1D05] dark:text-amber-300">
-                {ui.offlinePackManagerTitle}
-              </h3>
-            </div>
-
-            <div 
-              className="flex items-center justify-between cursor-pointer"
-              onClick={() => onUpdatePreferences({ downloadWifiOnly: !preferences.downloadWifiOnly })}
-            >
-              <div>
-                <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                  Wi-Fi Only
-                </span>
-                <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  {ui.offlinePackManagerDesc}
-                </span>
-              </div>
-              <WarmToggleSwitch
-                id="toggle-wifi-audio"
-                checked={!!preferences.downloadWifiOnly}
-                onChange={(val) => onUpdatePreferences({ downloadWifiOnly: val })}
-                label="Wi-Fi Only"
-              />
-            </div>
-
-            <div className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800 flex flex-col sm:flex-row gap-2">
-              <button
-                type="button"
-                disabled={downloadingAllAudio}
-                onClick={() => {
-                  setDownloadingAllAudio(true);
-                  setTimeout(() => {
-                    setDownloadingAllAudio(false);
-                    alert('તમામ ૩૧૫ શ્લોકોનો ઓડિયો ઑફલાઇન ઉપલબ્ધ થઈ ગયો છે! ✓');
-                  }, 1200);
-                }}
-                className="flex-1 py-2 px-3 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer shadow-xs"
-              >
-                <Download className="w-3.5 h-3.5" />
-                <span>{downloadingAllAudio ? (ui.installingButton || 'ડાઉનલોડ...') : (ui.installButton || 'Download Audio')}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  if (confirm('Clear audio cache?')) {
-                    setAudioCacheCleared(true);
-                    setTimeout(() => setAudioCacheCleared(false), 3000);
-                  }
-                }}
-                className="py-2 px-3 rounded-xl bg-white dark:bg-[#181310] border border-[#EADBCC] hover:bg-stone-50 text-red-600 text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-                <span>{ui.clearFilter || 'Clear'}</span>
-              </button>
-            </div>
-            {audioCacheCleared && (
-              <p className="text-xs text-emerald-600 font-medium text-center">
-                ઓડિયો કેશ સફળતાપૂર્વક સાફ કરવામાં આવ્યો છે!
-              </p>
-            )}
-          </div>
-
-          {/* =========================================================
-              CARD 5: એપ અપડેટ કરો (Update App)
-              EXACT card from the user's attachment!
+              CARD 4: એપ અપડેટ કરો (Update App)
+              Clean, compact card with refresh status
               ========================================================= */}
           <div 
             id="card-update-app"
@@ -655,7 +715,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             ========================================================= */}
         <div 
           id="settings-bottom-bar"
-          className="bg-[#FAF5EC] dark:bg-[#1A1410] border-t border-[#ECD8BE] dark:border-stone-800 px-4 sm:px-6 py-3.5 flex items-center justify-between flex-shrink-0 select-none shadow-xs"
+          className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between flex-shrink-0 select-none shadow-xs ${
+            preferences.theme === 'dark'
+              ? 'bg-[#15100C] border-stone-800'
+              : preferences.theme === 'sepia'
+                ? 'bg-[#EAE0CA] border-[#DFCFAA]'
+                : 'bg-[#FAF5EC] border-[#ECD8BE]'
+          }`}
         >
           {/* Left: મૂળ સેટિંગ્સ (Reset) */}
           <button

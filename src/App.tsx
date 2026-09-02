@@ -73,8 +73,9 @@ export default function App() {
     } else {
       root.classList.add('theme-light');
     }
+    document.body.className = `theme-${preferences.theme} ${preferences.theme === 'dark' ? 'dark' : ''}`;
     StorageService.savePreferences(preferences);
-  }, [preferences]);
+  }, [preferences.theme]);
 
   // Periodic check for Daily Study Reminder
   useEffect(() => {
@@ -180,7 +181,13 @@ export default function App() {
   }, [mukhpathRecords]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FDFBF7] dark:bg-[#171412] text-[#2D241E] dark:text-[#EDE5D8] transition-colors duration-200 selection:bg-amber-500/30 selection:text-[#8B2500]">
+    <div className={`min-h-screen flex flex-col transition-colors duration-200 selection:bg-amber-500/30 selection:text-[#8B2500] ${
+      preferences.theme === 'dark'
+        ? 'bg-[#171412] text-[#EDE5D8]'
+        : preferences.theme === 'sepia'
+          ? 'bg-[#F4ECD8] text-[#382513]'
+          : 'bg-[#FDFBF7] text-[#2D241E]'
+    }`}>
       {/* Update Available Notification Banner */}
       {hasUpdate && (
         <div className="bg-emerald-700 text-white px-4 py-2 text-xs flex items-center justify-between gap-3 sticky top-0 z-50 shadow-md animate-fadeIn">

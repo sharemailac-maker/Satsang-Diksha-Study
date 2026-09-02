@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant sepia (&:where(.theme-sepia, .theme-sepia *));
+
 @layer base {
   :root {
     --font-sanskrit: 'Noto Serif Devanagari', 'Noto Sans Devanagari', serif;
@@ -49,37 +52,63 @@
   background: rgba(196, 130, 15, 0.6);
 }
 
-/* Theme presets */
-.theme-light {
-  --bg-primary: #FDFBF7;
-  --bg-card: #FFFFFF;
-  --bg-secondary: #F4EFE6;
-  --text-primary: #2D241E;
-  --text-secondary: #6B5E51;
-  --border-color: #E8DFD1;
-  --accent-gold: #C4820F;
-  --accent-saffron: #E26D14;
+/* Theme presets and global overrides */
+html.dark {
+  color-scheme: dark;
 }
 
-.theme-sepia {
-  --bg-primary: #F4ECD8;
-  --bg-card: #EFE4CC;
-  --bg-secondary: #E5D7B7;
-  --text-primary: #382D1E;
-  --text-secondary: #66553E;
-  --border-color: #D9C8A5;
-  --accent-gold: #B87200;
-  --accent-saffron: #D05E05;
+html.theme-light {
+  color-scheme: light;
 }
 
-.theme-dark {
-  --bg-primary: #171412;
-  --bg-card: #221D1A;
-  --bg-secondary: #2E2722;
-  --text-primary: #F2ECE4;
-  --text-secondary: #A89D91;
-  --border-color: #3D342C;
-  --accent-gold: #E5A029;
-  --accent-saffron: #F38224;
+html.theme-sepia {
+  color-scheme: light;
 }
+
+/* Sepia Mode Theme Styling */
+html.theme-sepia,
+html.theme-sepia body {
+  background-color: #F4ECD8 !important;
+  color: #382513 !important;
+}
+
+html.theme-sepia .min-h-screen {
+  background-color: #F4ECD8 !important;
+  color: #382513 !important;
+}
+
+html.theme-sepia .bg-\[\#FDFBF7\],
+html.theme-sepia .bg-\[\#FFFDF7\],
+html.theme-sepia .bg-\[\#FAF6F0\],
+html.theme-sepia .bg-\[\#FAF5EC\],
+html.theme-sepia .bg-stone-50 {
+  background-color: #ECE0C8 !important;
+}
+
+html.theme-sepia .bg-white {
+  background-color: #FAF4E6 !important;
+}
+
+html.theme-sepia .border-\[\#E8DFD1\],
+html.theme-sepia .border-\[\#EADBCC\],
+html.theme-sepia .border-\[\#F6DEAC\],
+html.theme-sepia .border-\[\#F5E6CE\],
+html.theme-sepia .border-\[\#ECD8BE\] {
+  border-color: #DFCFAA !important;
+}
+
+html.theme-sepia .text-\[\#2D241E\],
+html.theme-sepia .text-\[\#2D1A0E\],
+html.theme-sepia .text-stone-900,
+html.theme-sepia .text-stone-800 {
+  color: #382513 !important;
+}
+
+html.theme-sepia .text-\[\#6B5E51\],
+html.theme-sepia .text-\[\#785E4F\],
+html.theme-sepia .text-\[\#7A6250\],
+html.theme-sepia .text-stone-600 {
+  color: #6E563E !important;
+}
+
 
