@@ -29,9 +29,9 @@ export const AVAILABLE_LANGUAGE_PACKS: LanguagePack[] = [
 ];
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  activeLanguage: 'english',
-  appLanguage: 'english',
-  secondaryLanguages: ['gujarati', 'hindi'],
+  activeLanguage: 'gujarati',
+  appLanguage: 'gujarati',
+  secondaryLanguages: ['hindi', 'english'],
   sanskritScript: 'devanagari',
   theme: 'light',
   fontSize: 18,

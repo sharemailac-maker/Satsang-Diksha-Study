@@ -20,16 +20,121 @@ import {
   getShlokaTitle, 
   getShlokaChapterName,
   getReferenceTitle, 
-  getReferenceText,
-  getReferenceCorrelation,
+  getReferenceSection,
   LANGUAGE_METADATA 
 } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
+import { PADACHHEDA_DATA } from '../data/padachhedaData';
+import { ANVAYA_DATA } from '../data/anvayaData';
+
+const CROSS_REF_I18N: Record<string, {
+  tag: string;
+  title: string;
+  desc: string;
+  searchPlaceholder: string;
+  allVerses: string;
+  vachnamrut: string;
+  swaminiVato: string;
+  allChapters: string;
+  availableCount: (c: number) => string;
+  searchQueryLabel: string;
+  sutraVani: string;
+  fullVerseLabel: string;
+  anvayaTitle: string;
+  wordBreakdownTitle: string;
+  wordBreakdownDesc: string;
+  selectWordLabel: string;
+  wordPrefix: string;
+  scriptureProofPrefix: string;
+  correlationPrefix: string;
+  scriptureCrossRefTitle: string;
+  referencesLabel: string;
+  readerBtn: string;
+}> = {
+  gujarati: {
+    tag: 'ત્રિવેણી સંગમ પ્રમાણ અધ્યયન (Cross-Reference Concordance)',
+    title: 'સત્સંગ દીક્ષા • વચનામૃત • સ્વામીની વાતો શબ્દશઃ સંબંધ',
+    desc: "પ્રગટ બ્રહ્મસ્વરૂપ મહંત સ્વામી મહારાજે રચેલ 'સત્સંગ દીક્ષા'ના તમામ ૩૧૫ શ્લોકો ભગવાન શ્રી સ્વામિનારાયણના સર્વોપરી વચનામૃત અને અક્ષરબ્રહ્મ ગુણાતીતાનંદ સ્વામીની વાતોના રહસ્યમય સિદ્ધાંતોનું જ પદચ્છેદ અને શબ્દશઃ સૂત્રાત્મક નિરૂપણ છે. નીચે દરેક શ્લોકનું વચનામૃત-વાતો પ્રમાણ અને પદ-સંબંધ દર્શાવેલ છે.",
+    searchPlaceholder: 'શ્લોક નં., વચનામૃત (દા.ત. ગઢડા ૧-૧), શબ્દ કે વિષય શોધો...',
+    allVerses: 'તમામ ૩૧૫ શ્લોક',
+    vachnamrut: '📖 વચનામૃત',
+    swaminiVato: '📿 સ્વામીની વાતો',
+    allChapters: 'બધાં પ્રકરણો',
+    availableCount: (c) => `કુલ ${c} શ્લોકના શાસ્ત્રીય સંબંધો ઉપલબ્ધ`,
+    searchQueryLabel: 'શોધ',
+    sutraVani: 'સત્સંગ દીક્ષા સૂત્ર વાણી',
+    fullVerseLabel: 'સંપૂર્ણ સંસ્કૃત શ્લોક (Full Sanskrit Verse)',
+    anvayaTitle: 'અન્વય (સંસ્કૃત ગદ્ય-ક્રમ - Prose Order)',
+    wordBreakdownTitle: 'શબ્દશઃ પદચ્છેદ અને શાસ્ત્રીય સંબંધ',
+    wordBreakdownDesc: 'શ્લોકના પ્રત્યેક પદનો અન્વય-અર્થ અને વચનામૃત/વાતો સાથે સંબંધ',
+    selectWordLabel: 'પદ પસંદ કરો:',
+    wordPrefix: 'પદ:',
+    scriptureProofPrefix: 'મૂળ શાસ્ત્ર પ્રમાણ:',
+    correlationPrefix: 'શાસ્ત્રીય સમન્વય:',
+    scriptureCrossRefTitle: 'શાસ્ત્રીય સંદર્ભ (વચનામૃત અને સ્વામીની વાતો)',
+    referencesLabel: 'સંદર્ભો',
+    readerBtn: 'અધ્યયન'
+  },
+  hindi: {
+    tag: 'त्रिवेणी संगम प्रमाण अध्ययन (Cross-Reference Concordance)',
+    title: 'सत्संग दीक्षा • वचनामृत • स्वामीनी बातें शब्दशः संबंध',
+    desc: "प्रगट ब्रह्मस्वरूप महंत स्वामी महाराज द्वारा रचित 'सत्संग दीक्षा' के समस्त ३१५ श्लोक भगवान श्री स्वामिनारायण के सर्वोपरी वचनामृत एवं अक्षरब्रह्म गुणातीतानंद स्वामीनी बातों के रहस्यमय सिद्धांतों का ही पदच्छेद व शब्दशः सूत्रात्मक निरूपण हैं। नीचे प्रत्येक श्लोक का वचनामृत-वार्ता संदर्भ एवं पद-संबंध दर्शाया गया है।",
+    searchPlaceholder: 'श्लोक सं., वचनामृत (उदा. गढडा १-१), शब्द या विषय खोजें...',
+    allVerses: 'समस्त ३१५ श्लोक',
+    vachnamrut: '📖 वचनामृत',
+    swaminiVato: '📿 स्वामीनी बातें',
+    allChapters: 'सभी प्रकरण',
+    availableCount: (c) => `कुल ${c} श्लोकों के शास्त्रीय संदर्भ उपलब्ध`,
+    searchQueryLabel: 'खोज',
+    sutraVani: 'सत्संग दीक्षा सूत्र वाणी',
+    fullVerseLabel: 'सम्पूर्ण संस्कृत श्लोक (Full Sanskrit Verse)',
+    anvayaTitle: 'अन्वय (संस्कृत गद्य-क्रम - Prose Order)',
+    wordBreakdownTitle: 'शब्दशः पदच्छेद एवं शास्त्रीय संबंध',
+    wordBreakdownDesc: 'श्लोक के प्रत्येक पद का अन्वय-अर्थ और वचनामृत/बातों से संबंध',
+    selectWordLabel: 'पद चुनें:',
+    wordPrefix: 'पद:',
+    scriptureProofPrefix: 'मूल शास्त्र प्रमाण:',
+    correlationPrefix: 'शास्त्रीय समन्वय:',
+    scriptureCrossRefTitle: 'शास्त्रीय संदर्भ (वचनामृत एवं स्वामीनी बातें)',
+    referencesLabel: 'संदर्भ',
+    readerBtn: 'अध्ययन'
+  },
+  english: {
+    tag: 'Scriptural Concordance Study (Cross-Reference Concordance)',
+    title: 'Satsang Diksha • Vachnamrut • Swamini Vato Concordance',
+    desc: "The 315 Sanskrit verses of Satsang Diksha authored by Pragat Brahmaswarup Mahant Swami Maharaj are a direct aphoristic crystallization and word-by-word synthesis of Bhagwan Swaminarayan's supreme Vachnamrut and Aksharbrahma Gunatitanand Swami's Swamini Vato. Below is the scriptural reference and word-level concordance for each verse.",
+    searchPlaceholder: 'Search verse no., Vachnamrut (e.g. Gadhada I-1), word or topic...',
+    allVerses: 'All 315 Verses',
+    vachnamrut: '📖 Vachnamrut',
+    swaminiVato: '📿 Swamini Vato',
+    allChapters: 'All Chapters',
+    availableCount: (c) => `Total ${c} verses with scriptural references available`,
+    searchQueryLabel: 'Search',
+    sutraVani: 'Satsang Diksha Sacred Verse',
+    fullVerseLabel: 'Complete Sanskrit Verse',
+    anvayaTitle: 'Anvaya (Sanskrit Prose Order)',
+    wordBreakdownTitle: 'Word-by-Word Breakdown & Concordance',
+    wordBreakdownDesc: 'Word meaning and correlation with Vachnamrut / Swamini Vato',
+    selectWordLabel: 'Select word to view details:',
+    wordPrefix: 'Word:',
+    scriptureProofPrefix: 'Original Scripture Reference:',
+    correlationPrefix: 'Scriptural Correlation:',
+    scriptureCrossRefTitle: 'Scriptural References (Vachnamrut & Swamini Vato)',
+    referencesLabel: 'references',
+    readerBtn: 'Study'
+  }
+};
+
+const getCrossRefStrings = (lang: string) => {
+  if (lang === 'gujarati') return CROSS_REF_I18N.gujarati;
+  if (lang === 'hindi') return CROSS_REF_I18N.hindi;
+  return CROSS_REF_I18N.english;
+};
 
 interface CrossScriptureViewProps {
   shlokas: Shloka[];
   preferences?: UserPreferences;
-  onOpenCrossRef: (ref: ScriptureReference) => void;
+  onOpenCrossRef?: (ref: ScriptureReference) => void;
   onSelectShloka: (id: number) => void;
 }
 
@@ -48,6 +153,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
   const lang = preferences?.activeLanguage || 'gujarati';
   const ui = getUIStrings(lang);
   const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
+  const t = getCrossRefStrings(lang);
 
   const filteredItems = useMemo(() => {
     return shlokas.filter(s => {
@@ -88,11 +194,14 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
           (r.correlationNote && r.correlationNote.toLowerCase().includes(query))
         );
 
-        const wordMatch = s.padachheda?.some(p => 
+        const padachhedaList: WordMeaning[] = (PADACHHEDA_DATA && PADACHHEDA_DATA[s.id]) || s.padachheda || [];
+        const wordMatch = padachhedaList.some(p => 
           p.word.toLowerCase().includes(query) ||
-          p.meaningGu.toLowerCase().includes(query) ||
-          p.meaningHi.toLowerCase().includes(query) ||
-          p.meaningEn.toLowerCase().includes(query) ||
+          (p.wordDevanagari && p.wordDevanagari.toLowerCase().includes(query)) ||
+          (p.wordGujarati && p.wordGujarati.toLowerCase().includes(query)) ||
+          (p.meaningGu && p.meaningGu.toLowerCase().includes(query)) ||
+          (p.meaningHi && p.meaningHi.toLowerCase().includes(query)) ||
+          (p.meaningEn && p.meaningEn.toLowerCase().includes(query)) ||
           (p.scriptureReference?.source && p.scriptureReference.source.toLowerCase().includes(query))
         );
 
@@ -124,15 +233,15 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
           </div>
           <div>
             <span className="text-[11px] font-bold text-amber-200 uppercase tracking-widest flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> ત્રિવેણી સંગમ પ્રમાણ અધ્યયન (Cross-Reference Concordance)
+              <Sparkles className="w-3.5 h-3.5" /> {t.tag}
             </span>
             <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-50">
-              સત્સંગ દીક્ષા • વચનામૃત • સ્વામીની વાતો શબ્દશઃ સંબંધ
+              {t.title}
             </h2>
           </div>
         </div>
         <p className="text-xs sm:text-sm text-amber-100/90 max-w-3xl leading-relaxed mt-2">
-          પ્રગટ બ્રહ્મસ્વરૂપ મહંત સ્વામી મહારાજે રચેલ 'સત્સંગ દીક્ષા'ના તમામ ૩૧૫ શ્લોકો ભગવાન શ્રી સ્વામિનારાયણના સર્વોપરી <strong>વચનામૃત</strong> અને અક્ષરબ્રહ્મ ગુણાતીતાનંદ <strong>સ્વામીની વાતો</strong>ના રહસ્યમય સિદ્ધાંતોનું જ પદચ્છેદ અને શબ્દશઃ સૂત્રાત્મક નિરૂપણ છે. નીચે દરેક શ્લોકનું વચનામૃત-વાતો પ્રમાણ અને પદ-સંબંધ દર્શાવેલ છે.
+          {t.desc}
         </p>
 
         {/* Search & Filter Bar */}
@@ -145,7 +254,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="શ્લોક નં., વચનામૃત (દા.ત. ગઢડા ૧-૧), શબ્દ કે વિષય શોધો..."
+                placeholder={t.searchPlaceholder}
                 className="w-full pl-9 pr-4 py-2 rounded-xl text-xs sm:text-sm bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-inner"
               />
               {searchQuery && (
@@ -160,19 +269,19 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
 
             {/* Scripture Filter Pills */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {(['all', 'vachnamrut', 'swamini_vato'] as const).map((t) => (
+              {(['all', 'vachnamrut', 'swamini_vato'] as const).map((filterOpt) => (
                 <button
-                  key={t}
-                  onClick={() => setFilterType(t)}
+                  key={filterOpt}
+                  onClick={() => setFilterType(filterOpt)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
-                    filterType === t
+                    filterType === filterOpt
                       ? 'bg-amber-400 text-amber-950 shadow-md font-bold'
                       : 'bg-black/25 text-amber-100 hover:bg-black/40'
                   }`}
                 >
-                  {t === 'all' && (lang === 'gujarati' ? 'તમામ ૩૧૫ શ્લોક' : lang === 'hindi' ? 'समस्त ३१५ श्लोक' : 'All 315 Verses')}
-                  {t === 'vachnamrut' && (lang === 'gujarati' ? '📖 વચનામૃત' : lang === 'hindi' ? '📖 वचनामृत' : '📖 Vachnamrut')}
-                  {t === 'swamini_vato' && (lang === 'gujarati' ? '📿 સ્વામીની વાતો' : lang === 'hindi' ? '📿 स्वामीनी बातें' : '📿 Swamini Vato')}
+                  {filterOpt === 'all' && t.allVerses}
+                  {filterOpt === 'vachnamrut' && t.vachnamrut}
+                  {filterOpt === 'swamini_vato' && t.swaminiVato}
                 </button>
               ))}
             </div>
@@ -191,7 +300,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                   : 'bg-white/10 text-amber-100 hover:bg-white/20'
               }`}
             >
-              {lang === 'gujarati' ? 'બધાં પ્રકરણો' : lang === 'hindi' ? 'सभी प्रकरण' : 'All Chapters'}
+              {t.allChapters}
             </button>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ch) => (
               <button
@@ -213,11 +322,11 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
       {/* Results Header Count */}
       <div className="flex items-center justify-between px-2 text-xs text-[#7A6B5C] dark:text-[#A89886]">
         <span>
-          કુલ <strong>{filteredItems.length}</strong> શ્લોકના શાસ્ત્રીય સંબંધો ઉપલબ્ધ
+          {t.availableCount(filteredItems.length)}
         </span>
         {searchQuery && (
           <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 px-2.5 py-0.5 rounded-full font-medium">
-            શોધ: "{searchQuery}"
+            {t.searchQueryLabel}: "{searchQuery}"
           </span>
         )}
       </div>
@@ -227,7 +336,9 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
         {filteredItems.map((shloka) => {
           const isWordExpanded = expandedWordShlokaId === shloka.id;
           const currentWordIdx = activeWordIndex[shloka.id] ?? 0;
-          const selectedWord: WordMeaning | undefined = shloka.padachheda?.[currentWordIdx];
+          const padachhedaList: WordMeaning[] = (PADACHHEDA_DATA && PADACHHEDA_DATA[shloka.id]) || shloka.padachheda || [];
+          const anvaya = ANVAYA_DATA ? ANVAYA_DATA[shloka.id] : null;
+          const selectedWord: WordMeaning | undefined = padachhedaList[currentWordIdx];
 
           return (
             <div
@@ -261,7 +372,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     }`}
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    <span>{ui.wordBreakdownTitle}</span>
+                    <span>{t.wordBreakdownTitle}</span>
                     {isWordExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                   </button>
 
@@ -269,28 +380,50 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                     onClick={() => onSelectShloka(shloka.id)}
                     className="text-xs px-3 py-1.5 rounded-xl bg-[#8B2500] hover:bg-[#A63000] text-white font-semibold transition shadow-xs flex items-center gap-1"
                   >
-                    <span>{ui.tabReader}</span>
+                    <span>{t.readerBtn}</span>
                     <BookOpen className="w-3 h-3" />
                   </button>
                 </div>
               </div>
 
               {/* Sanskrit Verse & Meaning Box */}
-              <div className="p-4 bg-[#FAF6F0] dark:bg-[#1E1916] rounded-xl border border-amber-500/20 space-y-2">
+              <div className="p-4 bg-[#FAF6F0] dark:bg-[#1E1916] rounded-xl border border-amber-500/20 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-[#8B2500] dark:text-amber-400 uppercase tracking-wider">
-                    સત્સંગ દીક્ષા સૂત્ર વાણી
+                  <span className="text-[11px] font-bold text-[#8B2500] dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                    {t.sutraVani}
                   </span>
-                  <span className="text-[11px] text-[#8A7A68] dark:text-[#A89886]">
-                    {ui.shlokaNumberPrefix} {shloka.id} / ૩૧૫
+                  <span className="text-[11px] text-[#8A7A68] dark:text-[#A89886] font-mono">
+                    {ui.shlokaNumberPrefix} {shloka.id} / 315
                   </span>
                 </div>
-                <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed">
-                  {shloka.sanskritDevanagari}
+
+                {/* Primary Sanskrit Script based on preference */}
+                <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
+                  {preferences?.sanskritScript === 'gujarati' ? shloka.sanskritGujarati : shloka.sanskritDevanagari}
                 </p>
-                <div className="pt-1 border-t border-amber-200/40 dark:border-[#352D26] space-y-1">
+
+                {/* Alternate Script Display */}
+                {preferences?.sanskritScript === 'gujarati' ? (
+                  <p className="font-sanskrit text-xs sm:text-sm text-[#8B2500]/85 dark:text-amber-300/80 leading-relaxed whitespace-pre-line">
+                    {shloka.sanskritDevanagari}
+                  </p>
+                ) : (
+                  <p className="font-gujarati text-xs sm:text-sm text-[#8B2500]/85 dark:text-amber-300/80 leading-relaxed whitespace-pre-line">
+                    {shloka.sanskritGujarati}
+                  </p>
+                )}
+
+                {/* IAST Transliteration */}
+                {shloka.sanskritIast && (
+                  <p className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
+                    {shloka.sanskritIast}
+                  </p>
+                )}
+
+                <div className="pt-2 border-t border-amber-200/40 dark:border-[#352D26] space-y-1">
                   <p className="text-xs sm:text-sm text-[#4A3D31] dark:text-[#DCD1C3] leading-relaxed">
-                    <strong className="text-[#8B2500] dark:text-amber-400">{langMeta.nativeName} ({langMeta.nameEn}):</strong> {getShlokaMeaning(shloka, lang)}
+                    <strong className="text-[#8B2500] dark:text-amber-400">{langMeta.nativeName}:</strong> {getShlokaMeaning(shloka, lang)}
                   </p>
                   {lang !== 'gujarati' && (
                     <p className="font-gujarati text-[11px] text-[#6B5E51] dark:text-[#A89886] leading-relaxed">
@@ -301,35 +434,90 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
               </div>
 
               {/* Word-by-Word Vachnamrut & Swami ni Vato Breakdown (Expandable) */}
-              {isWordExpanded && shloka.padachheda && shloka.padachheda.length > 0 && (
-                <div className="p-4 rounded-xl bg-amber-50/70 dark:bg-[#28201A] border border-amber-300 dark:border-amber-900/50 space-y-3 animate-fadeIn">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-amber-600" />
-                      {ui.wordBreakdownTitle}:
+              {isWordExpanded && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 dark:bg-[#28201A] border-2 border-amber-300 dark:border-amber-900/50 space-y-4 animate-fadeIn">
+                  <div className="flex items-center justify-between pb-2 border-b border-amber-200 dark:border-amber-900/40">
+                    <span className="text-xs sm:text-sm font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                      {t.wordBreakdownTitle}:
                     </span>
                     <span className="text-[11px] text-[#7A6B5C] dark:text-[#B5A595]">
-                      ({ui.wordBreakdownDesc})
+                      ({t.wordBreakdownDesc})
                     </span>
                   </div>
 
-                  {/* Word Chips */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {shloka.padachheda.map((p, pIdx) => (
-                      <button
-                        key={pIdx}
-                        onClick={() => handleWordSelect(shloka.id, pIdx)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
-                          currentWordIdx === pIdx
-                            ? 'bg-[#8B2500] text-white font-bold shadow-xs'
-                            : 'bg-white dark:bg-[#1E1916] text-[#54473C] dark:text-[#D1C5B7] border border-amber-200 dark:border-[#3D342C] hover:border-amber-400'
-                        }`}
-                      >
-                        <span className="font-sanskrit font-semibold">{p.word}</span>
-                        {currentWordIdx === pIdx && <CheckCircle2 className="w-3 h-3 text-amber-300" />}
-                      </button>
-                    ))}
+                  {/* Complete Full Sanskrit Verse prominently shown in Word Breakdown */}
+                  <div className="p-3.5 rounded-xl bg-white dark:bg-[#1E1916] border border-amber-300/80 dark:border-amber-900/40 space-y-2 shadow-xs">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wider">
+                      <span>॥ {t.fullVerseLabel} ॥</span>
+                      {shloka.sanskritMeter && (
+                        <span className="text-[10px] text-[#8A7A68] dark:text-[#A89886] font-normal normal-case">
+                          {lang === 'gujarati' ? `છંદ: ${shloka.sanskritMeter}` : `Meter: ${shloka.sanskritMeter}`}
+                        </span>
+                      )}
+                    </div>
+                    {/* Full Devanagari */}
+                    <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
+                      {shloka.sanskritDevanagari}
+                    </p>
+                    {/* Full Gujarati Script */}
+                    <p className="font-gujarati text-xs sm:text-sm font-semibold text-[#8B2500] dark:text-amber-300 leading-relaxed whitespace-pre-line">
+                      {shloka.sanskritGujarati}
+                    </p>
+                    {/* IAST Transliteration */}
+                    {shloka.sanskritIast && (
+                      <p className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
+                        {shloka.sanskritIast}
+                      </p>
+                    )}
                   </div>
+
+                  {/* Authentic Sanskrit Anvaya (Prose Order) */}
+                  {anvaya && (
+                    <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#201A16] border border-amber-200 dark:border-[#382E25] space-y-1.5">
+                      <div className="text-[11px] font-bold text-[#8B2500] dark:text-amber-400">
+                        {t.anvayaTitle}
+                      </div>
+                      <p className="font-sanskrit text-xs sm:text-sm font-medium text-[#4A3D31] dark:text-[#DCD1C3] leading-relaxed">
+                        {preferences?.sanskritScript === 'gujarati' ? anvaya.gujarati : anvaya.devanagari}
+                      </p>
+                      {anvaya.iast && (
+                        <p className="text-[11px] text-[#8A7A68] dark:text-[#A89886] font-mono italic">
+                          {anvaya.iast}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Word Chips */}
+                  {padachhedaList.length > 0 && (
+                    <div className="space-y-2">
+                      <span className="text-[11px] font-semibold text-[#7A6B5C] dark:text-[#B5A595]">
+                        {t.selectWordLabel}
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {padachhedaList.map((p, pIdx) => {
+                          const isSelected = currentWordIdx === pIdx;
+                          return (
+                            <button
+                              key={pIdx}
+                              onClick={() => handleWordSelect(shloka.id, pIdx)}
+                              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition cursor-pointer flex items-center gap-1.5 ${
+                                isSelected
+                                  ? 'bg-[#8B2500] text-white font-bold shadow-xs'
+                                  : 'bg-white dark:bg-[#1E1916] text-[#54473C] dark:text-[#D1C5B7] border border-amber-200 dark:border-[#3D342C] hover:border-amber-400'
+                              }`}
+                            >
+                              <span className="font-sanskrit font-semibold">
+                                {preferences?.sanskritScript === 'gujarati' ? (p.wordGujarati || p.word) : (p.wordDevanagari || p.word)}
+                              </span>
+                              {isSelected && <CheckCircle2 className="w-3 h-3 text-amber-300" />}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Selected Word Scriptural Correlation Detail Box */}
                   {selectedWord && (
@@ -337,12 +525,22 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-sanskrit text-sm font-bold text-[#8B2500] dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-md">
-                            પદ: {selectedWord.word}
+                            {t.wordPrefix} {preferences?.sanskritScript === 'gujarati' ? (selectedWord.wordGujarati || selectedWord.word) : (selectedWord.wordDevanagari || selectedWord.word)}
                           </span>
+                          {selectedWord.transliteration && (
+                            <span className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
+                              ({selectedWord.transliteration})
+                            </span>
+                          )}
+                          {selectedWord.grammaticalRole && (
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-[#6B5E51] dark:text-[#A89886]">
+                              {selectedWord.grammaticalRole}
+                            </span>
+                          )}
                           <span className="text-xs text-[#2D241E] dark:text-[#EDE5D8] font-semibold">
                             {getWordMeaningInLang(selectedWord, lang)}
                           </span>
-                          {lang !== 'gujarati' && (
+                          {lang !== 'gujarati' && selectedWord.meaningGu && (
                             <span className="text-xs text-[#6B5E51] dark:text-[#A89886]">
                               (ગુજરાતી: {selectedWord.meaningGu})
                             </span>
@@ -351,17 +549,19 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       </div>
 
                       {selectedWord.scriptureReference && (
-                        <div className="text-xs space-y-1.5 pt-2 border-t border-amber-100 dark:border-[#352D26]">
-                          <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold">
-                            <BookOpen className="w-3.5 h-3.5" />
-                            <span>મૂળ શાસ્ત્ર પ્રમાણ: {selectedWord.scriptureReference.source}</span>
-                          </div>
-                          <p className="text-[12px] text-[#3D3227] dark:text-[#E2D7CB] bg-[#FAF6F0] dark:bg-[#251E19] p-2.5 rounded-lg border-l-2 border-amber-600 italic">
-                            "{selectedWord.scriptureReference.quoteGu}"
-                          </p>
-                          <p className="text-[11px] text-[#6B5E51] dark:text-[#A89886]">
-                            <strong>શાસ્ત્રીય સમન્વય:</strong> {selectedWord.scriptureReference.correlation}
-                          </p>
+                        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-amber-100 dark:border-[#352D26] text-xs">
+                          <span className="font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
+                            <BookOpen className="w-3.5 h-3.5 text-amber-600" />
+                            {t.scriptureProofPrefix}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-lg bg-amber-100 dark:bg-amber-950/80 font-bold text-amber-950 dark:text-amber-200 border border-amber-300/60 dark:border-amber-800/50 shadow-2xs">
+                            {selectedWord.scriptureReference.source}
+                          </span>
+                          {selectedWord.scriptureReference.correlation && (
+                            <span className="text-[11px] text-[#6B5E51] dark:text-[#A89886]">
+                              • {selectedWord.scriptureReference.correlation}
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -369,44 +569,95 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 </div>
               )}
 
-              {/* Referenced Scriptures List (Vachnamrut & Swami ni Vato) */}
-              <div className="space-y-3 pt-1">
-                <span className="text-xs font-bold text-[#8B2500] dark:text-amber-400 block">
-                  {ui.scriptureCrossRefTitle}:
-                </span>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {shloka.crossReferences?.map((ref, idx) => (
-                    <div
-                      key={idx}
-                      onClick={() => onOpenCrossRef(ref)}
-                      className="p-4 rounded-xl bg-[#FAF6F0] dark:bg-[#28211C] border border-amber-200 dark:border-amber-900/40 hover:border-amber-500 cursor-pointer transition shadow-xs flex flex-col justify-between group hover:shadow-md"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300 flex items-center gap-1.5">
-                            <BookOpen className="w-3.5 h-3.5 text-amber-700 group-hover:text-amber-600 transition" />
-                            {getReferenceTitle(ref, lang)}
-                          </span>
-                          <ChevronRight className="w-4 h-4 text-amber-700 dark:text-amber-400 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                        </div>
-                        <p className="text-xs text-[#3D3227] dark:text-[#E2D7CB] line-clamp-3 leading-relaxed">
-                          "{getReferenceText(ref, lang)}"
-                        </p>
-                        {ref.correlationNote && (
-                          <p className="text-[11px] text-[#7A6B5C] dark:text-[#A89886] line-clamp-2 italic pt-1 border-t border-amber-200/50 dark:border-[#352D26]">
-                            {getReferenceCorrelation(ref, lang)}
-                          </p>
-                        )}
-                      </div>
+              {/* Referenced Scriptures (Vachnamrut & Swami ni Vato) - Reference Numbers Interface */}
+              {shloka.crossReferences && shloka.crossReferences.length > 0 && (() => {
+                const vachRefs = shloka.crossReferences.filter(r => r.type === 'vachnamrut');
+                const swamiRefs = shloka.crossReferences.filter(r => r.type === 'swamini_vato');
+                const vachLabel = lang === 'english' ? 'Vachnamrut' : lang === 'hindi' ? 'वचनामृत' : 'વચનામૃત';
+                const swamiLabel = lang === 'english' ? 'Swamini Vato' : lang === 'hindi' ? 'स्वामीनी बातें' : 'સ્વામીની વાતો';
 
-                      <div className="mt-3 pt-2 border-t border-amber-200/60 dark:border-amber-900/30 text-[11px] text-amber-800 dark:text-amber-300 font-semibold flex items-center justify-between">
-                        <span>સંપૂર્ણ સંદર્ભ વાંચો</span>
-                        <span>➔</span>
-                      </div>
+                return (
+                  <div className="space-y-2 pt-2 border-t border-amber-200/50 dark:border-amber-950/40">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-[#8B2500] dark:text-amber-400 flex items-center gap-1.5">
+                        <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                        <span>{ui.scriptureCrossRefTitle}:</span>
+                      </span>
+                      <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] font-medium">
+                        {shloka.crossReferences.length} {lang === 'english' ? 'references' : lang === 'hindi' ? 'संदर्भ' : 'સંદર્ભો'}
+                      </span>
                     </div>
-                  ))}
-                </div>
-              </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {/* Vachnamrut Reference Numbers */}
+                      {vachRefs.length > 0 && (
+                        <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 space-y-2">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#8B2500] dark:text-amber-300">
+                            <span className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400 inline-block" />
+                            <span>{vachLabel}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold ml-auto">
+                              {vachRefs.length}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {vachRefs.map((ref, idx) => {
+                              const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
+                              return (
+                                <div
+                                  key={idx}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E1916] border border-amber-300/60 dark:border-amber-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
+                                >
+                                  <span className="font-semibold text-amber-950 dark:text-amber-200">
+                                    {section}
+                                  </span>
+                                  {ref.topic && (
+                                    <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-amber-200 dark:border-stone-700 pl-1.5">
+                                      {ref.topic}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Swamini Vato Reference Numbers */}
+                      {swamiRefs.length > 0 && (
+                        <div className="p-3 rounded-xl bg-orange-50/70 dark:bg-orange-950/20 border border-orange-200/80 dark:border-orange-900/40 space-y-2">
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#9E3E00] dark:text-orange-300">
+                            <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-400 inline-block" />
+                            <span>{swamiLabel}</span>
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-200/80 dark:bg-orange-900/60 text-orange-900 dark:text-orange-200 font-semibold ml-auto">
+                              {swamiRefs.length}
+                            </span>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {swamiRefs.map((ref, idx) => {
+                              const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
+                              return (
+                                <div
+                                  key={idx}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E1916] border border-orange-300/60 dark:border-orange-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
+                                >
+                                  <span className="font-semibold text-orange-950 dark:text-orange-200">
+                                    {section}
+                                  </span>
+                                  {ref.topic && (
+                                    <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-orange-200 dark:border-stone-700 pl-1.5">
+                                      {ref.topic}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           );
         })}

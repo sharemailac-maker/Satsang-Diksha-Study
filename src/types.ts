@@ -71,6 +71,9 @@ export interface ScriptureReference {
   quoteHi?: string;
   quoteEn?: string;
   correlationNote?: string;
+  correlationNoteGu?: string;
+  correlationNoteHi?: string;
+  correlationNoteEn?: string;
 }
 
 export interface Shloka {

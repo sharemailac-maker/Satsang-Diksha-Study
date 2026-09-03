@@ -1,4 +1,4 @@
-const CACHE_NAME = 'satsang-diksha-v5-20260902';
+const CACHE_NAME = 'satsang-diksha-v6-20260902';
 
 const STATIC_ASSETS = [
   '/',
@@ -9,7 +9,9 @@ const STATIC_ASSETS = [
   '/icon-maskable-192.png',
   '/icon-maskable-512.png',
   '/icon-180x180.png',
-  '/favicon.ico'
+  '/favicon.ico',
+  '/screenshot-desktop.png',
+  '/screenshot-mobile.png'
 ];
 
 // Install Event: Precaches essential shell and skips waiting immediately

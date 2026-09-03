@@ -26,9 +26,7 @@ import {
   getShlokaTitle, 
   getShlokaChapterName,
   getReferenceTitle,
-  getReferenceText,
   getReferenceSection,
-  getReferenceCorrelation,
   LANGUAGE_METADATA 
 } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
@@ -45,7 +43,7 @@ interface ShlokaCardProps {
   onUpdateBookmarkNote: (shlokaId: number, note: string) => void;
   mukhpathStatus: MukhpathLevel;
   onUpdateMukhpathStatus: (shlokaId: number, status: MukhpathLevel) => void;
-  onOpenCrossRef: (ref: ScriptureReference) => void;
+  onOpenCrossRef?: (ref: ScriptureReference) => void;
   highlightQuery?: string;
 }
 
@@ -424,17 +422,19 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
 
                 {/* Specific Scripture Reference for this Word if available */}
                 {selectedWordData.scriptureReference && (
-                  <div className="p-3 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-300/50 text-[11px]">
+                  <div className="p-2.5 rounded-xl bg-amber-100/60 dark:bg-amber-950/40 border border-amber-300/50 text-[11px] flex flex-wrap items-center gap-2">
                     <div className="flex items-center gap-1.5 font-bold text-[#8B2500] dark:text-amber-300">
                       <BookOpen className="w-3.5 h-3.5" />
-                      <span>વચનામૃત સંદર્ભ: {selectedWordData.scriptureReference.source}</span>
+                      <span>{ui.scriptureCrossRefTitle || 'સંદર્ભ'}:</span>
                     </div>
-                    <p className="italic text-[#4A3E34] dark:text-[#D5C7B7] mt-1 font-gujarati">
-                      "{selectedWordData.scriptureReference.quoteGu}"
-                    </p>
-                    <p className="text-[10px] text-[#6B5E51] dark:text-[#A89886] mt-0.5">
-                      {selectedWordData.scriptureReference.correlation}
-                    </p>
+                    <span className="px-2 py-0.5 rounded-md bg-white dark:bg-[#1E1916] font-bold text-amber-950 dark:text-amber-200 border border-amber-300/60 dark:border-amber-800/50 shadow-2xs">
+                      {selectedWordData.scriptureReference.source}
+                    </span>
+                    {selectedWordData.scriptureReference.correlation && (
+                      <span className="text-[10px] text-[#6B5E51] dark:text-[#A89886]">
+                        • {selectedWordData.scriptureReference.correlation}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>
@@ -592,59 +592,97 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
         )}
 
-        {/* Scriptural Cross-References (Vachnamrut / Swami ni Vato) */}
-        {shloka.crossReferences && shloka.crossReferences.length > 0 && (
-          <div className="pt-2 space-y-2">
-            <div className="text-xs font-bold text-[#8B2500] dark:text-amber-400 flex items-center gap-1.5">
-              <BookOpen className="w-4 h-4" />
-              <span>{ui.scriptureCrossRefTitle}:</span>
-            </div>
+        {/* Scriptural Cross-References (Vachnamrut / Swami ni Vato) - Reference Numbers Interface */}
+        {shloka.crossReferences && shloka.crossReferences.length > 0 && (() => {
+          const vachRefs = shloka.crossReferences.filter(r => r.type === 'vachnamrut');
+          const swamiRefs = shloka.crossReferences.filter(r => r.type === 'swamini_vato');
+          const lang = preferences.activeLanguage;
 
-            <div className="grid grid-cols-1 gap-2">
-              {shloka.crossReferences.map((ref, idx) => {
-                const displayTitle = getReferenceTitle(ref, preferences.activeLanguage);
-                const displaySection = getReferenceSection(ref, preferences.activeLanguage);
-                const displayText = getReferenceText(ref, preferences.activeLanguage);
-                const displayCorrelation = getReferenceCorrelation(ref, preferences.activeLanguage);
-                const isVachnamrut = ref.type === 'vachnamrut';
-                const readLabel = preferences.activeLanguage === 'hindi' ? 'पढ़ें' : preferences.activeLanguage === 'english' ? 'Read' : 'વાંચો';
+          const vachLabel = lang === 'english' ? 'Vachnamrut' : lang === 'hindi' ? 'वचनामृत' : 'વચનામૃત';
+          const swamiLabel = lang === 'english' ? 'Swamini Vato' : lang === 'hindi' ? 'स्वामीनी बातें' : 'સ્વામીની વાતો';
 
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => onOpenCrossRef(ref)}
-                    className="p-3 rounded-xl bg-gradient-to-r from-amber-50/90 to-stone-50 dark:from-[#261F19] dark:to-[#1F1914] border border-amber-300/50 dark:border-amber-800/40 hover:border-amber-500 cursor-pointer transition flex items-center justify-between group"
-                  >
-                    <div className="space-y-1 pr-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-serif font-bold text-xs text-[#8B2500] dark:text-amber-300">
-                          {displayTitle}
-                        </span>
-                        {displaySection && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold">
-                            {displaySection}
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-xs text-[#4A3E34] dark:text-[#C5B7A8] leading-relaxed italic">
-                        "{displayText}"
-                      </p>
-                      {displayCorrelation && (
-                        <p className="text-[11px] text-amber-900 dark:text-amber-300/90 font-medium pt-0.5 border-t border-amber-200/40 dark:border-amber-900/30">
-                          {displayCorrelation}
-                        </p>
-                      )}
+          return (
+            <div className="pt-2 border-t border-amber-200/50 dark:border-amber-950/40 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-bold text-[#8B2500] dark:text-amber-400 flex items-center gap-1.5">
+                  <BookOpen className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  <span>{ui.scriptureCrossRefTitle}:</span>
+                </div>
+                <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] font-medium">
+                  {shloka.crossReferences.length} {lang === 'english' ? 'references' : lang === 'hindi' ? 'संदर्भ' : 'સંદર્ભો'}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* Vachnamrut References */}
+                {vachRefs.length > 0 && (
+                  <div className="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B2500] dark:text-amber-300">
+                      <span className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400 inline-block" />
+                      <span>{vachLabel}</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold ml-auto">
+                        {vachRefs.length}
+                      </span>
                     </div>
-                    <div className="flex flex-col items-center justify-center pl-1 text-amber-700 dark:text-amber-400 group-hover:translate-x-0.5 transition-transform flex-shrink-0">
-                      <BookOpen className="w-4 h-4" />
-                      <span className="text-[9px] font-bold mt-0.5">{readLabel}</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {vachRefs.map((ref, idx) => {
+                        const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
+                        return (
+                          <div
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E1916] border border-amber-300/60 dark:border-amber-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
+                          >
+                            <span className="font-semibold text-amber-950 dark:text-amber-200">
+                              {section}
+                            </span>
+                            {ref.topic && (
+                              <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-amber-200 dark:border-stone-700 pl-1.5">
+                                {ref.topic}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              })}
+                )}
+
+                {/* Swamini Vato References */}
+                {swamiRefs.length > 0 && (
+                  <div className="p-2.5 rounded-xl bg-orange-50/70 dark:bg-orange-950/20 border border-orange-200/80 dark:border-orange-900/40 space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#9E3E00] dark:text-orange-300">
+                      <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-400 inline-block" />
+                      <span>{swamiLabel}</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-orange-200/80 dark:bg-orange-900/60 text-orange-900 dark:text-orange-200 font-semibold ml-auto">
+                        {swamiRefs.length}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {swamiRefs.map((ref, idx) => {
+                        const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
+                        return (
+                          <div
+                            key={idx}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E1916] border border-orange-300/60 dark:border-orange-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
+                          >
+                            <span className="font-semibold text-orange-950 dark:text-orange-200">
+                              {section}
+                            </span>
+                            {ref.topic && (
+                              <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-orange-200 dark:border-stone-700 pl-1.5">
+                                {ref.topic}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Bookmark Reflection Note Input */}
         {isBookmarked && (
