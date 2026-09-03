@@ -19,7 +19,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { Shloka, UserPreferences } from '../types';
-import { AudioFormat, AUDIO_FORMAT_OPTIONS, getAudioUrls } from '../utils/audioPlayer';
+import { AudioFormat, AUDIO_FORMAT_OPTIONS, getAudioUrls, globalAudio } from '../utils/audioPlayer';
 import { getShlokaMeaning, getShlokaChapterName, LANGUAGE_METADATA } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
 
@@ -302,6 +302,17 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const activeVerseRef = useRef<HTMLDivElement | null>(null);
 
+  // Synchronized state refs to prevent stale closure bugs in audio events
+  const currentShlokaIdRef = useRef<number>(currentShlokaId);
+  const isPlayingRef = useRef<boolean>(isPlaying);
+  const isAutoAdvanceRef = useRef<boolean>(isAutoAdvance);
+  const isLoopCurrentRef = useRef<boolean>(isLoopCurrent);
+  const audioFormatRef = useRef<AudioFormat>(audioFormat);
+  const playbackSpeedRef = useRef<number>(playbackSpeed);
+  const isMutedRef = useRef<boolean>(isMuted);
+  const groupingModeRef = useRef<'udgaan' | '5' | '10' | '25' | 'all'>(groupingMode);
+  const selectedUdgaanIdRef = useRef<number>(selectedUdgaanId);
+
   const lang = preferences?.activeLanguage || preferences?.appLanguage || 'gujarati';
   const t = getUdgaanStrings(lang);
   const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
@@ -330,6 +341,20 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     return [1, 315];
   }, [groupingMode, selectedUdgaanId, currentShlokaId]);
 
+  const activeRangeRef = useRef<[number, number]>(activeRange);
+
+  // Keep refs synchronized on every render
+  currentShlokaIdRef.current = currentShlokaId;
+  isPlayingRef.current = isPlaying;
+  isAutoAdvanceRef.current = isAutoAdvance;
+  isLoopCurrentRef.current = isLoopCurrent;
+  activeRangeRef.current = activeRange;
+  audioFormatRef.current = audioFormat;
+  playbackSpeedRef.current = playbackSpeed;
+  isMutedRef.current = isMuted;
+  groupingModeRef.current = groupingMode;
+  selectedUdgaanIdRef.current = selectedUdgaanId;
+
   // List of shlokas in active range
   const activeShlokas = useMemo(() => {
     const [start, end] = activeRange;
@@ -347,9 +372,37 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   }, [currentShloka.id]);
 
   // Switch to a specific shloka with automatic mirror fallback
-  const playShloka = (shlokaId: number, autoPlay: boolean = true, formatToUse: AudioFormat = audioFormat) => {
+  const playShloka = (shlokaId: number, autoPlay: boolean = true, formatToUse: AudioFormat = audioFormatRef.current) => {
+    currentShlokaIdRef.current = shlokaId;
     setCurrentShlokaId(shlokaId);
     setHasError(false);
+
+    // Stop global audio from ShlokaCard so sounds do not overlap
+    globalAudio.stop();
+
+    // Automatically synchronize Udgaan section tab if in 'udgaan' grouping mode
+    if (groupingModeRef.current === 'udgaan') {
+      const section = UDGAAN_SECTIONS.find(u => shlokaId >= u.range[0] && shlokaId <= u.range[1]);
+      if (section) {
+        setSelectedUdgaanId(section.id);
+        selectedUdgaanIdRef.current = section.id;
+        activeRangeRef.current = section.range;
+      }
+    } else if (groupingModeRef.current === '5') {
+      const start = Math.floor((shlokaId - 1) / 5) * 5 + 1;
+      const end = Math.min(315, start + 4);
+      activeRangeRef.current = [start, end];
+    } else if (groupingModeRef.current === '10') {
+      const start = Math.floor((shlokaId - 1) / 10) * 10 + 1;
+      const end = Math.min(315, start + 9);
+      activeRangeRef.current = [start, end];
+    } else if (groupingModeRef.current === '25') {
+      const start = Math.floor((shlokaId - 1) / 25) * 25 + 1;
+      const end = Math.min(315, start + 24);
+      activeRangeRef.current = [start, end];
+    } else {
+      activeRangeRef.current = [1, 315];
+    }
     
     if (!audioRef.current) return;
 
@@ -360,31 +413,38 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
       if (idx >= urls.length) {
         setIsLoadingAudio(false);
         setIsPlaying(false);
+        isPlayingRef.current = false;
         setHasError(true);
         return;
       }
 
       if (!audioRef.current) return;
       audioRef.current.src = urls[idx];
-      audioRef.current.playbackRate = playbackSpeed;
-      audioRef.current.muted = isMuted;
+      audioRef.current.playbackRate = playbackSpeedRef.current;
+      audioRef.current.muted = isMutedRef.current;
 
       if (autoPlay) {
         setIsLoadingAudio(true);
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          setIsLoadingAudio(false);
-          setHasError(false);
-        }).catch(() => {
-          // If first mirror failed, try next mirror
-          if (idx + 1 < urls.length) {
-            loadAndPlayMirror(idx + 1);
-          } else {
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlaying(true);
+            isPlayingRef.current = true;
             setIsLoadingAudio(false);
-            setIsPlaying(false);
-            setHasError(true);
-          }
-        });
+            setHasError(false);
+          }).catch((err) => {
+            console.warn(`Audio play failed for mirror ${idx} on shloka ${shlokaId}:`, err);
+            // If first mirror failed, try next mirror
+            if (idx + 1 < urls.length) {
+              loadAndPlayMirror(idx + 1);
+            } else {
+              setIsLoadingAudio(false);
+              setIsPlaying(false);
+              isPlayingRef.current = false;
+              setHasError(true);
+            }
+          });
+        }
       }
     };
 
@@ -397,68 +457,94 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
+      isPlayingRef.current = false;
     } else {
+      globalAudio.stop();
       if (!audioRef.current.src || audioRef.current.src === '' || hasError) {
-        playShloka(currentShlokaId, true, audioFormat);
+        playShloka(currentShlokaIdRef.current, true, audioFormatRef.current);
       } else {
         setIsLoadingAudio(true);
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-          setIsLoadingAudio(false);
-        }).catch(() => {
-          // Retry loading from fresh URL
-          playShloka(currentShlokaId, true, audioFormat);
-        });
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlaying(true);
+            isPlayingRef.current = true;
+            setIsLoadingAudio(false);
+          }).catch(() => {
+            // Retry loading from fresh URL
+            playShloka(currentShlokaIdRef.current, true, audioFormatRef.current);
+          });
+        }
       }
     }
   };
 
   // Previous Shloka
   const handlePrevious = () => {
-    const [start, end] = activeRange;
-    let nextId = currentShlokaId - 1;
-    if (nextId < start) {
-      nextId = end;
+    const [start, end] = activeRangeRef.current;
+    const currentId = currentShlokaIdRef.current;
+    let prevId = currentId - 1;
+    if (prevId < start) {
+      prevId = end;
     }
-    playShloka(nextId, isPlaying, audioFormat);
+    playShloka(prevId, isPlayingRef.current, audioFormatRef.current);
   };
 
   // Next Shloka
   const handleNext = () => {
-    const [start, end] = activeRange;
-    let nextId = currentShlokaId + 1;
+    const [start, end] = activeRangeRef.current;
+    const currentId = currentShlokaIdRef.current;
+    let nextId = currentId + 1;
     if (nextId > end) {
       nextId = start;
     }
-    playShloka(nextId, isPlaying, audioFormat);
+    playShloka(nextId, isPlayingRef.current, audioFormatRef.current);
   };
 
-  // On audio ended
+  // On audio ended - properly advances to next shloka or repeats
   const handleAudioEnded = () => {
-    if (isLoopCurrent) {
+    // 1. Loop current verse if single-verse repeat is active
+    if (isLoopCurrentRef.current) {
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {});
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            setIsPlaying(true);
+            isPlayingRef.current = true;
+          }).catch(() => {});
+        }
       }
       return;
     }
 
-    if (isAutoAdvance) {
-      const [start, end] = activeRange;
-      if (currentShlokaId < end) {
-        playShloka(currentShlokaId + 1, true, audioFormat);
+    // 2. Sequential auto-advance to next shloka
+    if (isAutoAdvanceRef.current) {
+      const [start, end] = activeRangeRef.current;
+      const currentId = currentShlokaIdRef.current;
+
+      let nextId: number;
+      if (currentId < end) {
+        nextId = currentId + 1;
       } else {
-        // At the end of range, loop back to start
-        playShloka(start, true, audioFormat);
+        // At the end of the range, loop back to start of section
+        nextId = start;
       }
+
+      playShloka(nextId, true, audioFormatRef.current);
     } else {
       setIsPlaying(false);
+      isPlayingRef.current = false;
     }
   };
+
+  const handleAudioEndedRef = useRef(handleAudioEnded);
+  handleAudioEndedRef.current = handleAudioEnded;
 
   // Update speed
   const handleSpeedChange = (speed: number) => {
     setPlaybackSpeed(speed);
+    playbackSpeedRef.current = speed;
     if (audioRef.current) {
       audioRef.current.playbackRate = speed;
     }
@@ -467,8 +553,11 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   // Select an Udgaan section
   const handleSelectUdgaan = (section: UdgaanSection) => {
     setSelectedUdgaanId(section.id);
+    selectedUdgaanIdRef.current = section.id;
     setGroupingMode('udgaan');
-    playShloka(section.range[0], isPlaying, audioFormat);
+    groupingModeRef.current = 'udgaan';
+    activeRangeRef.current = section.range;
+    playShloka(section.range[0], isPlayingRef.current, audioFormatRef.current);
   };
 
   // Format seconds to mm:ss
@@ -479,40 +568,53 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
-  // Initialize audio element
+  // Initialize audio element with stable listeners
   useEffect(() => {
     const audio = new Audio();
     audioRef.current = audio;
-    audio.src = getAudioUrls(currentShlokaId, audioFormat)[0];
-    audio.playbackRate = playbackSpeed;
+    audio.src = getAudioUrls(currentShlokaIdRef.current, audioFormatRef.current)[0];
+    audio.playbackRate = playbackSpeedRef.current;
 
     const onTimeUpdate = () => {
-      setCurrentTime(audio.currentTime);
-      setDuration(audio.duration || 0);
+      if (audioRef.current) {
+        setCurrentTime(audioRef.current.currentTime);
+        if (audioRef.current.duration && !isNaN(audioRef.current.duration)) {
+          setDuration(audioRef.current.duration);
+        }
+      }
     };
 
     const onLoadedMetadata = () => {
-      setDuration(audio.duration || 0);
+      if (audioRef.current && audioRef.current.duration && !isNaN(audioRef.current.duration)) {
+        setDuration(audioRef.current.duration);
+      }
       setIsLoadingAudio(false);
     };
 
-    const onEnded = () => handleAudioEnded();
+    const onCanPlay = () => {
+      setIsLoadingAudio(false);
+    };
+
+    const onEnded = () => {
+      handleAudioEndedRef.current();
+    };
 
     const onError = () => {
       setIsLoadingAudio(false);
-      setHasError(true);
-      setIsPlaying(false);
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
+    audio.addEventListener('canplay', onCanPlay);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
 
     return () => {
       audio.pause();
+      audio.src = '';
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
+      audio.removeEventListener('canplay', onCanPlay);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
     };
@@ -662,9 +764,17 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
             <button
               key={mode.id}
               onClick={() => {
-                setGroupingMode(mode.id as any);
-                if (mode.id === 'all') {
-                  playShloka(1, isPlaying, audioFormat);
+                const targetMode = mode.id as 'udgaan' | '5' | '10' | '25' | 'all';
+                setGroupingMode(targetMode);
+                groupingModeRef.current = targetMode;
+                if (targetMode === 'all') {
+                  activeRangeRef.current = [1, 315];
+                  playShloka(1, isPlayingRef.current, audioFormatRef.current);
+                } else if (targetMode === 'udgaan') {
+                  const sec = UDGAAN_SECTIONS.find(u => currentShlokaIdRef.current >= u.range[0] && currentShlokaIdRef.current <= u.range[1]) || UDGAAN_SECTIONS[0];
+                  setSelectedUdgaanId(sec.id);
+                  selectedUdgaanIdRef.current = sec.id;
+                  activeRangeRef.current = sec.range;
                 }
               }}
               className={`px-3 py-1.5 rounded-xl font-medium transition cursor-pointer ${
