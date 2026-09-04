@@ -1,6 +1,6 @@
 {
   "appId": "org.baps.satsangdiksha",
-  "appName": "Satsang Diksha",
+  "appName": "Satsang Diksha Study",
   "webDir": "dist",
   "bundledWebRuntime": false,
   "server": {
