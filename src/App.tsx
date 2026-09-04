@@ -396,7 +396,10 @@ export default function App() {
 
         {/* TAB 5: QUIZ & TEST */}
         {activeTab === 'quiz' && (
-          <QuizView onSelectShloka={handleJumpToShloka} />
+          <QuizView
+            preferences={preferences}
+            onSelectShloka={handleJumpToShloka}
+          />
         )}
 
         {/* TAB 6: BOOKMARKS & NOTES */}

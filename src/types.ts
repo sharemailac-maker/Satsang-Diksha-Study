@@ -187,10 +187,58 @@ export interface MukhpathRecord {
 export interface QuizQuestion {
   id: string;
   shlokaId: number;
-  type: 'verse_to_meaning' | 'fill_blank' | 'cross_reference' | 'true_false';
-  question: string;
-  questionLang: Language;
-  options: string[];
+  type: string;
+  verseExcerptDevanagari?: string;
+  verseExcerptGujarati?: string;
+  meaningGu?: string;
+  meaningHi?: string;
+  meaningEn?: string;
+  questionGu?: string;
+  questionHi?: string;
+  questionEn?: string;
+  optionsDevanagari?: string[];
+  optionsGujarati?: string[];
+  question?: string;
+  questionLang?: Language;
+  options?: string[];
   correctIndex: number;
-  explanation: string;
+  explanation?: string;
+  explanationGu?: string;
+  explanationHi?: string;
+  explanationEn?: string;
+  fullSanskritDevanagari?: string;
+  fullSanskritGujarati?: string;
+}
+
+export interface QuizTestSet {
+  id: number;
+  startShloka: number;
+  endShloka: number;
+  titleGu: string;
+  titleHi: string;
+  titleEn: string;
+  chapterGu: string;
+  chapterHi: string;
+  chapterEn: string;
+  questionsCount: number;
+  questions: QuizQuestion[];
+}
+
+export interface QuizAttemptRecord {
+  id: string;
+  testSetId: number | 'daily';
+  testTitle: string;
+  date: string;
+  timestamp: number;
+  score: number;
+  total: number;
+  percentage: number;
+  timeSpentSeconds: number;
+  userAnswers: {
+    questionId: string;
+    shlokaId: number;
+    selectedOption: number;
+    correctOption: number;
+    isCorrect: boolean;
+  }[];
 }
