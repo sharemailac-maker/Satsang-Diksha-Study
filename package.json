@@ -8,10 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit",
-    "crossref:generate": "node scripts/crossref/generate.js",
-    "crossref:fetch": "node scripts/crossref/fetchTexts.js",
-    "crossref:match": "node scripts/crossref/semanticMatcher.js"
+    "lint": "tsc --noEmit"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
