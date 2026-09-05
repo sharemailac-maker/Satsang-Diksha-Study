@@ -363,34 +363,53 @@ export function getReferenceTitle(ref: ScriptureReference | { title?: string; ti
 /**
  * Returns translated section tag (e.g., 'ગઢડા પ્રથમ ૧' -> 'Gadhada I-1')
  */
-export function getReferenceSection(ref: ScriptureReference | { section?: string; type?: string }, lang: Language): string {
-  const rawSec = ref.section || '';
-  if (!rawSec) return '';
-
-  if (lang === 'gujarati') return rawSec;
+export function getReferenceSection(ref: ScriptureReference | { section?: string; sectionHi?: string; sectionEn?: string; type?: string }, lang: Language): string {
+  if (lang === 'gujarati') return ref.section || '';
 
   if (lang === 'hindi' || lang === 'marathi') {
+    if ('sectionHi' in ref && ref.sectionHi) return ref.sectionHi;
+    const rawSec = ref.section || '';
+    if (!rawSec) return '';
     return toHindiDigits(
       rawSec
-        .replace(/ગઢડા પ્રથમ/g, 'गढ़ડા પ્રથમ')
+        .replace(/ગઢડા પ્રથમ/g, 'गढ़डा प्रथम')
         .replace(/ગઢડા મધ્ય/g, 'गढ़डा मध्य')
-        .replace(/ગઢડા અંત્ય/g, 'गढ़ડા अन्त्य')
+        .replace(/ગઢડા અંત્ય/g, 'गढ़डा अन्त्य')
+        .replace(/સારંગપુર/g, 'सारंगपुर')
+        .replace(/કારિયાણી/g, 'कारियाणी')
+        .replace(/લોયા/g, 'लोया')
+        .replace(/પંચાળા/g, 'पंचाल')
+        .replace(/વરતાલ/g, 'वड़ताल')
+        .replace(/અમદાવાદ/g, 'अहमदाबाद')
+        .replace(/જેતલપુર/g, 'जेतलपुर')
+        .replace(/અસલાલી/g, 'असलाली')
         .replace(/પ્રકરણ/g, 'प्रकरण')
         .replace(/વાત/g, 'बात')
     );
   }
 
   if (lang === 'english' || lang === 'spanish' || lang === 'french' || lang === 'german' || lang === 'portuguese' || lang === 'russian' || lang === 'greek' || lang === 'polish') {
+    if ('sectionEn' in ref && ref.sectionEn) return ref.sectionEn;
+    const rawSec = ref.section || '';
+    if (!rawSec) return '';
     const western = normalizeGujDigits(rawSec);
     return western
       .replace(/ગઢડા પ્રથમ/g, 'Gadhada I-')
       .replace(/ગઢડા મધ્ય/g, 'Gadhada II-')
       .replace(/ગઢડા અંત્ય/g, 'Gadhada III-')
-      .replace(/પ્રકરણ/g, 'Prakaran')
-      .replace(/વાત/g, 'Discourse');
+      .replace(/સારંગપુર/g, 'Sarangpur ')
+      .replace(/કારિયાણી/g, 'Kariyani ')
+      .replace(/લોયા/g, 'Loya ')
+      .replace(/પંચાળા/g, 'Panchala ')
+      .replace(/વરતાલ/g, 'Vartal ')
+      .replace(/અમદાવાદ/g, 'Ahmedabad ')
+      .replace(/જેતલપુર/g, 'Jetalpur ')
+      .replace(/અસલાલી/g, 'Aslali ')
+      .replace(/પ્રકરણ/g, 'Prakaran ')
+      .replace(/વાત/g, 'Discourse ');
   }
 
-  return rawSec;
+  return ref.section || '';
 }
 
 // Canonical Scriptural Quotes Translated

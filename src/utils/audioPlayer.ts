@@ -53,11 +53,11 @@ export function getAudioUrls(shlokaId: number, format: AudioFormat = 'sanskrit')
   const paddedNum = String(shlokaId).padStart(3, '0');
   
   return [
-    // Primary direct archive download link with load-balancing
-    `https://archive.org/download/satsang_diksha/${format}_${paddedNum}.mp3`,
-    // Direct mirror node 1
+    // Direct fast archive node without redirect
     `https://ia800608.us.archive.org/3/items/satsang_diksha/${format}_${paddedNum}.mp3`,
-    // Direct mirror node 2
+    // Primary archive download endpoint
+    `https://archive.org/download/satsang_diksha/${format}_${paddedNum}.mp3`,
+    // Secondary mirror node
     `https://dn721605.ca.archive.org/0/items/satsang_diksha/${format}_${paddedNum}.mp3`
   ];
 }

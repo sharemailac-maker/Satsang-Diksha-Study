@@ -79,7 +79,7 @@ const UDGAAN_SECTIONS: UdgaanSection[] = [
   {
     id: 4,
     titleGu: 'ઉદ્ગાન ૪ (Udgaan 4)',
-    titleHi: 'उद्गान ४ (श्लोक १५९–२०૮)',
+    titleHi: 'उद्गान ४ (श्लोक १५९–२०८)',
     titleEn: 'Udgaan 4 (Verses 159–208)',
     titleDeva: 'उद्गानम् ४ (श्लोकाः १५९–२०८)',
     range: [159, 208],
@@ -301,6 +301,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const activeVerseRef = useRef<HTMLDivElement | null>(null);
+  const isTransitioningRef = useRef<boolean>(false);
 
   // Synchronized state refs to prevent stale closure bugs in audio events
   const currentShlokaIdRef = useRef<number>(currentShlokaId);
@@ -343,8 +344,11 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
   const activeRangeRef = useRef<[number, number]>(activeRange);
 
-  // Keep refs synchronized on every render
-  currentShlokaIdRef.current = currentShlokaId;
+  // Keep refs synchronized
+  useEffect(() => {
+    currentShlokaIdRef.current = currentShlokaId;
+  }, [currentShlokaId]);
+
   isPlayingRef.current = isPlaying;
   isAutoAdvanceRef.current = isAutoAdvance;
   isLoopCurrentRef.current = isLoopCurrent;
@@ -371,8 +375,35 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     return UDGAAN_SECTIONS.find(u => currentShloka.id >= u.range[0] && currentShloka.id <= u.range[1]);
   }, [currentShloka.id]);
 
+  // Helper to get active range bounds for any shloka ID
+  const getBoundsForShloka = (shlokaId: number): [number, number] => {
+    if (groupingModeRef.current === 'udgaan') {
+      const sec = UDGAAN_SECTIONS.find(u => shlokaId >= u.range[0] && shlokaId <= u.range[1]) 
+        || UDGAAN_SECTIONS.find(u => u.id === selectedUdgaanIdRef.current) 
+        || UDGAAN_SECTIONS[0];
+      return sec.range;
+    }
+    if (groupingModeRef.current === '5') {
+      const start = Math.floor((shlokaId - 1) / 5) * 5 + 1;
+      const end = Math.min(315, start + 4);
+      return [start, end];
+    }
+    if (groupingModeRef.current === '10') {
+      const start = Math.floor((shlokaId - 1) / 10) * 10 + 1;
+      const end = Math.min(315, start + 9);
+      return [start, end];
+    }
+    if (groupingModeRef.current === '25') {
+      const start = Math.floor((shlokaId - 1) / 25) * 25 + 1;
+      const end = Math.min(315, start + 24);
+      return [start, end];
+    }
+    return [1, 315];
+  };
+
   // Switch to a specific shloka with automatic mirror fallback
   const playShloka = (shlokaId: number, autoPlay: boolean = true, formatToUse: AudioFormat = audioFormatRef.current) => {
+    isTransitioningRef.current = true;
     currentShlokaIdRef.current = shlokaId;
     setCurrentShlokaId(shlokaId);
     setHasError(false);
@@ -388,23 +419,18 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
         selectedUdgaanIdRef.current = section.id;
         activeRangeRef.current = section.range;
       }
-    } else if (groupingModeRef.current === '5') {
-      const start = Math.floor((shlokaId - 1) / 5) * 5 + 1;
-      const end = Math.min(315, start + 4);
-      activeRangeRef.current = [start, end];
-    } else if (groupingModeRef.current === '10') {
-      const start = Math.floor((shlokaId - 1) / 10) * 10 + 1;
-      const end = Math.min(315, start + 9);
-      activeRangeRef.current = [start, end];
-    } else if (groupingModeRef.current === '25') {
-      const start = Math.floor((shlokaId - 1) / 25) * 25 + 1;
-      const end = Math.min(315, start + 24);
-      activeRangeRef.current = [start, end];
     } else {
-      activeRangeRef.current = [1, 315];
+      activeRangeRef.current = getBoundsForShloka(shlokaId);
     }
     
-    if (!audioRef.current) return;
+    if (!audioRef.current) {
+      isTransitioningRef.current = false;
+      return;
+    }
+
+    try {
+      audioRef.current.pause();
+    } catch (_) {}
 
     const urls = getAudioUrls(shlokaId, formatToUse);
     let mirrorIndex = 0;
@@ -414,11 +440,16 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
         setIsLoadingAudio(false);
         setIsPlaying(false);
         isPlayingRef.current = false;
+        isTransitioningRef.current = false;
         setHasError(true);
         return;
       }
 
-      if (!audioRef.current) return;
+      if (!audioRef.current) {
+        isTransitioningRef.current = false;
+        return;
+      }
+
       audioRef.current.src = urls[idx];
       audioRef.current.playbackRate = playbackSpeedRef.current;
       audioRef.current.muted = isMutedRef.current;
@@ -432,6 +463,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
             isPlayingRef.current = true;
             setIsLoadingAudio(false);
             setHasError(false);
+            isTransitioningRef.current = false;
           }).catch((err) => {
             console.warn(`Audio play failed for mirror ${idx} on shloka ${shlokaId}:`, err);
             // If first mirror failed, try next mirror
@@ -441,10 +473,15 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
               setIsLoadingAudio(false);
               setIsPlaying(false);
               isPlayingRef.current = false;
+              isTransitioningRef.current = false;
               setHasError(true);
             }
           });
+        } else {
+          isTransitioningRef.current = false;
         }
+      } else {
+        isTransitioningRef.current = false;
       }
     };
 
@@ -481,28 +518,24 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
   // Previous Shloka
   const handlePrevious = () => {
-    const [start, end] = activeRangeRef.current;
     const currentId = currentShlokaIdRef.current;
-    let prevId = currentId - 1;
-    if (prevId < start) {
-      prevId = end;
-    }
+    const [start, end] = getBoundsForShloka(currentId);
+    const prevId = currentId > start ? currentId - 1 : end;
     playShloka(prevId, isPlayingRef.current, audioFormatRef.current);
   };
 
   // Next Shloka
   const handleNext = () => {
-    const [start, end] = activeRangeRef.current;
     const currentId = currentShlokaIdRef.current;
-    let nextId = currentId + 1;
-    if (nextId > end) {
-      nextId = start;
-    }
+    const [start, end] = getBoundsForShloka(currentId);
+    const nextId = currentId < end ? currentId + 1 : start;
     playShloka(nextId, isPlayingRef.current, audioFormatRef.current);
   };
 
   // On audio ended - properly advances to next shloka or repeats
   const handleAudioEnded = () => {
+    if (isTransitioningRef.current) return;
+
     // 1. Loop current verse if single-verse repeat is active
     if (isLoopCurrentRef.current) {
       if (audioRef.current) {
@@ -520,16 +553,9 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
     // 2. Sequential auto-advance to next shloka
     if (isAutoAdvanceRef.current) {
-      const [start, end] = activeRangeRef.current;
       const currentId = currentShlokaIdRef.current;
-
-      let nextId: number;
-      if (currentId < end) {
-        nextId = currentId + 1;
-      } else {
-        // At the end of the range, loop back to start of section
-        nextId = start;
-      }
+      const [start, end] = getBoundsForShloka(currentId);
+      const nextId = currentId < end ? currentId + 1 : start;
 
       playShloka(nextId, true, audioFormatRef.current);
     } else {
@@ -557,7 +583,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
     setGroupingMode('udgaan');
     groupingModeRef.current = 'udgaan';
     activeRangeRef.current = section.range;
-    playShloka(section.range[0], isPlayingRef.current, audioFormatRef.current);
+    playShloka(section.range[0], true, audioFormatRef.current);
   };
 
   // Format seconds to mm:ss
@@ -593,19 +619,30 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
     const onCanPlay = () => {
       setIsLoadingAudio(false);
+      isTransitioningRef.current = false;
+    };
+
+    const onPlaying = () => {
+      setIsLoadingAudio(false);
+      setIsPlaying(true);
+      isPlayingRef.current = true;
+      isTransitioningRef.current = false;
     };
 
     const onEnded = () => {
+      if (isTransitioningRef.current) return;
       handleAudioEndedRef.current();
     };
 
     const onError = () => {
       setIsLoadingAudio(false);
+      isTransitioningRef.current = false;
     };
 
     audio.addEventListener('timeupdate', onTimeUpdate);
     audio.addEventListener('loadedmetadata', onLoadedMetadata);
     audio.addEventListener('canplay', onCanPlay);
+    audio.addEventListener('playing', onPlaying);
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
 
@@ -615,6 +652,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
       audio.removeEventListener('timeupdate', onTimeUpdate);
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       audio.removeEventListener('canplay', onCanPlay);
+      audio.removeEventListener('playing', onPlaying);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
     };
