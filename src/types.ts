@@ -63,7 +63,12 @@ export interface ScriptureReference {
   titleHi?: string;
   titleEn?: string;
   section?: string;
+  sectionHi?: string;
+  sectionEn?: string;
   topic?: string;
+  topicGu?: string;
+  topicHi?: string;
+  topicEn?: string;
   textGu?: string;
   textHi?: string;
   textEn?: string;

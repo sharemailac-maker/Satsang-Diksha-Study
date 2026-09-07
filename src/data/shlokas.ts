@@ -1,4 +1,5 @@
 import { Shloka } from "../types";
+import { CONCORDANCE_REFERENCES } from "./concordanceData";
 
 export const SHLOKAS: Shloka[] = [
   {
@@ -38383,6 +38384,15 @@ export const SHLOKAS: Shloka[] = [
     ]
   }
 ];
+
+// Enrich all 315 shlokas with expanded authentic Vachnamrut and Swamini Vato cross-references
+for (let i = 0; i < SHLOKAS.length; i++) {
+  const s = SHLOKAS[i];
+  const refs = CONCORDANCE_REFERENCES[s.id];
+  if (refs && refs.length > 0) {
+    s.crossReferences = refs;
+  }
+}
 
 export function getAllShlokas(): Shloka[] {
   return SHLOKAS;
