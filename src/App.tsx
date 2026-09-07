@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Search, 
-  RefreshCw, 
-  Sparkles,
-  CheckCircle2,
-  X
+  CheckCircle2
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -18,6 +15,7 @@ import { QuizView } from './components/QuizView';
 import { BookmarksView } from './components/BookmarksView';
 import { SettingsModal } from './components/SettingsModal';
 import { QuickJumpModal } from './components/QuickJumpModal';
+import { AppUpdateBanner } from './components/AppUpdateBanner';
 
 import { getAllShlokas } from './data/shlokas';
 import { CHAPTERS } from './data/chapters';
@@ -38,7 +36,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
-  const [hasUpdate, setHasUpdate] = useState<boolean>(false);
   
   // Modals state
   const [isQuickJumpOpen, setIsQuickJumpOpen] = useState<boolean>(false);
@@ -48,17 +45,6 @@ export default function App() {
 
   // All 315 Shlokas data
   const allShlokas = useMemo(() => getAllShlokas(), []);
-
-  // Listen for PWA updates
-  useEffect(() => {
-    const handleUpdateAvailable = () => {
-      setHasUpdate(true);
-    };
-    window.addEventListener('pwa-update-available', handleUpdateAvailable);
-    return () => {
-      window.removeEventListener('pwa-update-available', handleUpdateAvailable);
-    };
-  }, []);
 
   // Sync theme changes with DOM root
   useEffect(() => {
@@ -126,19 +112,6 @@ export default function App() {
     }, 150);
   };
 
-  const handleReloadAppUpdate = () => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(regs => {
-        for (const r of regs) {
-          if (r.waiting) {
-            r.waiting.postMessage({ action: 'SKIP_WAITING' });
-          }
-        }
-      });
-    }
-    window.location.reload();
-  };
-
   // Filter shlokas based on search and chapter selection
   const filteredShlokas = useMemo(() => {
     let result = allShlokas;
@@ -186,32 +159,8 @@ export default function App() {
           ? 'bg-[#F4ECD8] text-[#382513]'
           : 'bg-[#FDFBF7] text-[#2D241E]'
     }`}>
-      {/* Update Available Notification Banner */}
-      {hasUpdate && (
-        <div className="bg-emerald-700 text-white px-4 py-2 text-xs flex items-center justify-between gap-3 sticky top-0 z-50 shadow-md animate-fadeIn">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-200" />
-            <span className="font-semibold">
-              સત્સંગ દીક્ષા એપનું નવું વર્ઝન ઉપલબ્ધ છે! (New version available)
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleReloadAppUpdate}
-              className="px-3 py-1 rounded-lg bg-white text-emerald-900 font-bold hover:bg-emerald-50 transition shadow-xs flex items-center gap-1.5"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>અપડેટ કરો (Update Now)</span>
-            </button>
-            <button
-              onClick={() => setHasUpdate(false)}
-              className="p-1 text-white/80 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Automatic Background App Update Notification Banner */}
+      <AppUpdateBanner language={preferences.appLanguage || preferences.activeLanguage} />
 
       {/* Header with Search and Language bar */}
       <Header

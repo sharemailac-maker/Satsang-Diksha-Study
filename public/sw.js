@@ -1,4 +1,4 @@
-const CACHE_NAME = 'satsang-diksha-v6-20260902';
+const CACHE_NAME = 'satsang-diksha-v7-20260907';
 
 const STATIC_ASSETS = [
   '/',
@@ -14,9 +14,8 @@ const STATIC_ASSETS = [
   '/screenshot-mobile.png'
 ];
 
-// Install Event: Precaches essential shell and skips waiting immediately
+// Install Event: Precaches essential shell
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
@@ -40,11 +39,20 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch Event: Network-first for HTML pages (prevents capturing old versions), Stale-While-Revalidate for static assets
+// Fetch Event: Network-first for HTML pages & version.json, Stale-While-Revalidate for static assets
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+
+  // Always fetch version.json fresh from network with no-store to detect background updates
+  if (url.pathname === '/version.json') {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
 
   // Network-First for navigation / HTML requests so live updates appear immediately
   if (event.request.mode === 'navigate' || event.request.headers.get('accept')?.includes('text/html')) {
@@ -84,7 +92,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Message listener for instant skip waiting and cache purge
+// Message listener for skip waiting, cache purge, and version query
 self.addEventListener('message', (event) => {
   if (event.data && event.data.action === 'SKIP_WAITING') {
     self.skipWaiting();

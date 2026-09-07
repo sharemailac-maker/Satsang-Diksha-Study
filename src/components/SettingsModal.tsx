@@ -23,6 +23,8 @@ import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { StorageService, AVAILABLE_LANGUAGE_PACKS } from '../utils/storage';
 import { NotificationService } from '../utils/notificationService';
 import { getUIStrings } from '../utils/i18n';
+import { useAppUpdate } from '../hooks/useAppUpdate';
+import { CURRENT_APP_VERSION } from '../version';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -119,6 +121,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onUpdatePreferences,
   onResetPreferences
 }) => {
+  const {
+    updateAvailable,
+    remoteVersion,
+    isChecking: isCheckingUpdate,
+    checkStatusMessage,
+    checkForUpdates,
+    applyUpdate
+  } = useAppUpdate();
+
   const [updatingApp, setUpdatingApp] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState<string | null>(null);
   const [testNotificationStatus, setTestNotificationStatus] = useState<string | null>(null);
@@ -149,32 +160,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     }, 700);
   };
 
-  // Handle App Update check
+  // Handle App Update check or apply
   const handleUpdateApp = async () => {
-    setUpdatingApp(true);
-    setUpdateSuccess(null);
-    try {
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        for (const reg of registrations) {
-          await reg.update();
+    if (updateAvailable) {
+      setUpdatingApp(true);
+      await applyUpdate();
+    } else {
+      setUpdatingApp(true);
+      try {
+        const found = await checkForUpdates(false);
+        if (found) {
+          setUpdateSuccess('નવું સંસ્કરણ ઉપલબ્ધ છે! કૃપા કરીને અપડેટ કરો.');
         }
+      } catch {
+        setUpdateSuccess('અપડેટ તપાસવામાં નિષ્ફળતા આવી. કૃપા કરીને પુનઃ પ્રયાસ કરો.');
+      } finally {
+        setUpdatingApp(false);
       }
-      if ('caches' in window) {
-        const cacheKeys = await caches.keys();
-        await Promise.all(cacheKeys.map(key => caches.delete(key)));
-      }
-      setUpdateSuccess('એપ સફળતાપૂર્વક નવીનતમ સંસ્કરણમાં અપડેટ થઈ ગઈ છે! (App updated successfully!) ✓');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1400);
-    } catch {
-      setUpdateSuccess('એપ અપડેટ થઈ રહી છે... (Reloading...)');
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
-    } finally {
-      setUpdatingApp(false);
     }
   };
 
@@ -683,25 +685,49 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
 
             <div className="mt-3.5 pt-3 border-t border-[#F5E6CE] dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div className="text-xs text-[#7A6250] dark:text-stone-400">
-                {ui.appVersionLabel || 'આવૃત્તિ'}: <span className="font-bold text-[#7A1D05] dark:text-amber-300">v2.4 (Latest)</span>
+              <div className="text-xs text-[#7A6250] dark:text-stone-400 flex items-center gap-2">
+                <span>{ui.appVersionLabel || 'આવૃત્તિ'}:</span>
+                <span className="font-bold text-[#7A1D05] dark:text-amber-300">
+                  v{CURRENT_APP_VERSION.version}
+                </span>
+                {updateAvailable && (
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 animate-pulse">
+                    નવું ઉપલબ્ધ! (v{remoteVersion?.version || '2.5.0'})
+                  </span>
+                )}
               </div>
 
               <button
                 id="btn-update-app-action"
                 type="button"
                 onClick={handleUpdateApp}
-                disabled={updatingApp}
-                className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer disabled:opacity-75"
+                disabled={updatingApp || isCheckingUpdate}
+                className={`w-full sm:w-auto py-2.5 px-5 rounded-xl text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer disabled:opacity-75 ${
+                  updateAvailable
+                    ? 'bg-emerald-700 hover:bg-emerald-800 ring-2 ring-emerald-400/50'
+                    : 'bg-[#7A1D05] hover:bg-[#601503]'
+                }`}
               >
-                <RefreshCw className={`w-4 h-4 ${updatingApp ? 'animate-spin' : ''}`} />
-                <span>{updatingApp ? (ui.updatingAppButton || 'અપડેટ થઈ રહ્યું છે...') : (ui.updateAppButton || 'અત્યારે અપડેટ કરો (Check & Update)')}</span>
+                <RefreshCw className={`w-4 h-4 ${(updatingApp || isCheckingUpdate) ? 'animate-spin' : ''}`} />
+                <span>
+                  {updatingApp 
+                    ? (ui.updatingAppButton || 'અપડેટ થઈ રહ્યું છે...') 
+                    : isCheckingUpdate
+                    ? 'તપાસ થઈ રહી છે...'
+                    : updateAvailable
+                    ? 'હમણાં અપડેટ કરો (Update Now)'
+                    : 'અપડેટ્સ માટે તપાસો (Check for Updates)'}
+                </span>
               </button>
             </div>
 
-            {updateSuccess && (
+            <p className="text-[11px] text-[#8C7665] dark:text-stone-400 mt-2 italic text-center sm:text-left">
+              * જ્યારે પણ તમે ઓનલાઇન હોવ ત્યારે એપ આપોઆપ બેકગ્રાઉન્ડમાં નવા અપડેટ્સ તપાસે છે અને તમને સૂચિત કરે છે.
+            </p>
+
+            {(checkStatusMessage || updateSuccess) && (
               <div className="mt-3 p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 text-xs font-semibold text-emerald-800 dark:text-emerald-300 text-center animate-fadeIn">
-                {updateSuccess}
+                {checkStatusMessage || updateSuccess}
               </div>
             )}
           </div>

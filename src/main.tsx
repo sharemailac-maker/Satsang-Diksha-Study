@@ -10,11 +10,23 @@ if ('serviceWorker' in navigator) {
       .then((reg) => {
         console.log('[PWA] ServiceWorker registered with scope:', reg.scope);
 
-        // Check for updates periodically and when window regains focus
+        // Check if a worker is already waiting to be activated from a prior background fetch
+        if (reg.waiting && navigator.serviceWorker.controller) {
+          console.log('[PWA] Existing worker waiting for activation');
+          window.dispatchEvent(new CustomEvent('pwa-update-available'));
+        }
+
+        // Check for updates periodically and when user is online or window regains focus
         const checkForUpdates = () => {
-          reg.update().catch((err) => console.log('[PWA] Update check failed:', err));
+          if (navigator.onLine) {
+            reg.update().catch((err) => console.log('[PWA] Update check failed:', err));
+          }
         };
 
+        // Check on startup
+        setTimeout(checkForUpdates, 1500);
+
+        window.addEventListener('online', checkForUpdates);
         window.addEventListener('focus', checkForUpdates);
         document.addEventListener('visibilitychange', () => {
           if (document.visibilityState === 'visible') {

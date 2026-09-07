@@ -56,6 +56,22 @@ export const NotificationService = {
   },
 
   /**
+   * Intimate user that a new app update is available
+   */
+  sendAppUpdateNotification(version?: string, releaseNotes?: string) {
+    const title = version 
+      ? `સત્સંગ દીક્ષા એપ અપડેટ ઉપલબ્ધ છે (${version})`
+      : 'સત્સંગ દીક્ષા એપનું નવું સંસ્કરણ ઉપલબ્ધ છે!';
+    const body = releaseNotes || 'નવા શાસ્ત્રીય સંદર્ભો અને સુધારાઓ ઉપલબ્ધ છે. નવીનતમ સંસ્કરણ મેળવવા માટે કૃપા કરીને એપ ખોલો અને અપડેટ કરો.';
+
+    return this.sendNotification(title, {
+      body,
+      icon: '/icon-192.png',
+      tag: 'satsang-diksha-app-update'
+    });
+  },
+
+  /**
    * Check if reminder should fire based on current local time
    */
   checkAndTriggerReminder(reminder: ReminderSettings, dailyQuote?: string) {
