@@ -1,4 +1,4 @@
-const CACHE_NAME = 'satsang-diksha-v7-20260907';
+const CACHE_NAME = 'satsang-diksha-v8-20260907';
 
 const STATIC_ASSETS = [
   '/',

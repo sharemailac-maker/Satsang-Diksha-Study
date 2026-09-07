@@ -1,4 +1,5 @@
 import { ScriptureReference } from '../types';
+import { getSwaminiVat } from './swaminiVatoService';
 
 interface RawReference {
   t: 'v' | 's';
@@ -40339,11 +40340,13 @@ export function expandReference(raw: RawReference): ScriptureReference {
   const prefixHi = isVach ? 'वचनामृत' : 'स्वामीनी बातें';
   const prefixEn = isVach ? 'Vachnamrut' : 'Swamini Vato';
 
+  const vatData = !isVach ? getSwaminiVat(raw.secEn || raw.sec) : undefined;
+
   const correlationNoteGu = isVach
     ? `આ શ્લોકનો ભાવ વચનામૃત ${raw.sec}માં શ્રીજી મહારાજે નિરૂપેલા ઉપદેશ સાથે સીધો સંલગ્ન છે.`
     : `આ આજ્ઞા સ્વામીની વાતો ${raw.sec}માં ગુણાતીતાનંદ સ્વામીએ ઉપદેશેલા આધ્યાત્મિક સિદ્ધાંતનું સમર્થન કરે છે.`;
   const correlationNoteHi = isVach
-    ? `इस श्लोक का भाव वचनामृत ${raw.secHi} में श्रीजी महाराज द्वारा प्रतिपादित उपदेश से सीधे संलग्र है।`
+    ? `इस श्लोक का भाव वचनामृत ${raw.secHi} में श्रीजी महाराज द्वारा प्रतिपादित उपदेश से सीधे संलग्न है।`
     : `यह आज्ञा स्वामीनी बातें ${raw.secHi} में गुणातीतानंद स्वामी द्वारा प्रबोधित आध्यात्मिक सिद्धांत का समर्थन करती है।`;
   const correlationNoteEn = isVach
     ? `The teaching of this shloka directly correlates with the divine wisdom revealed in Vachnamrut ${raw.secEn}.`
@@ -40358,14 +40361,21 @@ export function expandReference(raw: RawReference): ScriptureReference {
     section: raw.sec,
     sectionHi: raw.secHi,
     sectionEn: raw.secEn,
-    topic: raw.top,
-    topicGu: raw.top,
+    topic: vatData?.categoryGu || raw.top,
+    topicGu: vatData?.categoryGu || raw.top,
     topicHi: raw.topHi,
-    topicEn: raw.topEn,
+    topicEn: vatData?.categoryEn || raw.topEn,
     correlationNote: correlationNoteGu,
     correlationNoteGu,
     correlationNoteHi,
     correlationNoteEn,
+    textGu: vatData?.textGu,
+    textEn: vatData?.textEn,
+    categoryGu: vatData?.categoryGu,
+    categoryEn: vatData?.categoryEn,
+    prakaran: vatData?.prakaran,
+    vatoNo: vatData?.no,
+    anirdeshUrl: vatData?.anirdeshUrl,
   };
 }
 

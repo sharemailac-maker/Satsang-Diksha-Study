@@ -223,17 +223,17 @@ class UpdateManagerService {
    * - Checks when tab regains focus or visibility
    * - Checks periodically in background while online
    */
-  public startBackgroundMonitoring(intervalMs = 90000): () => void {
+  public startBackgroundMonitoring(intervalMs = 45000): () => void {
     if (this.isMonitoring || typeof window === 'undefined') {
       return () => {};
     }
 
     this.isMonitoring = true;
 
-    // 1. Initial check when visitor visits app
+    // 1. Initial check immediately when visitor visits app
     setTimeout(() => {
       this.checkForUpdates(true);
-    }, 2500);
+    }, 800);
 
     // 2. Check whenever user comes online
     const handleOnline = () => {

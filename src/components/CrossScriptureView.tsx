@@ -26,6 +26,7 @@ import {
 import { getUIStrings } from '../utils/i18n';
 import { PADACHHEDA_DATA } from '../data/padachhedaData';
 import { ANVAYA_DATA } from '../data/anvayaData';
+import { SwaminiVatoChipsView } from './SwaminiVatoChipsView';
 
 const CROSS_REF_I18N: Record<string, {
   tag: string;
@@ -898,7 +899,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div className="space-y-3">
                       {/* Vachnamrut Reference Numbers */}
                       {vachRefs.length > 0 && (
                         <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 space-y-2">
@@ -932,37 +933,13 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                         </div>
                       )}
 
-                      {/* Swamini Vato Reference Numbers */}
+                      {/* Swamini Vato Chips-Like View and Listed Reference Vato from Anirdesh */}
                       {swamiRefs.length > 0 && (
-                        <div className="p-3 rounded-xl bg-orange-50/70 dark:bg-orange-950/20 border border-orange-200/80 dark:border-orange-900/40 space-y-2">
-                          <div className="flex items-center gap-1.5 text-xs font-bold text-[#9E3E00] dark:text-orange-300">
-                            <span className="w-2 h-2 rounded-full bg-orange-600 dark:bg-orange-400 inline-block" />
-                            <span>{swamiLabel}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-200/80 dark:bg-orange-900/60 text-orange-900 dark:text-orange-200 font-semibold ml-auto">
-                              {swamiRefs.length}
-                            </span>
-                          </div>
-                          <div className="flex flex-wrap gap-1.5">
-                            {swamiRefs.map((ref, idx) => {
-                              const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
-                              return (
-                                <div
-                                  key={idx}
-                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#1E1916] border border-orange-300/60 dark:border-orange-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
-                                >
-                                  <span className="font-semibold text-orange-950 dark:text-orange-200">
-                                    {section}
-                                  </span>
-                                  {ref.topic && (
-                                    <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-orange-200 dark:border-stone-700 pl-1.5">
-                                      {ref.topic}
-                                    </span>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                        <SwaminiVatoChipsView
+                          references={shloka.crossReferences}
+                          preferences={preferences}
+                          shlokaId={shloka.id}
+                        />
                       )}
                     </div>
                   </div>

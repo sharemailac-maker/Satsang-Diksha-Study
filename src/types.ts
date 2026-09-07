@@ -79,6 +79,11 @@ export interface ScriptureReference {
   correlationNoteGu?: string;
   correlationNoteHi?: string;
   correlationNoteEn?: string;
+  categoryGu?: string;
+  categoryEn?: string;
+  prakaran?: number;
+  vatoNo?: number;
+  anirdeshUrl?: string;
 }
 
 export interface Shloka {
