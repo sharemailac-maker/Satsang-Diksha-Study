@@ -34,6 +34,7 @@ import { globalAudio } from '../utils/audioPlayer';
 import { PADACHHEDA_DATA } from '../data/padachhedaData';
 import { ANVAYA_DATA } from '../data/anvayaData';
 import { SwaminiVatoChipsView } from './SwaminiVatoChipsView';
+import { VachnamrutChipsView } from './VachnamrutChipsView';
 
 interface ShlokaCardProps {
   shloka: Shloka;
@@ -615,37 +616,13 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
               </div>
 
               <div className="space-y-2.5">
-                {/* Vachnamrut References */}
+                {/* Vachnamrut Quotations Chips-Like View */}
                 {vachRefs.length > 0 && (
-                  <div className="p-2.5 rounded-xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 space-y-1.5">
-                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#8B2500] dark:text-amber-300">
-                      <span className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400 inline-block" />
-                      <span>{vachLabel}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-200/80 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 font-semibold ml-auto">
-                        {vachRefs.length}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {vachRefs.map((ref, idx) => {
-                        const section = getReferenceSection(ref, lang) || getReferenceTitle(ref, lang);
-                        return (
-                          <div
-                            key={idx}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white dark:bg-[#1E1916] border border-amber-300/60 dark:border-amber-800/50 text-xs text-[#2D241E] dark:text-[#EDE5D8] shadow-2xs"
-                          >
-                            <span className="font-semibold text-amber-950 dark:text-amber-200">
-                              {section}
-                            </span>
-                            {ref.topic && (
-                              <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] border-l border-amber-200 dark:border-stone-700 pl-1.5">
-                                {ref.topic}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
+                  <VachnamrutChipsView
+                    references={shloka.crossReferences}
+                    preferences={preferences}
+                    shlokaId={shloka.id}
+                  />
                 )}
 
                 {/* Swamini Vato Chips-Like View and Listed Reference Vato from Anirdesh */}
