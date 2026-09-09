@@ -62,12 +62,23 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   highlightQuery
 }) => {
   const [showPadachheda, setShowPadachheda] = useState(preferences.showWordBreakdownDefault || false);
-  const [anvayaScript, setAnvayaScript] = useState<'devanagari' | 'gujarati'>(preferences.sanskritScript === 'gujarati' ? 'gujarati' : 'devanagari');
+  const [anvayaScript, setAnvayaScript] = useState<'devanagari' | 'gujarati' | 'iast'>(
+    preferences.sanskritScript === 'gujarati' ? 'gujarati' : 
+    preferences.sanskritScript === 'iast' ? 'iast' : 'devanagari'
+  );
   const [anvayaViewMode, setAnvayaViewMode] = useState<'table' | 'chips'>('table');
   const [noteText, setNoteText] = useState(bookmarkNote);
   const [copied, setCopied] = useState(false);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  // Keep anvaya script synchronized with user's global preferences
+  React.useEffect(() => {
+    setAnvayaScript(
+      preferences.sanskritScript === 'gujarati' ? 'gujarati' : 
+      preferences.sanskritScript === 'iast' ? 'iast' : 'devanagari'
+    );
+  }, [preferences.sanskritScript]);
 
   // Subscribe to global audio state for active recitation status
   React.useEffect(() => {
@@ -199,10 +210,6 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           >
             {sanskritText}
           </p>
-
-          <div className="mt-2 text-xs text-[#8A7A68] dark:text-[#A89886] font-mono whitespace-pre-line select-text">
-            {shloka.sanskritIast}
-          </div>
         </div>
 
         {/* Interactive Anvaya (Prose Order) & Anvaya-Artha (Word-by-Word Breakdown) Section */}
@@ -236,6 +243,16 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                     }`}
                   >
                     ગુજરાતી
+                  </button>
+                  <button
+                    onClick={() => setAnvayaScript('iast')}
+                    className={`px-2 py-0.5 rounded-md transition cursor-pointer ${
+                      anvayaScript === 'iast'
+                        ? 'bg-[#8B2500] text-white font-bold'
+                        : 'text-stone-600 dark:text-stone-300 hover:text-amber-900'
+                    }`}
+                  >
+                    Roman
                   </button>
                 </div>
 
@@ -284,13 +301,12 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                   <span>અન્વય (સંસ્કૃત ગદ્ય-ક્રમ - Prose Order):</span>
                 </div>
                 <p className="font-sanskrit text-sm sm:text-base text-[#4A2600] dark:text-amber-200 font-medium leading-relaxed select-text">
-                  {anvayaScript === 'devanagari' ? (anvaya.devanagari || shloka.sanskritDevanagari) : (anvaya.gujarati || shloka.sanskritGujarati)}
+                  {anvayaScript === 'devanagari' 
+                    ? (anvaya.devanagari || shloka.sanskritDevanagari) 
+                    : anvayaScript === 'gujarati' 
+                    ? (anvaya.gujarati || shloka.sanskritGujarati)
+                    : (anvaya.iast || shloka.sanskritIast)}
                 </p>
-                {anvaya.iast && (
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 font-mono select-text pt-0.5">
-                    {anvaya.iast}
-                  </div>
-                )}
               </div>
             )}
 
@@ -307,7 +323,9 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                   {padachhedaList.map((item, idx) => {
                     const wordInScript = anvayaScript === 'devanagari' 
                       ? (item.wordDevanagari || item.word) 
-                      : (item.wordGujarati || item.word);
+                      : anvayaScript === 'gujarati'
+                      ? (item.wordGujarati || item.word)
+                      : (item.transliteration || item.wordDevanagari || item.word);
                     const meaning = getWordMeaningInLang(item, preferences.activeLanguage);
                     const isSelected = selectedWordIndex === idx;
                     return (
@@ -324,9 +342,9 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                           <span className="font-serif font-bold text-sm text-[#8B2500] dark:text-amber-300">
                             {wordInScript}
                           </span>
-                          {item.transliteration && (
+                          {anvayaScript === 'iast' && item.wordDevanagari && (
                             <span className="text-[10px] text-stone-400 dark:text-stone-500 font-mono hidden sm:inline">
-                              ({item.transliteration})
+                              ({item.wordDevanagari})
                             </span>
                           )}
                         </div>
@@ -344,7 +362,9 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                   {padachhedaList.map((item, idx) => {
                     const wordInScript = anvayaScript === 'devanagari' 
                       ? (item.wordDevanagari || item.word) 
-                      : (item.wordGujarati || item.word);
+                      : anvayaScript === 'gujarati'
+                      ? (item.wordGujarati || item.word)
+                      : (item.transliteration || item.wordDevanagari || item.word);
                     const isSelected = selectedWordIndex === idx;
                     return (
                       <button
@@ -370,11 +390,15 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                 <div className="flex items-center justify-between border-b border-amber-200 dark:border-amber-900/40 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="font-serif font-bold text-base text-[#8B2500] dark:text-amber-300">
-                      {anvayaScript === 'devanagari' ? (selectedWordData.wordDevanagari || selectedWordData.word) : (selectedWordData.wordGujarati || selectedWordData.word)}
+                      {anvayaScript === 'devanagari' 
+                        ? (selectedWordData.wordDevanagari || selectedWordData.word) 
+                        : anvayaScript === 'gujarati' 
+                        ? (selectedWordData.wordGujarati || selectedWordData.word) 
+                        : (selectedWordData.transliteration || selectedWordData.wordDevanagari || selectedWordData.word)}
                     </span>
-                    {selectedWordData.transliteration && (
+                    {anvayaScript === 'iast' && selectedWordData.wordDevanagari && (
                       <span className="text-stone-500 dark:text-stone-400 font-mono text-[11px]">
-                        ({selectedWordData.transliteration})
+                        ({selectedWordData.wordDevanagari})
                       </span>
                     )}
                   </div>

@@ -370,17 +370,43 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             {/* Sanskrit Script */}
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Type className="w-4 h-4 text-[#B85D00]" />
-                <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
-                  {ui.sanskritScriptTitle}
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Type className="w-4 h-4 text-[#B85D00]" />
+                  <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
+                    {ui.sanskritScriptTitle}
+                  </span>
+                </div>
+                <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/60">
+                  Default: દેવનાગરી
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {[
-                  { id: 'devanagari', label: 'દેવનાગરી', sub: 'Devanagari' },
-                  { id: 'gujarati', label: 'ગુજરાતી', sub: 'Gujarati' },
-                  { id: 'iast', label: 'IAST', sub: 'Roman Script' }
+                  {
+                    id: 'devanagari',
+                    label: 'દેવનાગરી',
+                    sub: 'Devanagari',
+                    isDefault: true,
+                    sample: 'स्वामिनारायणः साक्षात् अक्षरपुरुषोत्तमः।',
+                    desc: 'મૂળ સંસ્કૃત દેવનાગરી લિપિ'
+                  },
+                  {
+                    id: 'gujarati',
+                    label: 'ગુજરાતી',
+                    sub: 'Gujarati',
+                    isDefault: false,
+                    sample: 'સ્વામિનારાયણઃ સાક્ષાત્ અક્ષરપુરુષોત્તમઃ।',
+                    desc: 'ગુજરાતી લિપિમાં શ્લોક દર્શન'
+                  },
+                  {
+                    id: 'iast',
+                    label: 'રોમન (IAST)',
+                    sub: 'Roman Script',
+                    isDefault: false,
+                    sample: 'Swāminārāyaṇaḥ sākṣhāt Akṣhara-Puruṣhottamaḥ.',
+                    desc: 'Diacritical Roman transliteration'
+                  }
                 ].map((s) => {
                   const isSel = preferences.sanskritScript === s.id;
                   return (
@@ -388,19 +414,68 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       key={s.id}
                       type="button"
                       onClick={() => onUpdatePreferences({ sanskritScript: s.id as SanskritScript })}
-                      className={`p-2.5 rounded-xl text-center border-2 transition cursor-pointer ${
+                      className={`p-3 rounded-xl text-left border-2 transition cursor-pointer flex flex-col justify-between relative ${
                         isSel
-                          ? 'bg-[#7A1D05] text-white border-[#7A1D05] font-bold shadow-xs'
+                          ? 'bg-[#7A1D05] text-white border-[#7A1D05] shadow-xs'
                           : 'bg-white dark:bg-[#181310] border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-200 hover:border-amber-400'
                       }`}
                     >
-                      <div className="text-[13.5px] font-bold">{s.label}</div>
-                      <div className={`text-[10.5px] ${isSel ? 'text-amber-100/90' : 'text-[#7A6250] dark:text-stone-400'}`}>
-                        {s.sub}
+                      <div>
+                        <div className="flex items-center justify-between gap-1 mb-1">
+                          <div className="text-[14px] font-bold">{s.label}</div>
+                          {s.isDefault && (
+                            <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
+                              isSel ? 'bg-amber-300 text-amber-950' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200'
+                            }`}>
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <div className={`text-[11px] font-medium mb-2 ${isSel ? 'text-amber-100/90' : 'text-[#7A6250] dark:text-stone-400'}`}>
+                          {s.sub}
+                        </div>
+                      </div>
+
+                      {/* Short Example Snippet */}
+                      <div className={`p-2 rounded-lg text-xs leading-relaxed border ${
+                        isSel
+                          ? 'bg-[#5F1604] border-amber-400/40 text-amber-100 font-serif'
+                          : 'bg-[#FBF8F3] dark:bg-[#231A14] border-amber-200/60 dark:border-stone-800 text-[#6B240C] dark:text-amber-300 font-serif'
+                      }`}>
+                        <div className="text-[9.5px] font-bold uppercase tracking-wider opacity-75 mb-0.5">
+                          નમૂનો / Example:
+                        </div>
+                        <div className="font-semibold line-clamp-2">
+                          {s.sample}
+                        </div>
                       </div>
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Dynamic Live Script Example Card */}
+              <div className="mt-3 p-3 rounded-xl bg-amber-500/10 dark:bg-amber-900/20 border border-amber-400/30 flex items-start gap-2.5">
+                <div className="p-1.5 rounded-lg bg-[#7A1D05] text-white shrink-0 mt-0.5">
+                  <Check className="w-3.5 h-3.5" />
+                </div>
+                <div className="text-xs space-y-1">
+                  <div className="font-bold text-[#7A1D05] dark:text-amber-300">
+                    શ્લોક દર્શન પસંદગી (Selected Script View): {preferences.sanskritScript === 'devanagari' ? 'દેવનાગરી (Devanagari - Default)' : preferences.sanskritScript === 'gujarati' ? 'ગુજરાતી (Gujarati Script)' : 'રોમન (Roman IAST)'}
+                  </div>
+                  <div className="font-serif font-bold text-sm text-[#5B1503] dark:text-amber-100 leading-relaxed">
+                    {preferences.sanskritScript === 'gujarati'
+                      ? 'સ્વામિનારાયણઃ સાક્ષાત્ અક્ષરપુરુષોત્તમઃ। સર્વેભ્યઃ પરમામ્...'
+                      : preferences.sanskritScript === 'iast'
+                      ? 'Swāminārāyaṇaḥ sākṣhād Akṣhara-Puruṣhottamaḥ; Sarvebhyaḥ paramām...'
+                      : 'स्वामिनारायणः साक्षात् अक्षरपुरुषोत्तमः। सर्वेभ्यः परमाम्...'}
+                  </div>
+                  <div className="text-[10.5px] text-[#7A6250] dark:text-stone-400">
+                    {preferences.sanskritScript === 'iast' 
+                      ? '✓ Roman script is enabled across all verse sections.'
+                      : '✓ Default Devanagari active. Roman script is hidden across all sections.'}
+                  </div>
+                </div>
               </div>
             </div>
 

@@ -259,10 +259,11 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <p 
             className="font-sanskrit font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line text-base sm:text-lg"
           >
-            {preferences.sanskritScript === 'gujarati' ? todayShloka.sanskritGujarati : todayShloka.sanskritDevanagari}
-          </p>
-          <p className="text-xs text-stone-500 font-mono">
-            {todayShloka.sanskritIast}
+            {preferences.sanskritScript === 'gujarati' 
+              ? todayShloka.sanskritGujarati 
+              : preferences.sanskritScript === 'iast'
+              ? todayShloka.sanskritIast
+              : todayShloka.sanskritDevanagari}
           </p>
         </div>
 

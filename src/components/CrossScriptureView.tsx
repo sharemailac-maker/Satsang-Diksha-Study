@@ -712,24 +712,22 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
 
                 {/* Primary Sanskrit Script based on preference */}
                 <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
-                  {preferences?.sanskritScript === 'gujarati' ? shloka.sanskritGujarati : shloka.sanskritDevanagari}
+                  {preferences?.sanskritScript === 'gujarati' 
+                    ? shloka.sanskritGujarati 
+                    : preferences?.sanskritScript === 'iast'
+                    ? shloka.sanskritIast
+                    : shloka.sanskritDevanagari}
                 </p>
 
                 {/* Alternate Script Display */}
-                {preferences?.sanskritScript === 'gujarati' ? (
+                {preferences?.sanskritScript === 'gujarati' && (
                   <p className="font-sanskrit text-xs sm:text-sm text-[#8B2500]/85 dark:text-amber-300/80 leading-relaxed whitespace-pre-line">
                     {shloka.sanskritDevanagari}
                   </p>
-                ) : (
+                )}
+                {preferences?.sanskritScript === 'devanagari' && (
                   <p className="font-gujarati text-xs sm:text-sm text-[#8B2500]/85 dark:text-amber-300/80 leading-relaxed whitespace-pre-line">
                     {shloka.sanskritGujarati}
-                  </p>
-                )}
-
-                {/* IAST Transliteration */}
-                {shloka.sanskritIast && (
-                  <p className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
-                    {shloka.sanskritIast}
                   </p>
                 )}
 
@@ -768,18 +766,23 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                         </span>
                       )}
                     </div>
-                    {/* Full Devanagari */}
+                    {/* Full Sanskrit Verse in Selected Script */}
                     <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
-                      {shloka.sanskritDevanagari}
+                      {preferences?.sanskritScript === 'gujarati' 
+                        ? shloka.sanskritGujarati 
+                        : preferences?.sanskritScript === 'iast'
+                        ? shloka.sanskritIast
+                        : shloka.sanskritDevanagari}
                     </p>
-                    {/* Full Gujarati Script */}
-                    <p className="font-gujarati text-xs sm:text-sm font-semibold text-[#8B2500] dark:text-amber-300 leading-relaxed whitespace-pre-line">
-                      {shloka.sanskritGujarati}
-                    </p>
-                    {/* IAST Transliteration */}
-                    {shloka.sanskritIast && (
-                      <p className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
-                        {shloka.sanskritIast}
+                    {/* Alternate Script if in Devanagari or Gujarati */}
+                    {preferences?.sanskritScript === 'gujarati' && (
+                      <p className="font-sanskrit text-xs sm:text-sm font-semibold text-[#8B2500] dark:text-amber-300 leading-relaxed whitespace-pre-line">
+                        {shloka.sanskritDevanagari}
+                      </p>
+                    )}
+                    {preferences?.sanskritScript === 'devanagari' && (
+                      <p className="font-gujarati text-xs sm:text-sm font-semibold text-[#8B2500] dark:text-amber-300 leading-relaxed whitespace-pre-line">
+                        {shloka.sanskritGujarati}
                       </p>
                     )}
                   </div>
@@ -791,13 +794,12 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                         {t.anvayaTitle}
                       </div>
                       <p className="font-sanskrit text-xs sm:text-sm font-medium text-[#4A3D31] dark:text-[#DCD1C3] leading-relaxed">
-                        {preferences?.sanskritScript === 'gujarati' ? anvaya.gujarati : anvaya.devanagari}
+                        {preferences?.sanskritScript === 'gujarati' 
+                          ? (anvaya.gujarati || shloka.sanskritGujarati) 
+                          : preferences?.sanskritScript === 'iast'
+                          ? (anvaya.iast || shloka.sanskritIast)
+                          : (anvaya.devanagari || shloka.sanskritDevanagari)}
                       </p>
-                      {anvaya.iast && (
-                        <p className="text-[11px] text-[#8A7A68] dark:text-[#A89886] font-mono italic">
-                          {anvaya.iast}
-                        </p>
-                      )}
                     </div>
                   )}
 
@@ -821,7 +823,11 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                               }`}
                             >
                               <span className="font-sanskrit font-semibold">
-                                {preferences?.sanskritScript === 'gujarati' ? (p.wordGujarati || p.word) : (p.wordDevanagari || p.word)}
+                                {preferences?.sanskritScript === 'gujarati' 
+                                  ? (p.wordGujarati || p.word) 
+                                  : preferences?.sanskritScript === 'iast'
+                                  ? (p.transliteration || p.wordDevanagari || p.word)
+                                  : (p.wordDevanagari || p.word)}
                               </span>
                               {isSelected && <CheckCircle2 className="w-3 h-3 text-amber-300" />}
                             </button>
@@ -837,11 +843,15 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       <div className="flex items-center justify-between">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-sanskrit text-sm font-bold text-[#8B2500] dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-md">
-                            {t.wordPrefix} {preferences?.sanskritScript === 'gujarati' ? (selectedWord.wordGujarati || selectedWord.word) : (selectedWord.wordDevanagari || selectedWord.word)}
+                            {t.wordPrefix} {preferences?.sanskritScript === 'gujarati' 
+                              ? (selectedWord.wordGujarati || selectedWord.word) 
+                              : preferences?.sanskritScript === 'iast'
+                              ? (selectedWord.transliteration || selectedWord.wordDevanagari || selectedWord.word)
+                              : (selectedWord.wordDevanagari || selectedWord.word)}
                           </span>
-                          {selectedWord.transliteration && (
+                          {preferences?.sanskritScript === 'iast' && selectedWord.wordDevanagari && (
                             <span className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
-                              ({selectedWord.transliteration})
+                              ({selectedWord.wordDevanagari})
                             </span>
                           )}
                           {selectedWord.grammaticalRole && (

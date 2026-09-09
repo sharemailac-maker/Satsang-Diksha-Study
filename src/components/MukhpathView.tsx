@@ -83,7 +83,15 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
   const learningCount = Object.values(mukhpathRecords).filter((r: { status: MukhpathLevel }) => r.status === 'learning').length;
   const progressPercent = Math.round((memorizedCount / totalShlokas) * 100);
 
-  const sanskritLines = activeShloka ? activeShloka.sanskritDevanagari.split('\n') : [];
+  const sanskritVerse = activeShloka 
+    ? (preferences.sanskritScript === 'gujarati' 
+        ? activeShloka.sanskritGujarati 
+        : preferences.sanskritScript === 'iast' 
+        ? activeShloka.sanskritIast 
+        : activeShloka.sanskritDevanagari)
+    : '';
+
+  const sanskritLines = sanskritVerse ? sanskritVerse.split('\n') : [];
 
   const handleNext = () => {
     setHideState(true);
@@ -306,11 +314,8 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                   ॥ श्री स्वामिनारायणो विजयते ॥
                 </div>
                 <p className="font-sanskrit text-xl sm:text-2xl font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line">
-                  {activeShloka.sanskritDevanagari}
+                  {sanskritVerse}
                 </p>
-                <div className="mt-3 text-xs text-[#8A7A68] dark:text-[#A89886] font-mono">
-                  {activeShloka.sanskritIast}
-                </div>
               </div>
 
               {/* Translations display */}
@@ -342,12 +347,19 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                       {ui.wordBreakdownTitle}:
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      {padachhedaList.map((item, idx) => (
-                        <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between gap-2">
-                          <span className="font-sanskrit font-bold text-[#8B2500] dark:text-amber-300">{item.word}</span>
-                          <span className="text-stone-700 dark:text-stone-300 text-right font-medium">{getWordMeaningInLang(item, lang)}</span>
-                        </div>
-                      ))}
+                      {padachhedaList.map((item, idx) => {
+                        const itemWord = preferences.sanskritScript === 'gujarati' 
+                          ? (item.wordGujarati || item.word) 
+                          : preferences.sanskritScript === 'iast' 
+                          ? (item.transliteration || item.wordDevanagari || item.word) 
+                          : (item.wordDevanagari || item.word);
+                        return (
+                          <div key={idx} className="p-2 rounded-lg bg-white dark:bg-[#261F1A] border border-amber-300/40 flex items-start justify-between gap-2">
+                            <span className="font-sanskrit font-bold text-[#8B2500] dark:text-amber-300">{itemWord}</span>
+                            <span className="text-stone-700 dark:text-stone-300 text-right font-medium">{getWordMeaningInLang(item, lang)}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 );
@@ -382,7 +394,7 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                 ) : (
                   <div className="space-y-3">
                     <p className="font-sanskrit text-xl sm:text-2xl font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line">
-                      {activeShloka.sanskritDevanagari}
+                      {sanskritVerse}
                     </p>
                     <button
                       onClick={() => setHideState(true)}
@@ -402,7 +414,7 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
             <div className="space-y-6">
               <div className="p-6 rounded-2xl bg-[#FFFDF9] dark:bg-[#28211C] border-2 border-amber-500/30 text-center">
                 <p className="font-sanskrit text-xl sm:text-2xl font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line">
-                  {activeShloka.sanskritDevanagari}
+                  {sanskritVerse}
                 </p>
               </div>
 
@@ -500,7 +512,7 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                   <div className="space-y-2">
                     <span className="text-xs text-amber-700 dark:text-amber-400 font-serif">॥ સંસ્કૃત શ્લોક ॥</span>
                     <p className="font-sanskrit text-2xl font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line">
-                      {activeShloka.sanskritDevanagari}
+                      {sanskritVerse}
                     </p>
                   </div>
                 ) : (

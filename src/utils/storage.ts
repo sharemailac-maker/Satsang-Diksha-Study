@@ -60,9 +60,13 @@ export const StorageService = {
       const data = localStorage.getItem(STORAGE_KEYS.PREFS);
       if (!data) return DEFAULT_PREFERENCES;
       const parsed = JSON.parse(data);
+      const validScripts = ['devanagari', 'gujarati', 'iast'];
+      const sanskritScript = validScripts.includes(parsed.sanskritScript) ? parsed.sanskritScript : 'devanagari';
+
       return {
         ...DEFAULT_PREFERENCES,
         ...parsed,
+        sanskritScript,
         reminder: {
           ...DEFAULT_PREFERENCES.reminder,
           ...(parsed.reminder || {})

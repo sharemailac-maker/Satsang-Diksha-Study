@@ -874,23 +874,22 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
 
           {/* Primary Script */}
           <p className="font-sanskrit font-bold text-xl sm:text-2xl text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide">
-            {preferences?.sanskritScript === 'gujarati' ? currentShloka.sanskritGujarati : currentShloka.sanskritDevanagari}
+            {preferences?.sanskritScript === 'gujarati' 
+              ? currentShloka.sanskritGujarati 
+              : preferences?.sanskritScript === 'iast' 
+              ? currentShloka.sanskritIast 
+              : currentShloka.sanskritDevanagari}
           </p>
 
-          {/* Alternate Script */}
-          {preferences?.sanskritScript === 'gujarati' ? (
+          {/* Alternate Script (Shown only when in Devanagari or Gujarati mode) */}
+          {preferences?.sanskritScript === 'gujarati' && (
             <p className="font-sanskrit text-sm sm:text-base text-[#8B2500]/80 dark:text-amber-300/80 leading-relaxed whitespace-pre-line">
               {currentShloka.sanskritDevanagari}
             </p>
-          ) : (
+          )}
+          {preferences?.sanskritScript === 'devanagari' && (
             <p className="font-gujarati font-semibold text-base sm:text-lg text-[#8B2500] dark:text-amber-300 leading-relaxed">
               {currentShloka.sanskritGujarati}
-            </p>
-          )}
-
-          {currentShloka.sanskritIast && (
-            <p className="text-xs text-[#8A7A68] dark:text-[#A89886] font-mono italic">
-              {currentShloka.sanskritIast}
             </p>
           )}
         </div>
