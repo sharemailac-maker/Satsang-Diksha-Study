@@ -17,7 +17,8 @@ import {
   ChevronDown,
   CheckCircle2,
   Minus,
-  Plus
+  Plus,
+  Users
 } from 'lucide-react';
 import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { StorageService, AVAILABLE_LANGUAGE_PACKS } from '../utils/storage';
@@ -25,6 +26,7 @@ import { NotificationService } from '../utils/notificationService';
 import { getUIStrings } from '../utils/i18n';
 import { useAppUpdate } from '../hooks/useAppUpdate';
 import { CURRENT_APP_VERSION } from '../version';
+import { useHitCounter } from '../utils/hitCounter';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -135,6 +137,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [testNotificationStatus, setTestNotificationStatus] = useState<string | null>(null);
   const [downloadingPackLang, setDownloadingPackLang] = useState<Language | null>(null);
   const [packDownloadMessage, setPackDownloadMessage] = useState<string | null>(null);
+
+  // Anonymous Aggregate Hit Counter
+  const { count: hitCount, isLoading: isHitLoading, refresh: refreshHits } = useHitCounter();
 
   const ui = getUIStrings(preferences.activeLanguage);
 
@@ -807,16 +812,75 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             )}
           </div>
 
+          {/* =========================================================
+              CARD 5: એપ વપરાશ & મુલાકાતીઓ (Anonymous Hit Counter & GA4)
+              Real-time aggregate app visits counter without personal data
+              ========================================================= */}
+          <div 
+            id="card-anonymous-hit-counter"
+            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 flex-shrink-0 mt-0.5">
+                  <Users className="w-5 h-5 stroke-[2.3]" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
+                    કુલ એપ મુલાકાતો (App Visits & Access)
+                  </h3>
+                  <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5">
+                    ગુમનામ વપરાશકર્તા ગણતરી (Anonymous Hit Counter)
+                  </p>
+                </div>
+              </div>
+
+              {/* Refresh Live Count Button */}
+              <button
+                type="button"
+                onClick={refreshHits}
+                disabled={isHitLoading}
+                title="રીફ્રેશ કરો (Refresh Count)"
+                className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-[#7A1D05] dark:text-amber-300 border border-amber-200 dark:border-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isHitLoading ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">રીફ્રેશ</span>
+              </button>
+            </div>
+
+            {/* Live Count Display Metric */}
+            <div className="mt-3.5 p-3.5 sm:p-4 rounded-xl bg-gradient-to-br from-[#FFF9EE] via-[#FDF5E6] to-[#F5EBD7] dark:from-[#292019] dark:via-[#221B16] dark:to-[#1C1612] border border-[#ECDCC7] dark:border-stone-800 flex items-center justify-between gap-3 shadow-2xs">
+              <div>
+                <span className="text-[11px] font-bold text-[#8C6B52] dark:text-amber-200/80 uppercase tracking-wider block">
+                  કુલ એપ એક્સેસ (Total Accesses)
+                </span>
+                <div className="flex items-baseline gap-2 mt-0.5">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-[#7A1D05] dark:text-amber-300 tracking-tight font-mono">
+                    {isHitLoading ? '...' : hitCount.toLocaleString()}
+                  </span>
+                  <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">
+                    વખત
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-[#8C7665] dark:text-stone-400 mt-2.5 leading-relaxed">
+              * ૧૦૦% ગોપનીય અને ગુમનામ: કોઈ અંગત માહિતી, નામ, ઈમેલ કે કૂકીઝ એકત્રિત થતી નથી. માત્ર એપ એક્સેસની સંખ્યા ગણવામાં આવે છે.
+            </p>
+          </div>
+
         </div>
 
         {/* =========================================================
             BOTTOM FIXED ACTION BAR (Exact Match with Attachment)
             Left: મૂળ સેટિંગ્સ (Reset)
+            Center: મુલાકાતીઓ કાઉન્ટર ઇન્ડિકેટર (Visitor Counter)
             Right: સાચવો & બંધ કરો (Save & Close)
             ========================================================= */}
         <div 
           id="settings-bottom-bar"
-          className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between flex-shrink-0 select-none shadow-xs ${
+          className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 flex-shrink-0 select-none shadow-xs ${
             preferences.theme === 'dark'
               ? 'bg-[#15100C] border-stone-800'
               : preferences.theme === 'sepia'
@@ -834,18 +898,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onClose();
               }
             }}
-            className="flex items-center gap-2 text-[#4A2D1B] dark:text-stone-300 hover:text-[#7A1D05] text-sm font-medium transition cursor-pointer py-2 px-1"
+            className="flex items-center gap-2 text-[#4A2D1B] dark:text-stone-300 hover:text-[#7A1D05] text-sm font-medium transition cursor-pointer py-2 px-1 flex-shrink-0"
           >
             <RotateCcw className="w-4 h-4 text-[#7A1D05] stroke-[2.5]" />
             <span>{ui.resetButton}</span>
           </button>
+
+          {/* Center: Subtle hit counter indicator badge */}
+          <div 
+            id="settings-footer-hit-pill"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-amber-100/80 dark:bg-stone-800/90 border border-amber-200/80 dark:border-stone-700 text-[11px] sm:text-xs text-[#5D3A20] dark:text-amber-200 select-none shadow-2xs"
+            title="કુલ ગુમનામ એપ મુલાકાતો"
+          >
+            <Users className="w-3.5 h-3.5 text-[#7A1D05] dark:text-amber-400 flex-shrink-0" />
+            <span className="hidden xs:inline">મુલાકાતો:</span>
+            <strong className="font-mono font-bold text-[#7A1D05] dark:text-amber-300">
+              {isHitLoading ? '...' : hitCount.toLocaleString()}
+            </strong>
+          </div>
 
           {/* Right: સાચવો & બંધ કરો */}
           <button
             id="btn-save-and-close"
             type="button"
             onClick={onClose}
-            className="px-6 sm:px-7 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer active:scale-98"
+            className="px-5 sm:px-7 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer active:scale-98 flex-shrink-0"
           >
             {ui.saveCloseButton}
           </button>

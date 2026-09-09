@@ -22,6 +22,8 @@ import { CHAPTERS } from './data/chapters';
 import { StorageService, DEFAULT_PREFERENCES } from './utils/storage';
 import { NotificationService } from './utils/notificationService';
 import { getUIStrings } from './utils/i18n';
+import { trackPageView } from './utils/analytics';
+import { recordOrFetchVisit } from './utils/hitCounter';
 import { 
   UserPreferences, 
   Bookmark, 
@@ -60,6 +62,16 @@ export default function App() {
     document.body.className = `theme-${preferences.theme} ${preferences.theme === 'dark' ? 'dark' : ''}`;
     StorageService.savePreferences(preferences);
   }, [preferences.theme]);
+
+  // Anonymous aggregate visit registration on app launch
+  useEffect(() => {
+    recordOrFetchVisit();
+  }, []);
+
+  // Track virtual pageviews in GA4 on tab switch
+  useEffect(() => {
+    trackPageView(`Satsang Diksha - ${activeTab.toUpperCase()}`, `/#${activeTab}`);
+  }, [activeTab]);
 
   // Periodic check for Daily Study Reminder
   useEffect(() => {
