@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   BookOpen, 
   Sparkles, 
@@ -45,7 +45,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const ui = getUIStrings(preferences.activeLanguage);
 
   // Calculate today's shloka (e.g. based on day of the year)
-  const todayIndex = React.useMemo(() => {
+  const todayIndex = useMemo(() => {
     const start = new Date(new Date().getFullYear(), 0, 0);
     const diff = Date.now() - start.getTime();
     const oneDay = 1000 * 60 * 60 * 24;
@@ -53,19 +53,19 @@ export const HomeView: React.FC<HomeViewProps> = ({
     return (dayOfYear % 315) + 1;
   }, []);
 
-  const todayShloka = React.useMemo(() => {
+  const todayShloka = useMemo(() => {
     return shlokas.find(s => s.id === todayIndex) || shlokas[0];
   }, [shlokas, todayIndex]);
 
   // Subscribe to global audio state for Daily Shloka
-  React.useEffect(() => {
+  useEffect(() => {
     return globalAudio.subscribe((state) => {
       setIsPlayingAudio(state.isPlaying && state.shlokaId === todayShloka.id);
     });
   }, [todayShloka.id]);
 
   // Memorized counts
-  const memorizedCount = React.useMemo(() => {
+  const memorizedCount = useMemo(() => {
     return Object.values(mukhpathRecords).filter((r: { status: MukhpathLevel; recitationCount: number }) => r.status === 'memorized' || r.status === 'mastered').length;
   }, [mukhpathRecords]);
 

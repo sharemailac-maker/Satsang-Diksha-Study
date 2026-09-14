@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Bookmark, 
   Share2, 
@@ -73,7 +73,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   // Keep anvaya script synchronized with user's global preferences
-  React.useEffect(() => {
+  useEffect(() => {
     setAnvayaScript(
       preferences.sanskritScript === 'gujarati' ? 'gujarati' : 
       preferences.sanskritScript === 'iast' ? 'iast' : 'devanagari'
@@ -81,7 +81,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   }, [preferences.sanskritScript]);
 
   // Subscribe to global audio state for active recitation status
-  React.useEffect(() => {
+  useEffect(() => {
     return globalAudio.subscribe((state) => {
       setIsPlayingAudio(state.isPlaying && state.shlokaId === shloka.id);
     });

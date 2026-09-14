@@ -22,7 +22,6 @@ import { CHAPTERS } from './data/chapters';
 import { StorageService, DEFAULT_PREFERENCES } from './utils/storage';
 import { NotificationService } from './utils/notificationService';
 import { getUIStrings } from './utils/i18n';
-import { trackPageView } from './utils/analytics';
 import { recordOrFetchVisit } from './utils/hitCounter';
 import { 
   UserPreferences, 
@@ -67,11 +66,6 @@ export default function App() {
   useEffect(() => {
     recordOrFetchVisit();
   }, []);
-
-  // Track virtual pageviews in GA4 on tab switch
-  useEffect(() => {
-    trackPageView(`Satsang Diksha - ${activeTab.toUpperCase()}`, `/#${activeTab}`);
-  }, [activeTab]);
 
   // Periodic check for Daily Study Reminder
   useEffect(() => {
@@ -376,19 +370,23 @@ export default function App() {
       </main>
 
       {/* Modals */}
-      <QuickJumpModal
-        isOpen={isQuickJumpOpen}
-        onClose={() => setIsQuickJumpOpen(false)}
-        onJumpToShloka={handleJumpToShloka}
-      />
+      {isQuickJumpOpen && (
+        <QuickJumpModal
+          isOpen={isQuickJumpOpen}
+          onClose={() => setIsQuickJumpOpen(false)}
+          onJumpToShloka={handleJumpToShloka}
+        />
+      )}
 
-      <SettingsModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        preferences={preferences}
-        onUpdatePreferences={handleUpdatePreferences}
-        onResetPreferences={handleResetPreferences}
-      />
+      {isSettingsOpen && (
+        <SettingsModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          preferences={preferences}
+          onUpdatePreferences={handleUpdatePreferences}
+          onResetPreferences={handleResetPreferences}
+        />
+      )}
     </div>
   );
 }

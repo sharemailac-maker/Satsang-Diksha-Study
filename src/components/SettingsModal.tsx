@@ -904,19 +904,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <span>{ui.resetButton}</span>
           </button>
 
-          {/* Center: Subtle hit counter indicator badge */}
-          <div 
-            id="settings-footer-hit-pill"
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-amber-100/80 dark:bg-stone-800/90 border border-amber-200/80 dark:border-stone-700 text-[11px] sm:text-xs text-[#5D3A20] dark:text-amber-200 select-none shadow-2xs"
-            title="કુલ ગુમનામ એપ મુલાકાતો"
-          >
-            <Users className="w-3.5 h-3.5 text-[#7A1D05] dark:text-amber-400 flex-shrink-0" />
-            <span className="hidden xs:inline">મુલાકાતો:</span>
-            <strong className="font-mono font-bold text-[#7A1D05] dark:text-amber-300">
-              {isHitLoading ? '...' : hitCount.toLocaleString()}
-            </strong>
-          </div>
-
           {/* Right: સાચવો & બંધ કરો */}
           <button
             id="btn-save-and-close"
