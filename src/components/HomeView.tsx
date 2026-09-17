@@ -20,6 +20,7 @@ import { Shloka, UserPreferences, MukhpathLevel } from '../types';
 import { getUIStrings, getShlokaMeaning } from '../utils/i18n';
 import { globalAudio } from '../utils/audioPlayer';
 import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
+import { HomeLettersBanner } from './HomeLettersBanner';
 
 interface HomeViewProps {
   shlokas: Shloka[];
@@ -136,81 +137,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 space-y-6 animate-fadeIn pb-16">
-      {/* Hero Welcome Card */}
-      <div className="relative rounded-3xl overflow-hidden shadow-xl border border-amber-400/40 bg-gradient-to-r from-[#701A00] via-[#8B2500] to-[#B45309] text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-400/20 via-transparent to-black/30 pointer-events-none" />
-        
-        <div className="relative z-10 p-5 sm:p-7 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-3 text-center md:text-left max-w-xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 text-amber-200 text-xs font-semibold border border-amber-300/30">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>{ui.homeAuthorTitle || 'પ્રગટ બ્રહ્મસ્વરૂપ મહંત સ્વામી મહારાજ પ્રણીત'}</span>
-            </div>
-
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-amber-50 tracking-tight leading-tight">
-              {ui.homeHeroTitle || 'સત્સંગ દીક્ષા સ્વાધ્યાય'}
-            </h2>
-
-            <p className="text-xs sm:text-sm text-amber-100/90 leading-relaxed font-sans">
-              {ui.homeHeroDesc || 'ભગવાન સ્વામિનારાયણ પ્રબોધિત અક્ષરપુરુષોત્તમ ઉપાસના અને સદાચારના ૩૧૫ સંસ્કૃત શ્લોકોનું પ્રામાણિક અધ્યયન, પદચ્છેદ, મુખપાઠ અને વચનામૃત અનુસંધાન.'}
-            </p>
-
-            {/* Quick Action Buttons */}
-            <div className="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2.5 text-xs">
-              <button
-                onClick={() => onNavigateTab('reader')}
-                className="px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold shadow-md transition flex items-center gap-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                <span>{ui.homeStartShlokBtn || 'શ્લોક અધ્યયન શરૂ કરો'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('udgaan')}
-                className="px-4 py-2.5 rounded-xl bg-amber-500/30 hover:bg-amber-500/45 text-amber-100 font-semibold border border-amber-300/40 transition flex items-center gap-2"
-              >
-                <Radio className="w-4 h-4 text-amber-300" />
-                <span>{ui.homeUdgaanBtn || 'ઉદ્ગાન શ્રવણ (Udgaan Audio)'}</span>
-              </button>
-
-              <button
-                onClick={() => onNavigateTab('mukhpath')}
-                className="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-amber-100 font-semibold border border-amber-300/40 transition flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                <span>{ui.homeMukhpathBtn || 'મુખપાઠ સાધના'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Holy App Icon Artwork */}
-          <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden shadow-2xl border-4 border-amber-300/80 flex-shrink-0 bg-amber-950">
-            <img 
-              src={appIconImg} 
-              alt="Satsang Diksha Scripture" 
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        </div>
-
-        {/* Bottom Fast Stats Ribbon */}
-        <div className="border-t border-amber-400/20 bg-black/25 px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-xs text-amber-100">
-          <div className="flex items-center gap-2">
-            <Flame className="w-4 h-4 text-orange-400" />
-            <span>{ui.homeTotalShlokasBadge || 'કુલ શ્લોકો: ૩૧૫'}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            <span>{ui.homeMemorizedBadge || 'મુખપાઠ સિદ્ધ'}: <strong>{memorizedCount}</strong> ({Math.round((memorizedCount / 315) * 100)}%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <BookmarkIcon className="w-4 h-4 text-amber-300" />
-            <span>{ui.homeSavedBadge || 'સાચવેલા શ્લોકો'}: <strong>{totalBookmarks}</strong></span>
-          </div>
-        </div>
-      </div>
+      {/* Home Page Blessing Letters Carousel Banner (Swipe left/right style) */}
+      <HomeLettersBanner
+        onNavigateTab={onNavigateTab}
+        memorizedCount={memorizedCount}
+        totalBookmarks={totalBookmarks}
+        ui={ui}
+      />
 
       {/* TODAY'S FEATURED SHLOKA */}
       <div className="bg-white dark:bg-[#221D1A] rounded-3xl p-5 sm:p-6 shadow-md border border-[#E8DFD1] dark:border-[#3D342C] space-y-4">
