@@ -57,7 +57,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#7A1E00] text-white shadow-lg border-b border-[#A63000]/60">
+    <header className="sticky top-0 z-40 bg-[#7A1E00] text-white shadow-lg border-b border-[#A63000]/60 pt-[env(safe-area-inset-top,0px)]">
       {/* Top Brand Bar */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         {/* Left: Bigger Holy App Icon & Title/Sub-info */}

@@ -21,20 +21,12 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
   lang
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [lightboxImage, setLightboxImage] = useState<{ title: string; src?: string; type: 'quote' | 'letter' } | null>(null);
+  const [lightboxImage, setLightboxImage] = useState<{ title: string; src?: string } | null>(null);
   
-  // Custom uploaded images stored in localStorage (from Editor session)
+  // Custom uploaded quote image stored in localStorage (from Editor session)
   const [customQuoteImg] = useState<string | null>(() => {
     try {
       return localStorage.getItem('mukhpath_banner_quote_img');
-    } catch {
-      return null;
-    }
-  });
-
-  const [customLetterImg] = useState<string | null>(() => {
-    try {
-      return localStorage.getItem('mukhpath_banner_letter_img');
     } catch {
       return null;
     }
@@ -45,7 +37,7 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
   const touchEndXRef = useRef<number | null>(null);
   const minSwipeDistance = 45;
 
-  const totalSlides = 3;
+  const totalSlides = 2;
 
   const handleNext = () => {
     setActiveSlide((prev) => (prev + 1) % totalSlides);
@@ -288,123 +280,13 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
 
                       {/* Full-view button badge */}
                       <button
-                        onClick={() => setLightboxImage({ title: 'સત્સંગદીક્ષા મુખપાઠ પ્રેરણા સૂત્ર', type: 'quote' })}
+                        onClick={() => setLightboxImage({ title: 'સત્સંગદીક્ષા મુખપાઠ પ્રેરણા સૂત્ર' })}
                         className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-amber-500 hover:bg-amber-400 text-amber-950 text-[11px] font-bold shadow-md flex items-center gap-1 transition-all whitespace-nowrap cursor-pointer"
                         title="વિસ્તારથી જુઓ"
                       >
                         <Maximize2 className="w-3 h-3" />
                         <span>વિસ્તૃત જુઓ</span>
                       </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* SLIDE 3: Mahant Swami Maharaj Holy Ashirwad Patra Letter Banner */}
-          <div className="w-full flex-shrink-0 relative overflow-hidden bg-[#241712] text-[#FDF8EE] border border-amber-500/40">
-            {customLetterImg ? (
-              // Display user's uploaded raw original letter image
-              <div className="relative w-full h-[280px] sm:h-[320px] md:h-[350px] bg-[#1a0f0a] flex items-center justify-center overflow-hidden">
-                <img 
-                  src={customLetterImg} 
-                  alt="પ.પૂ. મહંતસ્વામી મહારાજ હસ્તલિખિત આશીર્વાદ પત્ર" 
-                  className="w-full h-full object-contain cursor-zoom-in"
-                  onClick={() => setLightboxImage({ title: 'પ.પૂ. મહંતસ્વામી મહારાજ આશીર્વાદ પત્ર (Nenpur Letter)', src: customLetterImg, type: 'letter' })}
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute bottom-3 right-3 flex items-center gap-2 z-10">
-                  <button 
-                    onClick={() => setLightboxImage({ title: 'પ.પૂ. મહંતસ્વામી મહારાજ આશીર્વાદ પત્ર (Nenpur Letter)', src: customLetterImg, type: 'letter' })}
-                    className="px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black/90 text-amber-200 border border-amber-400/40 text-xs flex items-center gap-1.5 backdrop-blur-xs transition cursor-pointer"
-                    title="મોટી સાઈઝમાં જુઓ"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5 text-amber-300" />
-                    <span>મોટી સાઈઝમાં જુઓ</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              // Authentic Double-Framed Ashirwad Patra Presentation
-              <div className="p-4 sm:p-6 bg-gradient-to-br from-[#2D160D] via-[#21110A] to-[#180A05] relative overflow-hidden">
-                {/* Outer Ornate Double Border */}
-                <div className="absolute inset-2 sm:inset-3 border-2 border-amber-400/30 rounded-2xl pointer-events-none" />
-
-                {/* Header title bar */}
-                <div className="flex items-center justify-between pb-3 border-b border-amber-500/20 mb-3 px-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-amber-400 text-sm">📜</span>
-                    <h3 className="text-sm sm:text-base font-serif font-bold text-amber-200">
-                      પ.પૂ. મહંતસ્વામી મહારાજ કૃત આશીર્વાદ પત્ર (નેનપુર, ૭ જુલાઈ ૨૦૨૦)
-                    </h3>
-                  </div>
-
-                  <button 
-                    onClick={() => setLightboxImage({ title: 'પ.પૂ. મહંતસ્વામી મહારાજ કૃત આશીર્વાદ પત્ર', type: 'letter' })}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-amber-950 text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
-                    title="સંપૂર્ણ પત્ર વિસ્તૃત રીતે વાંચો"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                    <span>વિસ્તૃત વાંચો</span>
-                  </button>
-                </div>
-
-                {/* Two Column Framed Letter Representation */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
-                  {/* Left Column: Gujarati Holy Letter Transcription */}
-                  <div 
-                    onClick={() => setLightboxImage({ title: 'પ.પૂ. મહંતસ્વામી મહારાજ હસ્તલિખિત આશીર્વાદ પત્ર (ગુજરાતી)', type: 'letter' })}
-                    className="cursor-pointer bg-[#FFFDF5] text-[#2C1808] p-3.5 sm:p-4 rounded-xl border border-amber-300 shadow-md hover:shadow-lg transition relative overflow-hidden group"
-                  >
-                    <div className="flex items-center justify-between border-b border-amber-900/15 pb-2 mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[#8B2500]">HH MAHANT SWAMI MAHARAJ</span>
-                      </div>
-                      <span className="text-[11px] font-mono text-amber-900 font-semibold">નેનપુર • ૭.૭.'૨૦</span>
-                    </div>
-
-                    <p className="text-xs font-serif font-bold text-[#7A1D05] mb-1">
-                      B.A.P.S. સંસ્થાના તમામ આશ્રિતો પ્રતિ,
-                    </p>
-
-                    <p className="text-[11px] sm:text-xs font-serif text-[#3E2310] leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all">
-                      "વિ. સત્સંગ દીક્ષા ગ્રંથ મહારાજ સ્વામીની કૃપાથી તૈયાર થયો છે. હવે આપણા બધાએ તેના ઓછામાં ઓછા પાંચ શ્લોકોનું વાંચન દરરોજ કરવું. જેમને શક્તિ અને આવડત હોય તેઓ સંસ્કૃત શ્લોકો વાંચે અને યથા શક્તિ મુખપાઠ કરે, એવી અમારી રુચિ છે. બાળકો-બાલિકાઓ, કિશોરો-કિશોરીઓ, યુવકો-યુવતીઓ મુખપાઠ કરી અક્ષર-પુરુષોત્તમનો ઉદ્ઘોષ કરે..."
-                    </p>
-
-                    <div className="mt-2.5 pt-2 border-t border-amber-900/10 flex items-center justify-between text-[10px] text-amber-800">
-                      <span className="font-serif italic">જય સ્વામિનારાયણ - સાધુ કેશવજીવનદાસ</span>
-                      <span className="text-amber-600 font-bold group-hover:text-amber-800 flex items-center gap-0.5">
-                        ક્લિક કરી સંપૂર્ણ વાંચો <ChevronRight className="w-3 h-3" />
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Right Column: English Holy Letter Transcription */}
-                  <div 
-                    onClick={() => setLightboxImage({ title: 'HH Mahant Swami Maharaj Blessing Letter (English)', type: 'letter' })}
-                    className="cursor-pointer bg-[#FFFDF5] text-[#2C1808] p-3.5 sm:p-4 rounded-xl border border-amber-300 shadow-md hover:shadow-lg transition relative overflow-hidden group"
-                  >
-                    <div className="flex items-center justify-between border-b border-amber-900/15 pb-2 mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-[#8B2500]">HH MAHANT SWAMI MAHARAJ</span>
-                      </div>
-                      <span className="text-[11px] font-mono text-amber-900 font-semibold">Nenpur • 7 July 2020</span>
-                    </div>
-
-                    <p className="text-xs font-serif font-bold text-[#7A1D05] mb-1">
-                      To All BAPS Devotees,
-                    </p>
-
-                    <p className="text-[11px] sm:text-xs font-serif text-[#3E2310] leading-relaxed line-clamp-4 group-hover:line-clamp-none transition-all">
-                      "By the grace of Maharaj and Swami, the 'Satsang Diksha' text has been prepared. Now, all should daily read at least five verses from it. Those who are able to should read the verses in Sanskrit and memorise them as per their capacity. That is my wish. May the balaks-balikas, kishores-kishoris, and yuvaks-yuvatis memorize them..."
-                    </p>
-
-                    <div className="mt-2.5 pt-2 border-t border-amber-900/10 flex items-center justify-between text-[10px] text-amber-800">
-                      <span className="font-serif italic">Sadhu Keshavjivandas</span>
-                      <span className="text-amber-600 font-bold group-hover:text-amber-800 flex items-center gap-0.5">
-                        Read Full Letter <ChevronRight className="w-3 h-3" />
-                      </span>
                     </div>
                   </div>
                 </div>
@@ -436,12 +318,12 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
         <div className="absolute bottom-2.5 sm:bottom-3 left-0 right-0 flex items-center justify-between px-4 sm:px-6 pointer-events-none z-20">
           {/* Slide Title / Category Pill */}
           <div className="pointer-events-auto bg-black/60 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-amber-400/30 text-[10px] sm:text-[11px] text-amber-200 font-medium">
-            {activeSlide === 0 ? '૧. મુખપાઠ પ્રગતિ' : activeSlide === 1 ? '૨. સ્વામીશ્રી પ્રેરણા સૂત્ર' : '૩. દિવ્ય આશીર્વાદ પત્ર'}
+            {activeSlide === 0 ? '૧. મુખપાઠ પ્રગતિ' : '૨. સ્વામીશ્રી પ્રેરણા સૂત્ર'}
           </div>
 
           {/* Indicators Dots */}
           <div className="pointer-events-auto flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-amber-400/30">
-            {[0, 1, 2].map((idx) => (
+            {[0, 1].map((idx) => (
               <button
                 key={idx}
                 onClick={() => setActiveSlide(idx)}
@@ -462,7 +344,7 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
         </div>
       </div>
 
-      {/* LIGHTBOX / FULL-VIEW MODAL */}
+      {/* LIGHTBOX / FULL-VIEW MODAL FOR QUOTE */}
       {lightboxImage && (
         <div 
           className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in"
@@ -499,7 +381,7 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
                   referrerPolicy="no-referrer"
                 />
               </div>
-            ) : lightboxImage.type === 'quote' ? (
+            ) : (
               /* High-Res Full Frame for Quote */
               <div className="bg-gradient-to-br from-[#FFFDF5] via-[#FFF9EA] to-[#FBF2DE] text-[#2C1808] p-6 sm:p-10 rounded-2xl border-4 border-amber-600 shadow-2xl space-y-6">
                 <div className="text-center space-y-2">
@@ -535,89 +417,13 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
                   </div>
                 </div>
               </div>
-            ) : (
-              /* High-Res Full Frame for Ashirwad Patra Letter */
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Gujarati Ashirwad Patra */}
-                  <div className="bg-[#FFFDF5] text-[#2C1808] p-5 sm:p-7 rounded-2xl border-2 border-amber-400 shadow-xl space-y-4">
-                    <div className="flex items-center justify-between border-b-2 border-amber-900/20 pb-3">
-                      <div>
-                        <div className="text-sm font-bold text-[#8B2500]">HH MAHANT SWAMI MAHARAJ</div>
-                        <div className="text-[11px] text-stone-600">(Swami Keshavjivandas)</div>
-                      </div>
-                      <div className="text-right text-xs font-serif font-bold text-amber-900">
-                        <div>નેનપુર</div>
-                        <div>૭.૭.'૨૦ • મંગળવાર</div>
-                      </div>
-                    </div>
-
-                    <div className="text-xs sm:text-sm font-serif font-bold text-[#7A1D05]">
-                      B.A.P.S સંસ્થાના તમામ આશ્રિતો પ્રતિ,
-                    </div>
-
-                    <div className="text-xs sm:text-sm font-serif text-[#3E2310] leading-relaxed space-y-3">
-                      <p>
-                        વિ. સત્સંગ દીક્ષા ગ્રંથ મહારાજ સ્વામીની કૃપાથી તૈયાર થયો છે. હવે આપણા બધાએ તેના ઓછામાં ઓછા પાંચ શ્લોકોનું વાંચન દરરોજ કરવું. જેમને શક્તિ અને આવડત હોય તેઓ સંસ્કૃત શ્લોકો વાંચે અને યથા શક્તિ મુખપાઠ કરે, એવી અમારી રુચિ છે.
-                      </p>
-                      <p>
-                        બાળકો-બાલિકાઓ, કિશોરો-કિશોરીઓ, યુવકો-યુવતીઓ મુખપાઠ કરી અક્ષર-પુરુષોત્તમનો ઉદ્ઘોષ કરે, યોગી બાપા અને પ્રમુખ સ્વામી ખૂબ રાજી થશે.
-                      </p>
-                      <p className="font-bold text-[#8B2500] pt-2">
-                        જયશ્રી સ્વામિનારાયણ
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-amber-900/15 text-[10px] text-stone-600 font-serif">
-                      B.A.P.S. Swaminarayan Mandir, Shahibaug Road, Ahmedabad - 380 004, Gujarat, India
-                    </div>
-                  </div>
-
-                  {/* English Ashirwad Patra */}
-                  <div className="bg-[#FFFDF5] text-[#2C1808] p-5 sm:p-7 rounded-2xl border-2 border-amber-400 shadow-xl space-y-4">
-                    <div className="flex items-center justify-between border-b-2 border-amber-900/20 pb-3">
-                      <div>
-                        <div className="text-sm font-bold text-[#8B2500]">HH MAHANT SWAMI MAHARAJ</div>
-                        <div className="text-[11px] text-stone-600">(Swami Keshavjivandas)</div>
-                      </div>
-                      <div className="text-right text-xs font-serif font-bold text-amber-900">
-                        <div>Nenpur, India</div>
-                        <div>7 July 2020 • Tuesday</div>
-                      </div>
-                    </div>
-
-                    <div className="text-xs sm:text-sm font-serif font-bold text-[#7A1D05]">
-                      To All BAPS Devotees,
-                    </div>
-
-                    <div className="text-xs sm:text-sm font-serif text-[#3E2310] leading-relaxed space-y-3">
-                      <p>
-                        Heartfelt Jai Shri Swaminarayan from Sadhu Keshavjivandas.
-                      </p>
-                      <p>
-                        By the grace of Maharaj and Swami, the 'Satsang Diksha' text has been prepared. Now, all should daily read at least five verses from it. Those who are able to should read the verses in Sanskrit and memorise them as per their capacity. That is my wish.
-                      </p>
-                      <p>
-                        May the balaks-balikas, kishores-kishoris, and yuvaks-yuvatis memorize them and proclaim the Akshar-Purushottam [principle]. Yogi Bapa and Pramukh Swami will be extremely pleased.
-                      </p>
-                      <p className="font-bold text-[#8B2500] pt-2">
-                        Jai Swaminarayan.
-                      </p>
-                    </div>
-
-                    <div className="pt-3 border-t border-amber-900/15 text-[10px] text-stone-600 font-serif">
-                      Email: letters@in.baps.org • www.baps.org
-                    </div>
-                  </div>
-                </div>
-              </div>
             )}
 
             {/* Modal Footer Controls */}
             <div className="mt-6 pt-4 border-t border-amber-500/30 flex items-center justify-between gap-3 text-xs text-amber-200">
               <div className="flex items-center gap-2 text-amber-300/90 font-serif">
                 <span>🪷</span>
-                <span className="text-xs sm:text-sm">પ્રગટ ગુરુહરિ પ.પૂ. મહંતસ્વામી મહારાજ દિવ્ય આશીર્વાદ</span>
+                <span className="text-xs sm:text-sm">પ્રગટ ગુરુહરિ પ.પૂ. મહંતસ્વામી મહારાજ દિવ્ય પ્રેરણા</span>
               </div>
 
               <button
