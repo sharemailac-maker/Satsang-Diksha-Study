@@ -31,6 +31,7 @@ import {
 import { getUIStrings } from '../utils/i18n';
 import { globalAudio } from '../utils/audioPlayer';
 import { PADACHHEDA_DATA } from '../data/padachhedaData';
+import { MukhpathBannerCarousel } from './MukhpathBannerCarousel';
 
 interface MukhpathViewProps {
   shlokas: Shloka[];
@@ -115,88 +116,12 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
-      {/* Mukhpath Overview Dashboard Banner */}
-      <div className="bg-gradient-to-r from-[#8B2500] via-[#A83200] to-[#D97706] rounded-3xl p-5 sm:p-7 text-white shadow-xl border border-amber-400/30">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-300 animate-spin-slow" />
-              <span className="text-xs font-bold tracking-wider uppercase text-amber-200">
-                {lang === 'hindi' ? 'सत्संग दीक्षा मुखपाठ साधना' : lang === 'english' ? 'Satsang Diksha Mukhpath Sadhana' : 'સત્સંગ દીક્ષા મુખપાઠ સાધના'}
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-amber-50">
-              {lang === 'hindi' ? 'मुखपाठ एवं कंठस्थ अभ्यास' : lang === 'english' ? 'Mukhpath Memorization Mastery' : 'મુખપાઠ સાધના અને કંઠસ્થ અભ્યાસ'}
-            </h2>
-            <p className="text-xs sm:text-sm text-amber-100/80 max-w-xl">
-              {lang === 'hindi' ? 'सभी ३૧૫ संस्कृत श्लोकों को पंक्तिबद्ध स्मरण, फ्लैशकार्ड और शब्दार्थ द्वारा कंठस्थ करें।' : lang === 'english' ? 'Learn, memorize, and master all 315 Sanskrit Shlokas through line-by-line reveal, flashcard testing, and word-by-word recall.' : '૩૧૫ દિવ્ય સંસ્કૃત શ્લોકોનું પદચ્છેદ, શબ્દાર્થ અને ક્રમબદ્ધ પઠન દ્વારા સંપૂર્ણ મુખપાઠ કરો.'}
-            </p>
-          </div>
-
-          {/* Progress Circle & Counter */}
-          <div className="flex items-center gap-4 bg-black/25 backdrop-blur-xs p-3.5 rounded-2xl border border-amber-300/30">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-mono">
-                {memorizedCount}<span className="text-sm font-normal text-amber-200/80">/315</span>
-              </div>
-              <div className="text-[11px] text-amber-200">{lang === 'hindi' ? 'कंठस्थ श्लोक' : lang === 'english' ? 'Memorized' : 'કંઠસ્થ શ્લોક'}</div>
-            </div>
-            <div className="h-10 w-px bg-amber-400/30" />
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-extrabold text-amber-300 font-mono">
-                {progressPercent}%
-              </div>
-              <div className="text-[11px] text-amber-200">{lang === 'hindi' ? 'प्रगति' : lang === 'english' ? 'Completed' : 'સિદ્ધિ'}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Multi-tier Progress Bar */}
-        <div className="mt-5 space-y-1.5">
-          <div className="w-full bg-black/30 h-3 rounded-full overflow-hidden border border-amber-300/20 p-0.5">
-            <div 
-              className="bg-gradient-to-r from-amber-400 via-yellow-300 to-emerald-400 h-full rounded-full transition-all duration-500 shadow-sm"
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-[11px] text-amber-200 font-mono">
-            <span>0</span>
-            <span>25</span>
-            <span>50</span>
-            <span>100</span>
-            <span>200</span>
-            <span>315</span>
-          </div>
-        </div>
-
-        {/* Milestones Badges */}
-        <div className="mt-4 flex flex-wrap items-center gap-2 pt-3 border-t border-amber-400/20">
-          <span className="text-xs text-amber-200 font-semibold flex items-center gap-1">
-            <Trophy className="w-3.5 h-3.5 text-yellow-300" />
-            બિરુદ સિદ્ધિ:
-          </span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-            memorizedCount >= 25 ? 'bg-amber-400 text-amber-950 border-amber-300 font-bold' : 'bg-black/20 text-amber-300/60 border-white/10'
-          }`}>
-            🥉 ૨૫ શ્લોક
-          </span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-            memorizedCount >= 50 ? 'bg-amber-400 text-amber-950 border-amber-300 font-bold' : 'bg-black/20 text-amber-300/60 border-white/10'
-          }`}>
-            🥈 ૫૦ શ્લોક
-          </span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-            memorizedCount >= 100 ? 'bg-amber-400 text-amber-950 border-amber-300 font-bold' : 'bg-black/20 text-amber-300/60 border-white/10'
-          }`}>
-            🥇 ૧૦૦ શ્લોક
-          </span>
-          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-            memorizedCount >= 315 ? 'bg-yellow-300 text-amber-950 border-yellow-100 font-extrabold shadow-md animate-bounce' : 'bg-black/20 text-amber-300/60 border-white/10'
-          }`}>
-            👑 ૩૧૫ સંપૂર્ણ સિદ્ધિ
-          </span>
-        </div>
-      </div>
+      {/* Mukhpath Overview Swipeable Banner Carousel */}
+      <MukhpathBannerCarousel
+        memorizedCount={memorizedCount}
+        progressPercent={progressPercent}
+        lang={lang}
+      />
 
       {/* Filter & Practice Mode Bar */}
       <div className="bg-white dark:bg-[#221D1A] rounded-2xl p-4 shadow-sm border border-[#E8DFD1] dark:border-[#3D342C] space-y-3">
