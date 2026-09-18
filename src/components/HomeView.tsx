@@ -143,6 +143,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         memorizedCount={memorizedCount}
         totalBookmarks={totalBookmarks}
         ui={ui}
+        activeLanguage={preferences.activeLanguage}
       />
 
       {/* TODAY'S FEATURED SHLOKA */}

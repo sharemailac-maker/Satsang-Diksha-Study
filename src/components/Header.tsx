@@ -37,9 +37,8 @@ export const Header: React.FC<HeaderProps> = ({
   const ui = getUIStrings(preferences.activeLanguage);
 
   const toggleTheme = () => {
-    const themes: ThemeMode[] = ['light', 'sepia', 'dark'];
-    const nextIdx = (themes.indexOf(preferences.theme) + 1) % themes.length;
-    onUpdatePreferences({ theme: themes[nextIdx] });
+    const next: ThemeMode = preferences.theme === 'light' ? 'dark' : 'light';
+    onUpdatePreferences({ theme: next });
   };
 
   const getLangBadge = () => {

@@ -211,9 +211,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         className={`w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] transition-all border ${
           preferences.theme === 'dark'
             ? 'bg-[#1A1410] border-stone-800 text-stone-100'
-            : preferences.theme === 'sepia'
-              ? 'bg-[#F2E8D2] border-[#DFCFAA] text-[#382513]'
-              : 'bg-[#FAF5EC] border-[#ECD8BE] text-[#2D1A0E]'
+            : 'bg-[#FAF5EC] border-[#ECD8BE] text-[#2D1A0E]'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
@@ -373,7 +371,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             id="card-script-display"
             className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
           >
-            {/* Sanskrit Script */}
+            {/* Sanskrit Script Dropdown Menu */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
@@ -386,175 +384,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   Default: દેવનાગરી
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {[
-                  {
-                    id: 'devanagari',
-                    label: 'દેવનાગરી',
-                    sub: 'Devanagari',
-                    isDefault: true,
-                    sample: 'स्वामिनारायणः साक्षात् अक्षरपुरुषोत्तमः।',
-                    desc: 'મૂળ સંસ્કૃત દેવનાગરી લિપિ'
-                  },
-                  {
-                    id: 'gujarati',
-                    label: 'ગુજરાતી',
-                    sub: 'Gujarati',
-                    isDefault: false,
-                    sample: 'સ્વામિનારાયણઃ સાક્ષાત્ અક્ષરપુરુષોત્તમઃ।',
-                    desc: 'ગુજરાતી લિપિમાં શ્લોક દર્શન'
-                  },
-                  {
-                    id: 'iast',
-                    label: 'રોમન (IAST)',
-                    sub: 'Roman Script',
-                    isDefault: false,
-                    sample: 'Swāminārāyaṇaḥ sākṣhāt Akṣhara-Puruṣhottamaḥ.',
-                    desc: 'Diacritical Roman transliteration'
-                  }
-                ].map((s) => {
-                  const isSel = preferences.sanskritScript === s.id;
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => onUpdatePreferences({ sanskritScript: s.id as SanskritScript })}
-                      className={`p-3 rounded-xl text-left border-2 transition cursor-pointer flex flex-col justify-between relative ${
-                        isSel
-                          ? 'bg-[#7A1D05] text-white border-[#7A1D05] shadow-xs'
-                          : 'bg-white dark:bg-[#181310] border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-200 hover:border-amber-400'
-                      }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-1 mb-1">
-                          <div className="text-[14px] font-bold">{s.label}</div>
-                          {s.isDefault && (
-                            <span className={`text-[9.5px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider ${
-                              isSel ? 'bg-amber-300 text-amber-950' : 'bg-amber-100 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200'
-                            }`}>
-                              Default
-                            </span>
-                          )}
-                        </div>
-                        <div className={`text-[11px] font-medium mb-2 ${isSel ? 'text-amber-100/90' : 'text-[#7A6250] dark:text-stone-400'}`}>
-                          {s.sub}
-                        </div>
-                      </div>
-
-                      {/* Short Example Snippet */}
-                      <div className={`p-2 rounded-lg text-xs leading-relaxed border ${
-                        isSel
-                          ? 'bg-[#5F1604] border-amber-400/40 text-amber-100 font-serif'
-                          : 'bg-[#FBF8F3] dark:bg-[#231A14] border-amber-200/60 dark:border-stone-800 text-[#6B240C] dark:text-amber-300 font-serif'
-                      }`}>
-                        <div className="text-[9.5px] font-bold uppercase tracking-wider opacity-75 mb-0.5">
-                          નમૂનો / Example:
-                        </div>
-                        <div className="font-semibold line-clamp-2">
-                          {s.sample}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Dynamic Live Script Example Card */}
-              <div className="mt-3 p-3 rounded-xl bg-amber-500/10 dark:bg-amber-900/20 border border-amber-400/30 flex items-start gap-2.5">
-                <div className="p-1.5 rounded-lg bg-[#7A1D05] text-white shrink-0 mt-0.5">
-                  <Check className="w-3.5 h-3.5" />
-                </div>
-                <div className="text-xs space-y-1">
-                  <div className="font-bold text-[#7A1D05] dark:text-amber-300">
-                    શ્લોક દર્શન પસંદગી (Selected Script View): {preferences.sanskritScript === 'devanagari' ? 'દેવનાગરી (Devanagari - Default)' : preferences.sanskritScript === 'gujarati' ? 'ગુજરાતી (Gujarati Script)' : 'રોમન (Roman IAST)'}
-                  </div>
-                  <div className="font-serif font-bold text-sm text-[#5B1503] dark:text-amber-100 leading-relaxed">
-                    {preferences.sanskritScript === 'gujarati'
-                      ? 'સ્વામિનારાયણઃ સાક્ષાત્ અક્ષરપુરુષોત્તમઃ। સર્વેભ્યઃ પરમામ્...'
-                      : preferences.sanskritScript === 'iast'
-                      ? 'Swāminārāyaṇaḥ sākṣhād Akṣhara-Puruṣhottamaḥ; Sarvebhyaḥ paramām...'
-                      : 'स्वामिनारायणः साक्षात् अक्षरपुरुषोत्तमः। सर्वेभ्यः परमाम्...'}
-                  </div>
-                  <div className="text-[10.5px] text-[#7A6250] dark:text-stone-400">
-                    {preferences.sanskritScript === 'iast' 
-                      ? '✓ Roman script is enabled across all verse sections.'
-                      : '✓ Default Devanagari active. Roman script is hidden across all sections.'}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Reading Theme */}
-            <div className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800">
-              <div className="flex items-center gap-2 mb-2">
-                <Sun className="w-4 h-4 text-[#B85D00]" />
-                <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
-                  {ui.themeTitle}
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'light', label: ui.themeLight, icon: <Sun className="w-4 h-4" />, color: 'bg-white text-stone-900 border-[#EADBCC]' },
-                  { id: 'sepia', label: ui.themeSepia, icon: <Sparkles className="w-4 h-4" />, color: 'bg-[#F4ECD8] text-[#4A2D1B] border-[#DFCFAA]' },
-                  { id: 'dark', label: ui.themeDark, icon: <Moon className="w-4 h-4" />, color: 'bg-[#1E1916] text-stone-100 border-stone-700' }
-                ].map((t) => {
-                  const isSel = preferences.theme === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => onUpdatePreferences({ theme: t.id as ThemeMode })}
-                      className={`p-2.5 rounded-xl text-center border-2 transition cursor-pointer flex flex-col items-center justify-center gap-1 ${
-                        isSel
-                          ? 'bg-[#7A1D05] text-white border-[#7A1D05] font-bold shadow-xs'
-                          : `${t.color} hover:border-amber-400`
-                      }`}
-                    >
-                      <div className="flex items-center gap-1.5">
-                        {t.icon}
-                        <span className="text-[13px] font-bold">{t.label}</span>
-                      </div>
-                      {isSel && <div className="w-1.5 h-1.5 rounded-full bg-amber-300"></div>}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Font Size Adjuster */}
-            <div className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800 flex items-center justify-between">
-              <div>
-                <span className="font-bold text-[14.5px] text-[#7A1D05] dark:text-amber-300 block">
-                  {ui.fontSizeTitle}
-                </span>
-                <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  {preferences.fontSize || 18} px
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => onUpdatePreferences({ fontSize: Math.max(14, (preferences.fontSize || 18) - 2) })}
-                  className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 cursor-pointer flex items-center justify-center text-sm"
+              <div className="relative">
+                <select
+                  id="select-sanskrit-script"
+                  value={preferences.sanskritScript}
+                  onChange={(e) => onUpdatePreferences({ sanskritScript: e.target.value as SanskritScript })}
+                  className="w-full appearance-none px-4 py-3 rounded-xl border-2 border-[#EADBCC] dark:border-stone-700 bg-white dark:bg-[#181310] text-[#7A1D05] dark:text-amber-200 font-bold text-sm focus:outline-none focus:border-[#7A1D05] cursor-pointer shadow-2xs pr-10"
                 >
-                  A-
-                </button>
-                <span className="text-sm font-semibold w-8 text-center text-[#7A1D05] dark:text-amber-200">
-                  {preferences.fontSize || 18}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => onUpdatePreferences({ fontSize: Math.min(28, (preferences.fontSize || 18) + 2) })}
-                  className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 cursor-pointer flex items-center justify-center text-sm"
-                >
-                  A+
-                </button>
+                  <option value="devanagari">દેવનાગરી (Devanagari - Default)</option>
+                  <option value="gujarati">ગુજરાતી લિપિ (Gujarati Script)</option>
+                  <option value="iast">રોમન લિપિ (Roman IAST Script)</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#7A1D05] dark:text-amber-300">
+                  <ChevronDown className="w-4 h-4" />
+                </div>
               </div>
             </div>
 
             {/* Auto Swipe On Read */}
             <div 
-              className="pt-2 border-t border-[#F5E6CE] dark:border-stone-800 flex items-center justify-between cursor-pointer"
+              className="pt-3 border-t border-[#F5E6CE] dark:border-stone-800 flex items-center justify-between cursor-pointer"
               onClick={() => onUpdatePreferences({ autoSwipeOnRead: !preferences.autoSwipeOnRead })}
             >
               <div>
@@ -571,6 +420,65 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 onChange={(val) => onUpdatePreferences({ autoSwipeOnRead: val })}
                 label="Auto Swipe"
               />
+            </div>
+
+            {/* Auto Swipe Verses while listening */}
+            <div 
+              className="pt-3 border-t border-[#F5E6CE] dark:border-stone-800 flex items-center justify-between cursor-pointer"
+              onClick={() => onUpdatePreferences({ autoSwipeWhileListening: !(preferences.autoSwipeWhileListening ?? true) })}
+            >
+              <div>
+                <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
+                  ઓડિયો શ્રવણ વખતે આપોઆપ આગળ વધવું (Auto swipe Verses while listening)
+                </span>
+                <span className="text-xs text-[#785E4F] dark:text-stone-400">
+                  ઉદ્ગાન ઓડિયો પૂર્ણ થતાં પછીનો શ્લોક આપોઆપ શરૂ કરવો
+                </span>
+              </div>
+              <WarmToggleSwitch
+                id="toggle-auto-swipe-listening"
+                checked={preferences.autoSwipeWhileListening !== false}
+                onChange={(val) => onUpdatePreferences({ autoSwipeWhileListening: val })}
+                label="Auto swipe while listening"
+              />
+            </div>
+          </div>
+
+          {/* =========================================================
+              CARD: અક્ષર કદ (Font Size Settings - Outside layout group)
+              ========================================================= */}
+          <div 
+            id="card-font-size-settings"
+            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs flex items-center justify-between"
+          >
+            <div>
+              <span className="font-bold text-[14.5px] text-[#7A1D05] dark:text-amber-300 block">
+                {ui.fontSizeTitle || 'અક્ષર કદ (Font Size)'}
+              </span>
+              <span className="text-xs text-[#785E4F] dark:text-stone-400">
+                વાંચન માટે અક્ષરોનું માપ વધારો કે ઘટાડો ({preferences.fontSize || 18} px)
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onUpdatePreferences({ fontSize: Math.max(14, (preferences.fontSize || 18) - 2) })}
+                className="w-9 h-9 rounded-xl bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 cursor-pointer flex items-center justify-center text-sm shadow-2xs active:scale-95"
+                title="Decrease font size"
+              >
+                A-
+              </button>
+              <span className="text-sm font-bold w-9 text-center text-[#7A1D05] dark:text-amber-200">
+                {preferences.fontSize || 18}
+              </span>
+              <button
+                type="button"
+                onClick={() => onUpdatePreferences({ fontSize: Math.min(28, (preferences.fontSize || 18) + 2) })}
+                className="w-9 h-9 rounded-xl bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 cursor-pointer flex items-center justify-center text-sm shadow-2xs active:scale-95"
+                title="Increase font size"
+              >
+                A+
+              </button>
             </div>
           </div>
 
@@ -694,12 +602,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <WarmToggleSwitch
                   id="toggle-reminder"
                   checked={!!preferences.reminder?.enabled}
-                  onChange={(val) => onUpdatePreferences({
-                    reminder: {
-                      ...preferences.reminder,
-                      enabled: val
+                  onChange={async (val) => {
+                    if (val) {
+                      await NotificationService.requestPermission();
                     }
-                  })}
+                    onUpdatePreferences({
+                      reminder: {
+                        ...preferences.reminder,
+                        enabled: val
+                      }
+                    });
+                  }}
                   label="Daily Reminder"
                 />
               </div>
@@ -883,9 +796,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 flex-shrink-0 select-none shadow-xs ${
             preferences.theme === 'dark'
               ? 'bg-[#15100C] border-stone-800'
-              : preferences.theme === 'sepia'
-                ? 'bg-[#EAE0CA] border-[#DFCFAA]'
-                : 'bg-[#FAF5EC] border-[#ECD8BE]'
+              : 'bg-[#FAF5EC] border-[#ECD8BE]'
           }`}
         >
           {/* Left: મૂળ સેટિંગ્સ (Reset) */}

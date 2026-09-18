@@ -312,6 +312,7 @@ export default function App() {
             shlokas={allShlokas}
             preferences={preferences}
             onSelectShloka={handleJumpToShloka}
+            onUpdatePreferences={handleUpdatePreferences}
           />
         )}
 

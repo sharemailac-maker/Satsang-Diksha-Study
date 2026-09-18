@@ -49,6 +49,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   dailyGoal: 1, // 1 Shloka daily reading target
   readerTimeout: '5 Minutes',
   autoSwipeOnRead: false,
+  autoSwipeWhileListening: true,
   downloadWifiOnly: false,
   playingMethod: 'Stream and Save',
   autoMarkReadWithAudio: false
@@ -62,10 +63,12 @@ export const StorageService = {
       const parsed = JSON.parse(data);
       const validScripts = ['devanagari', 'gujarati', 'iast'];
       const sanskritScript = validScripts.includes(parsed.sanskritScript) ? parsed.sanskritScript : 'devanagari';
+      const theme = parsed.theme === 'dark' ? 'dark' : 'light';
 
       return {
         ...DEFAULT_PREFERENCES,
         ...parsed,
+        theme,
         sanskritScript,
         reminder: {
           ...DEFAULT_PREFERENCES.reminder,
@@ -75,6 +78,7 @@ export const StorageService = {
         secondaryLanguages: parsed.secondaryLanguages || DEFAULT_PREFERENCES.secondaryLanguages,
         readerTimeout: parsed.readerTimeout || DEFAULT_PREFERENCES.readerTimeout,
         autoSwipeOnRead: parsed.autoSwipeOnRead ?? DEFAULT_PREFERENCES.autoSwipeOnRead,
+        autoSwipeWhileListening: parsed.autoSwipeWhileListening ?? DEFAULT_PREFERENCES.autoSwipeWhileListening,
         downloadWifiOnly: parsed.downloadWifiOnly ?? DEFAULT_PREFERENCES.downloadWifiOnly,
         playingMethod: parsed.playingMethod || DEFAULT_PREFERENCES.playingMethod,
         autoMarkReadWithAudio: parsed.autoMarkReadWithAudio ?? DEFAULT_PREFERENCES.autoMarkReadWithAudio,

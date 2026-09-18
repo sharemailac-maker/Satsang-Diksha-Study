@@ -1,7 +1,6 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
-@custom-variant sepia (&:where(.theme-sepia, .theme-sepia *));
 
 @layer base {
   :root {
@@ -59,56 +58,6 @@ html.dark {
 
 html.theme-light {
   color-scheme: light;
-}
-
-html.theme-sepia {
-  color-scheme: light;
-}
-
-/* Sepia Mode Theme Styling */
-html.theme-sepia,
-html.theme-sepia body {
-  background-color: #F4ECD8 !important;
-  color: #382513 !important;
-}
-
-html.theme-sepia .min-h-screen {
-  background-color: #F4ECD8 !important;
-  color: #382513 !important;
-}
-
-html.theme-sepia .bg-\[\#FDFBF7\],
-html.theme-sepia .bg-\[\#FFFDF7\],
-html.theme-sepia .bg-\[\#FAF6F0\],
-html.theme-sepia .bg-\[\#FAF5EC\],
-html.theme-sepia .bg-stone-50 {
-  background-color: #ECE0C8 !important;
-}
-
-html.theme-sepia .bg-white {
-  background-color: #FAF4E6 !important;
-}
-
-html.theme-sepia .border-\[\#E8DFD1\],
-html.theme-sepia .border-\[\#EADBCC\],
-html.theme-sepia .border-\[\#F6DEAC\],
-html.theme-sepia .border-\[\#F5E6CE\],
-html.theme-sepia .border-\[\#ECD8BE\] {
-  border-color: #DFCFAA !important;
-}
-
-html.theme-sepia .text-\[\#2D241E\],
-html.theme-sepia .text-\[\#2D1A0E\],
-html.theme-sepia .text-stone-900,
-html.theme-sepia .text-stone-800 {
-  color: #382513 !important;
-}
-
-html.theme-sepia .text-\[\#6B5E51\],
-html.theme-sepia .text-\[\#785E4F\],
-html.theme-sepia .text-\[\#7A6250\],
-html.theme-sepia .text-stone-600 {
-  color: #6E563E !important;
 }
 
 

@@ -18,7 +18,7 @@ export type Language =
 
 export type SanskritScript = 'devanagari' | 'gujarati' | 'iast';
 
-export type ThemeMode = 'light' | 'sepia' | 'dark';
+export type ThemeMode = 'light' | 'dark';
 
 export type MukhpathLevel = 'unlearned' | 'learning' | 'memorized' | 'mastered';
 
@@ -175,6 +175,7 @@ export interface UserPreferences {
   autoSwipeOnRead?: boolean; // Auto Swipe when 'Mark as Read'
 
   // Audio preferences from settings
+  autoSwipeWhileListening?: boolean; // Auto swipe verses while listening to audio
   downloadWifiOnly?: boolean; // Download using Wi-Fi Only
   playingMethod?: string; // 'Stream and Save' | 'Stream Only' | 'Download All'
   autoMarkReadWithAudio?: boolean; // Auto 'Mark as Read' with audio

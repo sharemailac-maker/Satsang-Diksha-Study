@@ -27,6 +27,7 @@ interface UdgaanViewProps {
   shlokas: Shloka[];
   preferences: UserPreferences;
   onSelectShloka?: (shlokaId: number) => void;
+  onUpdatePreferences?: (prefs: Partial<UserPreferences>) => void;
 }
 
 interface UdgaanSection {
@@ -283,14 +284,14 @@ const getUdgaanSectionDesc = (section: UdgaanSection, lang: string) => {
   return section.descriptionEn || section.descriptionGu;
 };
 
-export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, onSelectShloka }) => {
+export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, onSelectShloka, onUpdatePreferences }) => {
   const [selectedUdgaanId, setSelectedUdgaanId] = useState<number>(1);
   const [groupingMode, setGroupingMode] = useState<'udgaan' | '5' | '10' | '25' | 'all'>('udgaan');
   const [audioFormat, setAudioFormat] = useState<AudioFormat>('sanskrit');
   
   const [currentShlokaId, setCurrentShlokaId] = useState<number>(1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isAutoAdvance, setIsAutoAdvance] = useState<boolean>(true);
+  const [isAutoAdvance, setIsAutoAdvance] = useState<boolean>(preferences?.autoSwipeWhileListening !== false);
   const [isLoopCurrent, setIsLoopCurrent] = useState<boolean>(false);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
@@ -306,13 +307,21 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
   // Synchronized state refs to prevent stale closure bugs in audio events
   const currentShlokaIdRef = useRef<number>(currentShlokaId);
   const isPlayingRef = useRef<boolean>(isPlaying);
-  const isAutoAdvanceRef = useRef<boolean>(isAutoAdvance);
+  const isAutoAdvanceRef = useRef<boolean>(preferences?.autoSwipeWhileListening !== false);
   const isLoopCurrentRef = useRef<boolean>(isLoopCurrent);
   const audioFormatRef = useRef<AudioFormat>(audioFormat);
   const playbackSpeedRef = useRef<number>(playbackSpeed);
   const isMutedRef = useRef<boolean>(isMuted);
   const groupingModeRef = useRef<'udgaan' | '5' | '10' | '25' | 'all'>(groupingMode);
   const selectedUdgaanIdRef = useRef<number>(selectedUdgaanId);
+
+  // Synchronize with external preferences if changed from Settings Modal
+  useEffect(() => {
+    if (preferences?.autoSwipeWhileListening !== undefined) {
+      setIsAutoAdvance(preferences.autoSwipeWhileListening);
+      isAutoAdvanceRef.current = preferences.autoSwipeWhileListening;
+    }
+  }, [preferences?.autoSwipeWhileListening]);
 
   const lang = preferences?.activeLanguage || preferences?.appLanguage || 'gujarati';
   const t = getUdgaanStrings(lang);
@@ -947,7 +956,12 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({ shlokas, preferences, on
             {/* Playback mode options */}
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsAutoAdvance(!isAutoAdvance)}
+                onClick={() => {
+                  const nextVal = !isAutoAdvance;
+                  setIsAutoAdvance(nextVal);
+                  isAutoAdvanceRef.current = nextVal;
+                  onUpdatePreferences?.({ autoSwipeWhileListening: nextVal });
+                }}
                 title={t.continuousPlaybackTitle(isAutoAdvance)}
                 className={`p-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
                   isAutoAdvance 

@@ -1,5 +1,28 @@
 import { ReminderSettings } from '../types';
 
+/**
+ * Robustly parses time string in either 12-hour ("07:40 PM", "7:40 AM") or 24-hour ("19:40", "07:40") format
+ */
+export function parseTimeString(timeStr?: string): { hour: number; minute: number } | null {
+  if (!timeStr) return null;
+  const str = timeStr.trim().toUpperCase();
+  const isPM = str.includes('PM');
+  const isAM = str.includes('AM');
+  const cleaned = str.replace(/[AP]M/, '').trim();
+  const parts = cleaned.split(':');
+  if (parts.length < 2) return null;
+  let hour = parseInt(parts[0], 10);
+  const minute = parseInt(parts[1], 10);
+  if (isNaN(hour) || isNaN(minute)) return null;
+
+  if (isPM && hour < 12) {
+    hour += 12;
+  } else if (isAM && hour === 12) {
+    hour = 0;
+  }
+  return { hour, minute };
+}
+
 export const NotificationService = {
   /**
    * Request browser notification permission
@@ -27,13 +50,36 @@ export const NotificationService = {
   },
 
   /**
-   * Send a test or scheduled notification
+   * Send a test or scheduled notification with ServiceWorker fallback
    */
-  sendNotification(title: string, options: { body: string; icon?: string; tag?: string }) {
+  async sendNotification(title: string, options: { body: string; icon?: string; tag?: string }): Promise<boolean> {
+    if (!('Notification' in window)) return false;
+
     if (!this.isPermissionGranted()) {
-      return false;
+      const granted = await this.requestPermission();
+      if (!granted) return false;
     }
 
+    // Try service worker notification first (better on mobile / PWA)
+    try {
+      if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+        const reg = await navigator.serviceWorker.ready;
+        if (reg && typeof reg.showNotification === 'function') {
+          await reg.showNotification(title, {
+            body: options.body,
+            icon: options.icon || '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: options.tag || 'satsang-diksha-reminder',
+            vibrate: [200, 100, 200]
+          } as NotificationOptions);
+          return true;
+        }
+      }
+    } catch {
+      // fallback to standard Notification
+    }
+
+    // Standard Window Notification
     try {
       const notif = new Notification(title, {
         body: options.body,
@@ -75,23 +121,25 @@ export const NotificationService = {
    * Check if reminder should fire based on current local time
    */
   checkAndTriggerReminder(reminder: ReminderSettings, dailyQuote?: string) {
-    if (!reminder.enabled) return;
+    if (!reminder || !reminder.enabled || !reminder.time) return;
+
+    const parsed = parseTimeString(reminder.time);
+    if (!parsed) return;
 
     const now = new Date();
-    const [targetHour, targetMinute] = reminder.time.split(':').map(n => parseInt(n, 10));
     
     // Check if within the current minute window
-    if (now.getHours() === targetHour && now.getMinutes() === targetMinute) {
-      const lastTriggerKey = 'satsang_diksha_last_reminder_date';
-      const todayStr = now.toDateString();
+    if (now.getHours() === parsed.hour && now.getMinutes() === parsed.minute) {
+      const lastTriggerKey = 'satsang_diksha_last_reminder_time';
+      const todayMinuteStr = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()} ${parsed.hour}:${parsed.minute}`;
       const lastTriggered = localStorage.getItem(lastTriggerKey);
 
-      if (lastTriggered !== todayStr) {
+      if (lastTriggered !== todayMinuteStr) {
         this.sendNotification('સત્સંગ દીક્ષા સ્વાધ્યાય સમય (Daily Study Reminder)', {
           body: dailyQuote || reminder.customMessage || 'સમય થયો છે સત્સંગ દીક્ષા અધ્યયન અને મુખપાઠ સાધના કરવાનો...',
           icon: '/icon-192.png'
         });
-        localStorage.setItem(lastTriggerKey, todayStr);
+        localStorage.setItem(lastTriggerKey, todayMinuteStr);
       }
     }
   }
