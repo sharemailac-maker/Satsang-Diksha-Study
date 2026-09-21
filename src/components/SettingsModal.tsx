@@ -18,7 +18,8 @@ import {
   CheckCircle2,
   Minus,
   Plus,
-  Users
+  Users,
+  FileText
 } from 'lucide-react';
 import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { StorageService, AVAILABLE_LANGUAGE_PACKS } from '../utils/storage';
@@ -723,6 +724,49 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {checkStatusMessage || updateSuccess}
               </div>
             )}
+          </div>
+
+          {/* =========================================================
+              CARD: એપ પરિચય & પ્રેઝન્ટેશન (App Presentation PDF)
+              Downloadable overview presentation in PDF format
+              ========================================================= */}
+          <div 
+            id="card-app-presentation-pdf"
+            className="border-2 border-[#EADBCC] dark:border-stone-800 bg-white dark:bg-[#1E1916] rounded-2xl p-4 sm:p-5 shadow-xs"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 flex-shrink-0 mt-0.5">
+                  <FileText className="w-5 h-5 stroke-[2.3]" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
+                    એપ પરિચય & પ્રેઝન્ટેશન (App Presentation PDF)
+                  </h3>
+                  <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5">
+                    સત્સંગ દીક્ષા એપના તમામ ફીચર્સ અને કન્કોર્ડન્સનું સુંદર PDF પ્રેઝન્ટેશન
+                  </p>
+                </div>
+              </div>
+
+              <a
+                href="/Satsang_Diksha_App_Presentation.pdf"
+                download="Satsang_Diksha_App_Presentation.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="ડાઉનલોડ કરો (Download Presentation PDF)"
+                className="px-3.5 py-2 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs flex-shrink-0"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>PDF ડાઉનલોડ</span>
+              </a>
+            </div>
+
+            <div className="mt-3 p-3 rounded-xl bg-[#FAF5EE] dark:bg-[#2A221C] border border-[#EADBCC] dark:border-stone-800 text-xs text-[#5D4638] dark:text-stone-300 space-y-1 leading-relaxed">
+              <p>
+                • ૩૧૫ શ્લોક અધ્યયન (પદચ્છેદ, અન્વય અને અર્થ), ૨૪૩ વચનામૃત અને ૭૪૪ સ્વામીની વાતોનું કન્કોર્ડન્સ, મુખપાઠ ટ્રેકર અને ક્વિઝ ફીચર્સનો સંપૂર્ણ સારાંશ.
+              </p>
+            </div>
           </div>
 
           {/* =========================================================

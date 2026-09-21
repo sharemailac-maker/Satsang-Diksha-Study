@@ -28,6 +28,8 @@ import { PADACHHEDA_DATA } from '../data/padachhedaData';
 import { ANVAYA_DATA } from '../data/anvayaData';
 import { SwaminiVatoChipsView } from './SwaminiVatoChipsView';
 import { VachnamrutChipsView } from './VachnamrutChipsView';
+import { VachnamrutListView } from './VachnamrutListView';
+import { SwaminiVatoListView } from './SwaminiVatoListView';
 
 const CROSS_REF_I18N: Record<string, {
   tag: string;
@@ -566,7 +568,13 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={t.searchPlaceholder}
+                placeholder={
+                  filterType === 'vachnamrut'
+                    ? (lang === 'english' ? 'Search Vachnamrut (e.g. Gadhada I-1), topic, quote or verse no...' : lang === 'hindi' ? 'वचनामृत (उदा. गढडा १-१), विषय, उपदेश या श्लोक सं. खोजें...' : 'વચનામૃત (દા.ત. ગઢડા ૧-૧), વિષય, ઉપદેશ કે શ્લોક નં. શોધો...')
+                    : filterType === 'swamini_vato'
+                      ? (lang === 'english' ? 'Search Swamini Vato (e.g. 1/8), topic, text or verse no...' : lang === 'hindi' ? 'स्वामीनी बातें (उदा. १/८), विषय, बात या श्लोक सं. खोजें...' : 'સ્વામીની વાતો (દા.ત. ૧/૮), વિષય, વાત કે શ્લોક નં. શોધો...')
+                      : t.searchPlaceholder
+                }
                 className="w-full pl-9 pr-4 py-2 rounded-xl text-xs sm:text-sm bg-white text-stone-900 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-300 shadow-inner"
               />
               {searchQuery && (
@@ -585,53 +593,71 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 <button
                   key={filterOpt}
                   onClick={() => setFilterType(filterOpt)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${
                     filterType === filterOpt
                       ? 'bg-amber-400 text-amber-950 shadow-md font-bold'
                       : 'bg-black/25 text-amber-100 hover:bg-black/40'
                   }`}
                 >
-                  {filterOpt === 'all' && t.allVerses}
-                  {filterOpt === 'vachnamrut' && t.vachnamrut}
-                  {filterOpt === 'swamini_vato' && t.swaminiVato}
+                  <span>
+                    {filterOpt === 'all' && t.allVerses}
+                    {filterOpt === 'vachnamrut' && t.vachnamrut}
+                    {filterOpt === 'swamini_vato' && t.swaminiVato}
+                  </span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      filterType === filterOpt
+                        ? 'bg-amber-950/15 text-amber-950'
+                        : 'bg-white/15 text-amber-200'
+                    }`}
+                  >
+                    {filterOpt === 'all' && '315'}
+                    {filterOpt === 'vachnamrut' && '243'}
+                    {filterOpt === 'swamini_vato' && '744'}
+                  </span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Chapter Selector Chips */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-            <span className="text-amber-200/80 font-medium whitespace-nowrap mr-1">
-              {ui.chapterPrefix}:
-            </span>
-            <button
-              onClick={() => setSelectedChapter('all')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
-                selectedChapter === 'all'
-                  ? 'bg-white text-amber-950 font-bold shadow-xs'
-                  : 'bg-white/10 text-amber-100 hover:bg-white/20'
-              }`}
-            >
-              {t.allChapters}
-            </button>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ch) => (
+          {/* Chapter Selector Chips (Shown only for All 315 Verses mode) */}
+          {filterType === 'all' && (
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+              <span className="text-amber-200/80 font-medium whitespace-nowrap mr-1">
+                {ui.chapterPrefix}:
+              </span>
               <button
-                key={ch}
-                onClick={() => setSelectedChapter(ch)}
+                onClick={() => setSelectedChapter('all')}
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
-                  selectedChapter === ch
+                  selectedChapter === 'all'
                     ? 'bg-white text-amber-950 font-bold shadow-xs'
                     : 'bg-white/10 text-amber-100 hover:bg-white/20'
                 }`}
               >
-                {ui.chapterPrefix} {ch}
+                {t.allChapters}
               </button>
-            ))}
-          </div>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ch) => (
+                <button
+                  key={ch}
+                  onClick={() => setSelectedChapter(ch)}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
+                    selectedChapter === ch
+                      ? 'bg-white text-amber-950 font-bold shadow-xs'
+                      : 'bg-white/10 text-amber-100 hover:bg-white/20'
+                  }`}
+                >
+                  {ui.chapterPrefix} {ch}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Results Header Count */}
+      {/* MODE 1: ALL 315 SHLOKAS CONCORDANCE CARDS */}
+      {filterType === 'all' && (
+        <>
+          {/* Results Header Count */}
       <div className="flex items-center justify-between px-2 text-xs text-[#7A6B5C] dark:text-[#A89886]">
         <span>
           {t.availableCount(filteredItems.length)}
@@ -958,6 +984,28 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
           </div>
         )}
       </div>
+        </>
+      )}
+
+      {/* MODE 2: ALL VACHNAMRUT LIST WITH RELATED SATSANG DIKSHA SHLOKAS */}
+      {filterType === 'vachnamrut' && (
+        <VachnamrutListView
+          shlokas={shlokas}
+          preferences={preferences}
+          onSelectShloka={onSelectShloka}
+          externalSearchQuery={searchQuery}
+        />
+      )}
+
+      {/* MODE 3: ALL SWAMINI VATO LIST WITH RELATED SATSANG DIKSHA SHLOKAS */}
+      {filterType === 'swamini_vato' && (
+        <SwaminiVatoListView
+          shlokas={shlokas}
+          preferences={preferences}
+          onSelectShloka={onSelectShloka}
+          externalSearchQuery={searchQuery}
+        />
+      )}
     </div>
   );
 };

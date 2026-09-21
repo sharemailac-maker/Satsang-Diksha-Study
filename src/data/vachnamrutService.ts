@@ -26,7 +26,7 @@ interface RawQuoteItem {
 
 interface RawVachItem {
   c: string;
-  n: number;
+  n?: number;
   sg: string;
   sh: string;
   se: string;
@@ -36,7 +36,7 @@ interface RawVachItem {
   q: RawQuoteItem[];
 }
 
-const rawStore = vachData as Record<string, RawVachItem>;
+const rawStore = vachData as unknown as Record<string, RawVachItem>;
 
 const guDigits: Record<string, string> = {
   '૦': '0', '૧': '1', '૨': '2', '૩': '3', '૪': '4',
@@ -82,9 +82,11 @@ export function normalizeVachnamrutCode(sec: string): string {
   s = s.replace(/વરતાલ/g, 'Var-').replace(/વર\./g, 'Var-').replace(/वड़ताल/g, 'Var-').replace(/Vartal/gi, 'Var-');
   s = s.replace(/અમદાવાદ/g, 'Amd-').replace(/અમદા\./g, 'Amd-').replace(/અમ\./g, 'Amd-').replace(/अहमदाबाद/g, 'Amd-').replace(/Ahmedabad/gi, 'Amd-');
   s = s.replace(/જેતલપુર/g, 'Jetalpur-').replace(/જેત\./g, 'Jetalpur-').replace(/जेत्तलपुर/g, 'Jetalpur-').replace(/Jetalpur/gi, 'Jetalpur-');
-  s = s.replace(/અશ્લાલી/g, 'Ashlali-1').replace(/असलाली/g, 'Ashlali-1').replace(/Aslali/gi, 'Ashlali-1');
+  if (/અશ્લાલી|असलाली|Aslali/i.test(s)) {
+    return 'Ashlali-1';
+  }
 
-  const match = s.match(/([A-Za-z]+)-?\s*(\d+)/);
+  const match = s.match(/([A-Za-z]+)[-\s]+(\d+)/);
   if (match) {
     return `${match[1]}-${match[2]}`;
   }
@@ -112,7 +114,7 @@ export function getVachnamrutEntry(codeOrSection: string): VachnamrutEntry | und
 
   return {
     code: raw.c,
-    vachNo: raw.n,
+    vachNo: raw.n ?? (parseInt(raw.c?.split('-')[1] || '0', 10) || 0),
     sectionGu: raw.sg,
     sectionHi: raw.sh,
     sectionEn: raw.se,
