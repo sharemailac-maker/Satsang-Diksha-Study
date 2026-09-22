@@ -7,6 +7,7 @@ import {
   VachnamrutConcordanceItem 
 } from '../data/concordanceReverseIndex';
 import { getShlokaTitle } from '../utils/translationHelper';
+import { ShlokaChipsList } from './ShlokaChipsList';
 
 interface VachnamrutListViewProps {
   shlokas: Shloka[];
@@ -231,46 +232,14 @@ export const VachnamrutListView: React.FC<VachnamrutListViewProps> = ({
                 </div>
               )}
 
-              {/* Related Satsang Diksha Shlokas Section */}
-              <div className="pt-2">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                  <h4 className="text-xs font-bold text-[#8B2500] dark:text-amber-300 uppercase tracking-wide">
-                    {lang === 'english'
-                      ? 'Related Satsang Diksha Verses (Click to study in Shloka Adhyayan):'
-                      : lang === 'hindi'
-                        ? 'संबंधित सत्संग दीक्षा श्लोक (श्लोक अध्ययन में देखने के लिए क्लिक करें):'
-                        : 'સંબંધિત સત્સંગ દીક્ષા શ્લોકો (શ્લોક અધ્યયનમાં જોવા માટે ક્લિક કરો):'}
-                  </h4>
-                </div>
-
-                {/* Shloka Chips Grid */}
-                <div className="flex flex-wrap gap-2">
-                  {item.relatedShlokaIds.map((shlokaId) => {
-                    const shloka = shlokaMap.get(shlokaId);
-                    const title = shloka ? getShlokaTitle(shloka, lang) : `Verse ${shlokaId}`;
-
-                    return (
-                      <button
-                        key={shlokaId}
-                        onClick={() => onSelectShloka(shlokaId)}
-                        title={`${title} - ${lang === 'english' ? 'Click to open in Shloka Reader' : 'શ્લોક અધ્યયનમાં જોવા માટે ક્લિક કરો'}`}
-                        className="group flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FAF6F0] dark:bg-[#2C2520] hover:bg-[#8B2500] hover:text-white dark:hover:bg-amber-600 border border-[#E8DFD1] dark:border-[#3D342C] text-stone-800 dark:text-stone-200 transition-all shadow-xs hover:shadow-md cursor-pointer text-xs"
-                      >
-                        <span className="font-bold text-[#8B2500] dark:text-amber-400 group-hover:text-amber-200">
-                          #{shlokaId}
-                        </span>
-                        {shloka && (
-                          <span className="max-w-[150px] sm:max-w-[200px] truncate text-[11px] font-medium text-stone-600 dark:text-stone-400 group-hover:text-white">
-                            {title}
-                          </span>
-                        )}
-                        <ArrowUpRight className="w-3 h-3 text-stone-400 group-hover:text-amber-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              {/* Related Satsang Diksha Shlokas Chips Section */}
+              <ShlokaChipsList
+                shlokaIds={item.relatedShlokaIds}
+                shlokaMap={shlokaMap}
+                preferences={preferences}
+                onSelectShloka={onSelectShloka}
+                accentColor="amber"
+              />
             </div>
           );
         })}

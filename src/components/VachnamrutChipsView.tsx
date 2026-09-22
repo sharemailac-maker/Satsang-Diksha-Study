@@ -124,18 +124,6 @@ export const VachnamrutChipsView: React.FC<VachnamrutChipsViewProps> = ({
                     {sectionLabel}
                   </span>
 
-                  {topicLabel && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-md truncate max-w-[140px] sm:max-w-[180px] ${
-                        isExpanded
-                          ? 'bg-amber-800/90 text-amber-100'
-                          : 'bg-amber-100/70 dark:bg-amber-950/50 text-amber-900 dark:text-amber-300'
-                      }`}
-                    >
-                      {topicLabel}
-                    </span>
-                  )}
-
                   {isExpanded ? (
                     <ChevronUp className="w-3 h-3 ml-0.5 opacity-90" />
                   ) : (
@@ -158,12 +146,6 @@ export const VachnamrutChipsView: React.FC<VachnamrutChipsViewProps> = ({
                 <span className="font-semibold text-stone-800 dark:text-stone-200">
                   {sectionLabel}
                 </span>
-
-                {topicLabel && (
-                  <span className="text-[10px] text-stone-500 dark:text-stone-400 border-l border-stone-300 dark:border-stone-700 pl-1.5">
-                    {topicLabel}
-                  </span>
-                )}
               </div>
             );
           })}

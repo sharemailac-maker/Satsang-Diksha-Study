@@ -38385,13 +38385,10 @@ export const SHLOKAS: Shloka[] = [
   }
 ];
 
-// Enrich all 315 shlokas with expanded authentic Vachnamrut and Swamini Vato cross-references
+// Enrich all 315 shlokas with authenticated Vachnamrut and Swamini Vato cross-references from the 4 primary documents
 for (let i = 0; i < SHLOKAS.length; i++) {
   const s = SHLOKAS[i];
-  const refs = CONCORDANCE_REFERENCES[s.id];
-  if (refs && refs.length > 0) {
-    s.crossReferences = refs;
-  }
+  s.crossReferences = CONCORDANCE_REFERENCES[s.id] || [];
 }
 
 export function getAllShlokas(): Shloka[] {
