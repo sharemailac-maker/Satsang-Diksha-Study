@@ -18,8 +18,10 @@ import {
   CheckCircle2,
   Minus,
   Plus,
-  Users
+  Users,
+  Share2
 } from 'lucide-react';
+import { ShareAppModal } from './ShareAppModal';
 import { UserPreferences, ThemeMode, SanskritScript, Language } from '../types';
 import { StorageService, AVAILABLE_LANGUAGE_PACKS } from '../utils/storage';
 import { NotificationService } from '../utils/notificationService';
@@ -140,6 +142,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   // Anonymous Aggregate Hit Counter
   const { count: hitCount, isLoading: isHitLoading, refresh: refreshHits } = useHitCounter();
+
+  // Share App Modal state
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const ui = getUIStrings(preferences.activeLanguage);
 
@@ -785,6 +790,40 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </p>
           </div>
 
+          {/* =========================================================
+              CARD 6: એપ શેર કરો (Share This App)
+              Only in settings matching existing brown/red branding without disclosing link
+              ========================================================= */}
+          <div 
+            id="card-share-app"
+            className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 flex-shrink-0 mt-0.5">
+                  <Share2 className="w-5 h-5 stroke-[2.3]" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
+                    Share This App
+                  </h3>
+                  <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5">
+                    Share with colleagues, tellers, shopkeepers, or friends
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(true)}
+                className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer flex-shrink-0"
+              >
+                <Share2 className="w-4 h-4" />
+                <span>Share App</span>
+              </button>
+            </div>
+          </div>
+
         </div>
 
         {/* =========================================================
@@ -829,6 +868,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
       </div>
+
+      {/* Share This App Modal */}
+      <ShareAppModal 
+        isOpen={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+      />
     </div>
   );
 };

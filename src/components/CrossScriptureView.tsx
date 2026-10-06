@@ -1006,6 +1006,16 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
           externalSearchQuery={searchQuery}
         />
       )}
+
+      {/* Go to Top section bar */}
+      <div className="pt-8 pb-4 text-center">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#8B2500]/10 hover:bg-[#8B2500]/20 text-[#8B2500] dark:text-amber-400 font-serif font-semibold text-xs transition-all duration-200 border border-[#8B2500]/20"
+        >
+          <span>⬆ ઉપર જાઓ (Go to Top)</span>
+        </button>
+      </div>
     </div>
   );
 };

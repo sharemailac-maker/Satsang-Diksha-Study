@@ -16,6 +16,7 @@ import { BookmarksView } from './components/BookmarksView';
 import { SettingsModal } from './components/SettingsModal';
 import { QuickJumpModal } from './components/QuickJumpModal';
 import { AppUpdateBanner } from './components/AppUpdateBanner';
+import { ScrollToTopButton } from './components/ScrollToTopButton';
 
 import { getAllShlokas } from './data/shlokas';
 import { CHAPTERS } from './data/chapters';
@@ -388,6 +389,9 @@ export default function App() {
           onResetPreferences={handleResetPreferences}
         />
       )}
+
+      {/* Global Go to Top floating button */}
+      <ScrollToTopButton preferences={preferences} />
     </div>
   );
 }

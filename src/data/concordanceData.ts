@@ -1,4 +1,5 @@
 import { ScriptureReference } from '../types';
+import { enrichShlokaWithBookCorrelations } from './correlationsBookData';
 
 /**
  * Authentic Concordance References for Satsang Diksha Shlokas (1 to 315)
@@ -52804,6 +52805,11 @@ export const CONCORDANCE_REFERENCES: Record<number, ScriptureReference[]> = {
     }
   ]
 };
+
+// Enrich every single verse in CONCORDANCE_REFERENCES (1 to 315) with authentic correlation quotes & reference numbers
+for (let id = 1; id <= 315; id++) {
+  CONCORDANCE_REFERENCES[id] = enrichShlokaWithBookCorrelations(id, CONCORDANCE_REFERENCES[id] || []);
+}
 
 export function getScriptureReferencesForShloka(id: number): ScriptureReference[] {
   return CONCORDANCE_REFERENCES[id] || [];
