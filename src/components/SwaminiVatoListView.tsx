@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { BookOpen, Search, ExternalLink, ChevronDown, ChevronUp, Sparkles, Filter, ArrowUpRight } from 'lucide-react';
+import { BookOpen, Search, ChevronDown, ChevronUp, Sparkles, Filter } from 'lucide-react';
 import { Shloka, UserPreferences } from '../types';
 import { 
   getSwaminiVatoConcordanceList, 
@@ -190,17 +190,6 @@ export const SwaminiVatoListView: React.FC<SwaminiVatoListViewProps> = ({
                     {item.relatedShlokaIds.length}{' '}
                     {lang === 'english' ? 'Verses Linked' : lang === 'hindi' ? 'श्लोक संबंधित' : 'શ્લોક સંબંધિત'}
                   </span>
-                  {item.anirdeshUrl && (
-                    <a
-                      href={item.anirdeshUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={lang === 'english' ? 'View on Anirdesh' : 'અનિર્દેશ પર જુઓ'}
-                      className="p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
                 </div>
               </div>
 

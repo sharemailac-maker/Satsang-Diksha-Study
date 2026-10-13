@@ -209,6 +209,7 @@ export const ShlokaChipsList: React.FC<ShlokaChipsListProps> = ({
                 isOrange ? 'bg-orange-700 hover:bg-orange-800' : 'bg-[#8B2500] hover:bg-[#A63000]'
               }`}
             >
+              <BookOpen className="w-3.5 h-3.5" />
               <span>
                 {lang === 'english'
                   ? 'Open in Shloka Adhyayan'
@@ -216,7 +217,6 @@ export const ShlokaChipsList: React.FC<ShlokaChipsListProps> = ({
                   ? 'श्लोक अध्ययन में विस्तृत देखें'
                   : 'શ્લોક અધ્યયનમાં સવિસ્તાર જુઓ'}
               </span>
-              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ExternalLink, ChevronDown, ChevronUp, Copy, Check, Tag } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Copy, Check, Tag } from 'lucide-react';
 import { ScriptureReference, UserPreferences } from '../types';
 
 interface SwaminiVatoChipsViewProps {
@@ -47,12 +47,13 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
   };
 
   // Translations for UI labels
+  // Translations for UI labels
   const ui = {
     title: lang === 'english' ? 'Swamini Vato References' : lang === 'hindi' ? 'स्वामीनी बातें संदर्भ' : 'સ્વામીની વાતો પ્રકરણ સંદર્ભ',
-    openInAnirdesh: lang === 'english' ? 'Open in Anirdesh' : lang === 'hindi' ? 'Anirdesh पर देखें' : 'અનિર્દેશ પર જુઓ',
     copyDiscourse: lang === 'english' ? 'Copy' : lang === 'hindi' ? 'कॉपी' : 'કોપી',
     copied: lang === 'english' ? 'Copied' : lang === 'hindi' ? 'कॉपी हो गया' : 'કોપી થઈ ગયું',
-    correlationTitle: lang === 'english' ? 'Scriptural Concordance Note:' : lang === 'hindi' ? 'शास्त्रीय समन्वय:' : 'શ્લોક સાથે શાસ્ત્રીય સંવાદ:',
+    correlationTitle: lang === 'english' ? 'Scriptural Concordance Note:' : lang === 'hindi' ? 'शास्त्रीય समन्वय:' : 'શ્લોક સાથે શાસ્ત્રીય સંવાદ:',
+    noQuotationTag: lang === 'english' ? 'Reference Number' : 'સંદર્ભ ક્રમાંક',
   };
 
   return (
@@ -77,39 +78,53 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
       <div className="space-y-1.5">
         <div className="flex flex-wrap gap-1.5 sm:gap-2">
           {swamiRefs.map((ref, idx) => {
+            const hasQuote = Boolean(ref.textGu?.trim() || ref.textEn?.trim());
             const isExpanded = expandedIndices.has(idx);
             const sectionLabel = lang === 'english' 
               ? (ref.sectionEn || ref.section) 
               : lang === 'hindi' 
               ? (ref.sectionHi || ref.section) 
               : ref.section;
-            
-            const categoryLabel = lang === 'english' 
-              ? (ref.categoryEn || ref.topicEn || ref.topic) 
-              : (ref.categoryGu || ref.topicGu || ref.topic);
 
+            // If quote is available, allow interactive expansion
+            if (hasQuote) {
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  id={`vato-chip-${shlokaId ?? 'item'}-${idx}`}
+                  onClick={() => toggleChip(idx)}
+                  className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer shadow-2xs border ${
+                    isExpanded
+                      ? 'bg-orange-600 text-white border-orange-700 dark:bg-orange-700 dark:border-orange-500 ring-2 ring-orange-400/30'
+                      : 'bg-white dark:bg-[#1F1916] text-[#2D241E] dark:text-[#EDE5D8] border-orange-300/70 dark:border-orange-800/60 hover:border-orange-500 hover:bg-orange-50/70 dark:hover:bg-orange-950/30'
+                  }`}
+                >
+                  <BookOpen className={`w-3.5 h-3.5 ${isExpanded ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
+                  <span className="font-bold tracking-tight">
+                    {sectionLabel}
+                  </span>
+                  {isExpanded ? (
+                    <ChevronUp className="w-3 h-3 ml-0.5 opacity-80" />
+                  ) : (
+                    <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 group-hover:opacity-100" />
+                  )}
+                </button>
+              );
+            }
+
+            // Reference number badge without quote (clean tag without arrow or dropdown)
             return (
-              <button
+              <div
                 key={idx}
-                type="button"
                 id={`vato-chip-${shlokaId ?? 'item'}-${idx}`}
-                onClick={() => toggleChip(idx)}
-                className={`group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs transition-all duration-150 cursor-pointer shadow-2xs border ${
-                  isExpanded
-                    ? 'bg-orange-600 text-white border-orange-700 dark:bg-orange-700 dark:border-orange-500 ring-2 ring-orange-400/30'
-                    : 'bg-white dark:bg-[#1F1916] text-[#2D241E] dark:text-[#EDE5D8] border-orange-300/70 dark:border-orange-800/60 hover:border-orange-500 hover:bg-orange-50/70 dark:hover:bg-orange-950/30'
-                }`}
+                title={ui.noQuotationTag}
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs bg-stone-100/80 dark:bg-[#1E1916] text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-800/80 shadow-2xs select-none"
               >
-                <BookOpen className={`w-3.5 h-3.5 ${isExpanded ? 'text-white' : 'text-orange-600 dark:text-orange-400'}`} />
-                <span className="font-bold tracking-tight">
+                <span className="font-semibold text-stone-800 dark:text-stone-200">
                   {sectionLabel}
                 </span>
-                {isExpanded ? (
-                  <ChevronUp className="w-3 h-3 ml-0.5 opacity-80" />
-                ) : (
-                  <ChevronDown className="w-3 h-3 ml-0.5 opacity-50 group-hover:opacity-100" />
-                )}
-              </button>
+              </div>
             );
           })}
         </div>
@@ -139,17 +154,13 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
               ? (ref.correlationNoteHi || ref.correlationNote)
               : (ref.correlationNoteGu || ref.correlationNote);
 
-            const vatUrl = ref.anirdeshUrl || (ref.prakaran && ref.vatoNo 
-              ? `https://anirdesh.com/vato/index.php?prakaran=${ref.prakaran}&no=${ref.vatoNo}` 
-              : 'https://anirdesh.com/vato/index.php?by=category');
-
             return (
               <div
                 key={idx}
                 id={`vato-detail-card-${shlokaId ?? 'item'}-${idx}`}
                 className="rounded-xl bg-white/95 dark:bg-[#1E1815] border border-orange-200 dark:border-orange-900/60 p-3.5 sm:p-4 space-y-3 shadow-xs"
               >
-                {/* Vat Card Header */}
+                {/* Vat Card Header (No external link or arrow) */}
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-100 dark:border-stone-800 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-1 rounded-lg bg-orange-600 text-white font-bold text-xs shadow-2xs">
@@ -157,7 +168,7 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
                     </span>
                   </div>
 
-                  {/* Actions (Copy & External Link) */}
+                  {/* Copy Action Only (No external links or arrows) */}
                   <div className="flex items-center gap-1.5 text-xs">
                     <button
                       type="button"
@@ -171,16 +182,6 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
                         <Copy className="w-3.5 h-3.5" />
                       )}
                     </button>
-
-                    <a
-                      href={vatUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={ui.openInAnirdesh}
-                      className="p-1.5 rounded-lg text-orange-700 dark:text-orange-400 hover:bg-orange-100 dark:hover:bg-orange-900/40 transition-colors inline-flex items-center"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
                   </div>
                 </div>
 

@@ -49,6 +49,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
   const sanskritScript = preferences?.sanskritScript || 'gujarati';
 
   const allTestSets = useMemo(() => getAllQuizTestSets(), []);
+  const totalQuestionsCount = useMemo(() => allTestSets.reduce((sum, s) => sum + s.questions.length, 0), [allTestSets]);
 
   // View mode
   const [mode, setMode] = useState<QuizMode>('catalog');
@@ -249,10 +250,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
             </h1>
             <p className="text-xs sm:text-sm text-amber-100/90 max-w-xl">
               {activeLang === 'hindi' 
-                ? 'प्रत्येक 10-12 श्लोकों के 20 प्रश्नों के 26 टेस्ट सेट • दैनिक स्वाध्याय टेस्ट • शत-प्रतिशत ऑफलाइन'
+                ? `${allTestSets.length} टेस्ट सेट • ${totalQuestionsCount} प्रश्न • दैनिक स्वाध्याय टेस्ट • शत-प्रतिशत ऑफलाइन`
                 : activeLang === 'english'
-                ? '26 Curated Test Sets (20 questions each) • 520 Questions • Daily 20-Q Practice • 100% Offline'
-                : 'દરેક ૧૦-૧૨ શ્લોકોના ૨૦ પ્રશ્નોના ૨૬ ટેસ્ટ સેટ • ૫૨૦ પ્રશ્નો • દૈનિક સ્વાધ્યાય કસોટી • ૧૦૦% ઓફલાઇન'}
+                ? `${allTestSets.length} Curated Test Sets • ${totalQuestionsCount} Questions • Daily Swadhyay Practice • 100% Offline`
+                : `${allTestSets.length} ટેસ્ટ સેટ • ${totalQuestionsCount} પ્રશ્નો • દૈનિક સ્વાધ્યાય કસોટી • ૧૦૦% ઓફલાઇન`}
             </p>
           </div>
 
@@ -279,7 +280,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
       </div>
 
       {/* ========================================================================= */}
-      {/* MODE 1: CATALOG OF 26 TEST SETS + DAILY TEST HERO */}
+      {/* MODE 1: CATALOG OF TEST SETS + DAILY TEST HERO */}
       {/* ========================================================================= */}
       {mode === 'catalog' && (
         <div className="space-y-6">
@@ -290,7 +291,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-200/70 dark:bg-amber-900/50 text-amber-900 dark:text-amber-200 text-xs font-bold">
                   <Calendar className="w-3.5 h-3.5" />
                   <span>
-                    {activeLang === 'hindi' ? 'आज का दैनिक स्वाध्याय टेस्ट (20 प्रश्न)' : activeLang === 'english' ? "Today's Daily Swadhyay Test (20 Qs)" : 'આજનો દૈનિક સ્વાધ્યાય ટેસ્ટ (૨૦ પ્રશ્નો)'}
+                    {activeLang === 'hindi' ? `आज का दैनिक स्वाध्याय टेस्ट (${dailySet.questions.length} प्रश्न)` : activeLang === 'english' ? `Today's Daily Swadhyay Test (${dailySet.questions.length} Qs)` : `આજનો દૈનિક સ્વાધ્યાય ટેસ્ટ (${dailySet.questions.length} પ્રશ્નો)`}
                   </span>
                   {streakInfo.completedToday && (
                     <span className="ml-1.5 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px]">
@@ -305,10 +306,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
 
                 <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 max-w-xl">
                   {activeLang === 'hindi' 
-                    ? `आज के निर्धारित श्लोक: ${dailySet.startShloka} से ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). 20 प्रश्नों से अपने ज्ञान की परीक्षा लीजिए!`
+                    ? `आज के निर्धारित श्लोक: ${dailySet.startShloka} से ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). ${dailySet.questions.length} प्रश्नों से अपने ज्ञान की परीक्षा लीजिए!`
                     : activeLang === 'english'
-                    ? `Today's focused verses: Shlokas ${dailySet.startShloka} to ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). Test your mastery with 20 questions!`
-                    : `આજના નિર્ધારિત શ્લોકો: ${dailySet.startShloka} થી ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). ૨૦ પ્રશ્નોથી તમારા જ્ઞાનની પરીક્ષા લો!`}
+                    ? `Today's focused verses: Shlokas ${dailySet.startShloka} to ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). Test your mastery with ${dailySet.questions.length} questions!`
+                    : `આજના નિર્ધારિત શ્લોકો: ${dailySet.startShloka} થી ${dailySet.endShloka} (${getSetChapter(dailySet, activeLang)}). ${dailySet.questions.length} પ્રશ્નોથી તમારા જ્ઞાનની પરીક્ષા લો!`}
                 </p>
               </div>
 
@@ -321,7 +322,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
                   <span>
                     {streakInfo.completedToday 
                       ? (activeLang === 'hindi' ? 'दैनिक टेस्ट पुनः दें' : activeLang === 'english' ? 'Retake Daily Test' : 'દૈનિક ટેસ્ટ ફરીથી આપો')
-                      : (activeLang === 'hindi' ? 'दैनिक टेस्ट शुरू करें (20 प्रश्न)' : activeLang === 'english' ? 'Start Daily Test (20 Qs)' : 'દૈનિક ટેસ્ટ શરૂ કરો (૨૦ પ્રશ્નો)')}
+                      : (activeLang === 'hindi' ? `दैनिक टेस्ट शुरू करें (${dailySet.questions.length} प्रश्न)` : activeLang === 'english' ? `Start Daily Test (${dailySet.questions.length} Qs)` : `દૈનિક ટેસ્ટ શરૂ કરો (${dailySet.questions.length} પ્રશ્નો)`)}
                   </span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -351,7 +352,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
                     : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
                 }`}
               >
-                {activeLang === 'hindi' ? 'सभी 26 सेट (520 प्रश्न)' : activeLang === 'english' ? 'All 26 Sets (520 Qs)' : 'બધા ૨૬ સેટ (૫૨૦ પ્રશ્નો)'}
+                {activeLang === 'hindi' ? `सभी ${allTestSets.length} सेट (${totalQuestionsCount} प्रश्न)` : activeLang === 'english' ? `All ${allTestSets.length} Sets (${totalQuestionsCount} Qs)` : `બધા ${allTestSets.length} સેટ (${totalQuestionsCount} પ્રશ્નો)`}
               </button>
 
               <button
@@ -383,10 +384,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
             <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 font-semibold px-1">
               <span>
                 {activeLang === 'hindi' 
-                  ? `कुल ${filteredSets.length} टेस्ट सेट उपलब्ध (प्रत्येक में 20 प्रश्न)`
+                  ? `कुल ${filteredSets.length} टेस्ट सेट उपलब्ध`
                   : activeLang === 'english'
-                  ? `Showing ${filteredSets.length} Test Sets (20 questions each)`
-                  : `કુલ ${filteredSets.length} ટેસ્ટ સેટ ઉપલબ્ધ (દરેકમાં ૨૦ પ્રશ્નો)`}
+                  ? `Showing ${filteredSets.length} Test Sets`
+                  : `કુલ ${filteredSets.length} ટેસ્ટ સેટ ઉપલબ્ધ`}
               </span>
               <span>
                 {activeLang === 'hindi' ? 'क्रमशः 1 से 315 श्लोक' : activeLang === 'english' ? 'Ascending Verses 1 to 315' : 'ક્રમશઃ ૧ થી ૩૧૫ શ્લોક'}
