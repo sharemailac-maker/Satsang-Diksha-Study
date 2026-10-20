@@ -307,13 +307,17 @@ export default function App() {
           </div>
         )}
 
-        {/* TAB: UDGAAN AUDIO (BAPS VEDIC CHANTING) */}
+        {/* TAB: UDGAAN AUDIO (VEDIC CHANTING) */}
         {activeTab === 'udgaan' && (
           <UdgaanView
             shlokas={allShlokas}
             preferences={preferences}
             onSelectShloka={handleJumpToShloka}
             onUpdatePreferences={handleUpdatePreferences}
+            onNavigateTab={(tab) => {
+              setActiveTab(tab);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         )}
 

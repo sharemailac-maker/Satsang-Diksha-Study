@@ -28,6 +28,7 @@ interface UdgaanViewProps {
   preferences: UserPreferences;
   onSelectShloka?: (shlokaId: number) => void;
   onUpdatePreferences?: (prefs: Partial<UserPreferences>) => void;
+  onNavigateTab?: (tab: string) => void;
 }
 
 export type PlaybackMode = 'single' | 'group';
@@ -188,7 +189,8 @@ const getUdgaanStrings = (lang: string) => {
 export const UdgaanView: React.FC<UdgaanViewProps> = ({ 
   shlokas, 
   preferences, 
-  onSelectShloka 
+  onSelectShloka,
+  onNavigateTab 
 }) => {
   // Playback mode: 'single' (1 shlok) vs 'group' (range between any start and end from 1 to 315)
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('single');
@@ -586,7 +588,33 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
   const currentMeaning = getShlokaMeaning(currentShloka, lang);
 
   return (
-    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 space-y-6 animate-fadeIn pb-32 select-none">
+    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 space-y-6 animate-fadeIn pb-28 select-none">
+      {/* Top Section Breadcrumb / Navigation Bar */}
+      {onNavigateTab && (
+        <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white/80 dark:bg-[#221D1A]/80 border border-[#E8DFD1] dark:border-[#3D342C] shadow-2xs">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onNavigateTab('reader')}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#7A1E00] to-[#8B2500] text-amber-50 font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>{lang === 'hindi' ? '← श्लोक अध्ययन (Reader)' : lang === 'english' ? '← Shloka Study (Reader)' : '← શ્લોક અધ્યયન (Reader)'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigateTab('home')}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FAF6F0] dark:bg-[#2A221C] text-[#6B5E51] dark:text-[#A89886] font-semibold text-xs border border-amber-200/60 dark:border-stone-800 hover:bg-amber-50 transition cursor-pointer"
+            >
+              <span>{lang === 'hindi' ? 'मुख्य पृष्ठ (Home)' : lang === 'english' ? 'Home' : 'મુખ્ય પેજ (Home)'}</span>
+            </button>
+          </div>
+          <span className="text-[11px] text-[#7A6B5C] dark:text-[#A89886] font-medium hidden sm:inline">
+            સત્સંગ દીક્ષા • ૩૧૫ શ્લોક
+          </span>
+        </div>
+      )}
+
       {/* Header Banner - Zero external redirection links */}
       <div className="relative rounded-3xl overflow-hidden shadow-xl border border-amber-400/40 bg-gradient-to-r from-[#691800] via-[#8B2500] to-[#A03900] text-white p-5 sm:p-7">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
@@ -1206,56 +1234,6 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* STICKY BOTTOM AUDIO PLAYER BAR (Appears while playing or paused) */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#1E1815]/95 backdrop-blur-md border-t border-amber-300/40 dark:border-stone-800 shadow-2xl py-2.5 px-3 sm:px-6">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
-          {/* Active Shloka Info */}
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-xl bg-[#8B2500] text-amber-100 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-sm">
-              #{currentShloka.id}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-[#8B2500] dark:text-amber-300 truncate">
-                {currentShloka.titleGu}
-              </p>
-              <p className="text-[10px] text-[#7A6B5C] dark:text-[#A89886] truncate">
-                {formatTime(currentTime)} / {formatTime(duration)} • {playbackSpeed}x • {repeatMode === 'loop_verse' ? '🔂 Loop' : repeatMode === 'continuous' ? '🔁 Auto' : '⏹️ Once'}
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Controls */}
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <button
-              type="button"
-              onClick={handlePrevious}
-              className="p-1.5 rounded-lg text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-800 transition cursor-pointer"
-              title={t.prevVerseTitle}
-            >
-              <SkipBack className="w-4 h-4 fill-current" />
-            </button>
-
-            <button
-              type="button"
-              onClick={handleTogglePlay}
-              className="w-9 h-9 rounded-xl bg-[#8B2500] text-amber-100 flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition cursor-pointer"
-              title={isPlaying ? t.pauseTitle : t.playTitle}
-            >
-              {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current translate-x-0.5" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleNext}
-              className="p-1.5 rounded-lg text-[#8B2500] dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-stone-800 transition cursor-pointer"
-              title={t.nextVerseTitle}
-            >
-              <SkipForward className="w-4 h-4 fill-current" />
-            </button>
-          </div>
         </div>
       </div>
     </div>

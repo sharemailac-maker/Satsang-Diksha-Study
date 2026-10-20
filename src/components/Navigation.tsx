@@ -133,7 +133,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* Real Mobile App Bottom Navigation Bar (Fixed at Bottom for Native Look & Feel) */}
       <nav 
         id="native-mobile-bottom-nav" 
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#FAF6F0]/95 dark:bg-[#1C1714]/95 backdrop-blur-md border-t border-[#E8DFD1] dark:border-[#382F28] px-1 py-1.5 shadow-lg safe-area-bottom"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FAF6F0]/95 dark:bg-[#1C1714]/95 backdrop-blur-md border-t border-[#E8DFD1] dark:border-[#382F28] px-1 py-1.5 shadow-lg safe-area-bottom"
         style={{ paddingBottom: 'max(6px, env(safe-area-inset-bottom))' }}
       >
         <div className="flex items-center justify-around gap-0.5">
