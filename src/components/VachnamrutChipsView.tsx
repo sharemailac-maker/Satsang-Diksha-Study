@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ChevronDown, ChevronUp, Copy, Check, Tag } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Tag } from 'lucide-react';
 import { ScriptureReference, UserPreferences } from '../types';
 import { 
   getVachnamrutEntry, 
@@ -30,7 +30,6 @@ export const VachnamrutChipsView: React.FC<VachnamrutChipsViewProps> = ({
   const [expandedIndices, setExpandedIndices] = useState<Set<number>>(
     new Set(initialExpanded ? vachRefs.map((_, i) => i) : [])
   );
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   if (vachRefs.length === 0) return null;
 
@@ -47,18 +46,9 @@ export const VachnamrutChipsView: React.FC<VachnamrutChipsViewProps> = ({
     });
   };
 
-  const handleCopy = (quotes: string[], idx: number) => {
-    const textToCopy = quotes.join('\n\n');
-    navigator.clipboard.writeText(textToCopy);
-    setCopiedIdx(idx);
-    setTimeout(() => setCopiedIdx(null), 2000);
-  };
-
   // Translations for UI labels
   const ui = {
     title: lang === 'english' ? 'Vachnamrut References' : lang === 'hindi' ? 'वचनामृत संदर्भ' : 'વચનામૃત સંદર્ભ',
-    copy: lang === 'english' ? 'Copy Quotation' : lang === 'hindi' ? 'कॉपी' : 'કોપી',
-    copied: lang === 'english' ? 'Copied' : lang === 'hindi' ? 'कॉपी हो गया' : 'કોપી થઈ ગયું',
     correlationTitle: lang === 'english' ? 'Scriptural Concordance Note:' : lang === 'hindi' ? 'शास्त्रीय समन्वय:' : 'શ્લોક સાથે શાસ્ત્રીય સંવાદ:',
     availableQuotation: lang === 'english' ? 'Click to view quotation' : lang === 'hindi' ? 'अवतरण देखने के लिए क्लिक करें' : 'અવતરણ જોવા ક્લિક કરો',
     noQuotationTag: lang === 'english' ? 'Concordance number' : lang === 'hindi' ? 'संदर्भ संख्या' : 'સંદર્ભ ક્રમાંક',
@@ -202,28 +192,6 @@ export const VachnamrutChipsView: React.FC<VachnamrutChipsViewProps> = ({
                         {topicLabel}
                       </span>
                     )}
-                  </div>
-
-                  {/* Copy Action (No external link in app as instructed) */}
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(quotesInLang, idx)}
-                      title={ui.copy}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer border border-stone-200/80 dark:border-stone-700/60"
-                    >
-                      {copiedIdx === idx ? (
-                        <>
-                          <Check className="w-3.5 h-3.5 text-emerald-600" />
-                          <span className="text-[11px] text-emerald-700 font-medium">{ui.copied}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-3.5 h-3.5" />
-                          <span className="text-[11px] font-medium">{ui.copy}</span>
-                        </>
-                      )}
-                    </button>
                   </div>
                 </div>
 

@@ -737,7 +737,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 </div>
 
                 {/* Primary Sanskrit Script based on preference */}
-                <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
+                <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-none">
                   {preferences?.sanskritScript === 'gujarati' 
                     ? shloka.sanskritGujarati 
                     : preferences?.sanskritScript === 'iast'
@@ -793,7 +793,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                       )}
                     </div>
                     {/* Full Sanskrit Verse in Selected Script */}
-                    <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-text">
+                    <p className="font-sanskrit text-base sm:text-lg font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line tracking-wide select-none">
                       {preferences?.sanskritScript === 'gujarati' 
                         ? shloka.sanskritGujarati 
                         : preferences?.sanskritScript === 'iast'

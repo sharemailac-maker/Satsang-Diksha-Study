@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ChevronDown, ChevronUp, Copy, Check, Tag } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronUp, Tag } from 'lucide-react';
 import { ScriptureReference, UserPreferences } from '../types';
 
 interface SwaminiVatoChipsViewProps {
@@ -24,7 +24,6 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
   const [expandedIndices, setExpandedIndices] = useState<Set<number>>(
     new Set(initialExpanded ? swamiRefs.map((_, i) => i) : [])
   );
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   if (swamiRefs.length === 0) return null;
 
@@ -40,18 +39,9 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
     });
   };
 
-  const handleCopy = (text: string, idx: number) => {
-    navigator.clipboard.writeText(text);
-    setCopiedIdx(idx);
-    setTimeout(() => setCopiedIdx(null), 2000);
-  };
-
-  // Translations for UI labels
   // Translations for UI labels
   const ui = {
     title: lang === 'english' ? 'Swamini Vato References' : lang === 'hindi' ? 'स्वामीनी बातें संदर्भ' : 'સ્વામીની વાતો પ્રકરણ સંદર્ભ',
-    copyDiscourse: lang === 'english' ? 'Copy' : lang === 'hindi' ? 'कॉपी' : 'કોપી',
-    copied: lang === 'english' ? 'Copied' : lang === 'hindi' ? 'कॉपी हो गया' : 'કોપી થઈ ગયું',
     correlationTitle: lang === 'english' ? 'Scriptural Concordance Note:' : lang === 'hindi' ? 'शास्त्रीય समन्वय:' : 'શ્લોક સાથે શાસ્ત્રીય સંવાદ:',
     noQuotationTag: lang === 'english' ? 'Reference Number' : 'સંદર્ભ ક્રમાંક',
   };
@@ -160,28 +150,12 @@ export const SwaminiVatoChipsView: React.FC<SwaminiVatoChipsViewProps> = ({
                 id={`vato-detail-card-${shlokaId ?? 'item'}-${idx}`}
                 className="rounded-xl bg-white/95 dark:bg-[#1E1815] border border-orange-200 dark:border-orange-900/60 p-3.5 sm:p-4 space-y-3 shadow-xs"
               >
-                {/* Vat Card Header (No external link or arrow) */}
+                {/* Vat Card Header (No external link, arrow, or copy button) */}
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-orange-100 dark:border-stone-800 pb-2">
                   <div className="flex items-center gap-2">
                     <span className="px-2.5 py-1 rounded-lg bg-orange-600 text-white font-bold text-xs shadow-2xs">
                       {sectionLabel}
                     </span>
-                  </div>
-
-                  {/* Copy Action Only (No external links or arrows) */}
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(displayText, idx)}
-                      title={ui.copyDiscourse}
-                      className="p-1.5 rounded-lg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors cursor-pointer"
-                    >
-                      {copiedIdx === idx ? (
-                        <Check className="w-3.5 h-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="w-3.5 h-3.5" />
-                      )}
-                    </button>
                   </div>
                 </div>
 

@@ -60,4 +60,37 @@ html.theme-light {
   color-scheme: light;
 }
 
+/* Strict Anti-Copy and Text/Image Selection Restrictions */
+*, *::before, *::after {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Allow search bars and text inputs to remain usable for typing */
+input, textarea {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Strictly restrict image selection, dragging, and context saving */
+img {
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+  -webkit-touch-callout: none !important;
+  pointer-events: none;
+}
+
+/* Allow buttons containing images or interactive image cards to be clicked */
+button img, a img, .clickable img {
+  pointer-events: auto;
+}
+
 

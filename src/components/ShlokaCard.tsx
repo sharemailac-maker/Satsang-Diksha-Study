@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { 
   Bookmark, 
   Share2, 
-  Copy, 
-  Check, 
   ChevronDown, 
   ChevronUp, 
   Sparkles, 
@@ -68,7 +66,6 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
   );
   const [anvayaViewMode, setAnvayaViewMode] = useState<'table' | 'chips'>('table');
   const [noteText, setNoteText] = useState(bookmarkNote);
-  const [copied, setCopied] = useState(false);
   const [selectedWordIndex, setSelectedWordIndex] = useState<number | null>(null);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
@@ -94,13 +91,6 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
     preferences.sanskritScript === 'gujarati' ? shloka.sanskritGujarati :
     preferences.sanskritScript === 'iast' ? shloka.sanskritIast :
     shloka.sanskritDevanagari;
-
-  const handleCopy = () => {
-    const textToCopy = `॥ Satsang Diksha Study - ${ui.shlokaNumberPrefix} ${shloka.id} ॥\n\n${shloka.sanskritDevanagari}\n\n[ગુજરાતી અર્થ]: ${shloka.meaningGu}\n\n[हिन्दी भावार्थ]: ${shloka.meaningHi}\n\n[English Meaning]: ${shloka.meaningEn}`;
-    navigator.clipboard.writeText(textToCopy);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const handleAudioRecitation = () => {
     // Play authentic Vedic chanting in male voice with background music
@@ -184,15 +174,6 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           >
             <Bookmark className="w-4 h-4 fill-current" />
           </button>
-
-          {/* Copy Button */}
-          <button
-            onClick={handleCopy}
-            title={ui.copyShloka}
-            className="p-1.5 rounded-lg bg-black/20 hover:bg-black/40 text-amber-200 transition"
-          >
-            {copied ? <Check className="w-4 h-4 text-green-300" /> : <Copy className="w-4 h-4" />}
-          </button>
         </div>
       </div>
 
@@ -205,7 +186,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
           </div>
 
           <p 
-            className="font-sanskrit font-medium text-[#731E00] dark:text-[#F39C38] leading-relaxed tracking-wide whitespace-pre-line select-text"
+            className="font-sanskrit font-medium text-[#731E00] dark:text-[#F39C38] leading-relaxed tracking-wide whitespace-pre-line select-none"
             style={{ fontSize: `${preferences.fontSize + 2}px` }}
           >
             {sanskritText}
@@ -300,7 +281,7 @@ export const ShlokaCard: React.FC<ShlokaCardProps> = ({
                   <BookOpen className="w-3.5 h-3.5" />
                   <span>અન્વય (સંસ્કૃત ગદ્ય-ક્રમ - Prose Order):</span>
                 </div>
-                <p className="font-sanskrit text-sm sm:text-base text-[#4A2600] dark:text-amber-200 font-medium leading-relaxed select-text">
+                <p className="font-sanskrit text-sm sm:text-base text-[#4A2600] dark:text-amber-200 font-medium leading-relaxed select-none">
                   {anvayaScript === 'devanagari' 
                     ? (anvaya.devanagari || shloka.sanskritDevanagari) 
                     : anvayaScript === 'gujarati' 

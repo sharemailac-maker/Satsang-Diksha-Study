@@ -88,10 +88,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     {
       id: 'udgaan',
       title: ui.homeUdgaanTitle || 'ઉદ્ગાન વૈદિક ગાન',
-      subtitle: ui.homeUdgaanDesc || 'BAPS ૧ થી ૬ ઉદ્ગાન અને જૂથવાર સંસ્કૃત શ્લોક શ્રવણ',
+      subtitle: ui.homeUdgaanDesc || 'સંસ્કૃત શ્લોક શ્રેણી અને જૂથવાર વૈદિક ગાન શ્રવણ (૧ થી ૩૧૫)',
       icon: Radio,
       color: 'from-[#D97706] to-[#B45309]',
-      badge: 'BAPS Audio'
+      badge: '૩૧૫ શ્લોક ગાન'
     },
     {
       id: 'mukhpath',

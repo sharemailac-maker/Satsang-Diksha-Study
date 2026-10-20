@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, ChevronDown, ChevronUp, Copy, Check, ArrowRight, BookOpen } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronUp, ArrowRight, BookOpen } from 'lucide-react';
 import { Shloka, UserPreferences } from '../types';
 import { getShlokaTitle, getShlokaChapterName } from '../utils/translationHelper';
 
@@ -19,7 +19,6 @@ export const ShlokaChipsList: React.FC<ShlokaChipsListProps> = ({
   accentColor = 'amber'
 }) => {
   const [expandedShlokaId, setExpandedShlokaId] = useState<number | null>(null);
-  const [copied, setCopied] = useState<boolean>(false);
 
   const lang = preferences?.activeLanguage || 'gujarati';
   const script = preferences?.sanskritScript || 'gujarati';
@@ -31,27 +30,6 @@ export const ShlokaChipsList: React.FC<ShlokaChipsListProps> = ({
   };
 
   const activeShloka = expandedShlokaId ? shlokaMap.get(expandedShlokaId) : null;
-
-  const handleCopy = (shloka: Shloka) => {
-    const sanskrit =
-      script === 'gujarati'
-        ? shloka.sanskritGujarati
-        : script === 'iast'
-        ? shloka.sanskritIast
-        : shloka.sanskritDevanagari;
-
-    const meaning =
-      lang === 'english'
-        ? shloka.meaningEn
-        : lang === 'hindi'
-        ? shloka.meaningHi
-        : shloka.meaningGu;
-
-    const copyText = `સત્સંગ દીક્ષા શ્લોક ${shloka.id}\n${sanskrit}\n\nઅર્થ:\n${meaning}`;
-    navigator.clipboard.writeText(copyText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
 
   const getSanskritText = (shloka: Shloka) => {
     if (script === 'gujarati') return shloka.sanskritGujarati;
@@ -162,14 +140,6 @@ export const ShlokaChipsList: React.FC<ShlokaChipsListProps> = ({
             </div>
 
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleCopy(activeShloka)}
-                title={lang === 'english' ? 'Copy verse text' : 'શ્લોક કોપી કરો'}
-                className="p-1.5 rounded-lg bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white border border-stone-200 dark:border-stone-700 shadow-2xs transition"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
               <button
                 type="button"
                 onClick={() => setExpandedShlokaId(null)}

@@ -62,6 +62,71 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Prevent copying, cutting, context menu, image dragging, and text selection
+if (typeof window !== 'undefined') {
+  // Prevent contextmenu (right-click / long press on images or text)
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  }, { capture: true, passive: false });
+
+  // Prevent clipboard copy
+  document.addEventListener('copy', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, { capture: true, passive: false });
+
+  // Prevent clipboard cut
+  document.addEventListener('cut', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, { capture: true, passive: false });
+
+  // Prevent drag-and-drop of images and text
+  document.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+  }, { capture: true, passive: false });
+
+  // Prevent text selection (allow only interactive inputs & textareas)
+  document.addEventListener('selectstart', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+      return;
+    }
+    e.preventDefault();
+  }, { capture: true, passive: false });
+
+  // Block copy/cut/select-all/save keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    const isModifier = e.ctrlKey || e.metaKey;
+    if (!isModifier) return;
+
+    const key = e.key.toLowerCase();
+    const target = e.target as HTMLElement | null;
+    const isInput = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable);
+
+    // Block Ctrl/Cmd + C (Copy) and Ctrl/Cmd + X (Cut)
+    if (key === 'c' || key === 'x') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    // Block Ctrl/Cmd + A (Select All) outside inputs
+    if (key === 'a' && !isInput) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    // Block Ctrl/Cmd + S (Save), U (View Source), P (Print)
+    if (key === 's' || key === 'u' || key === 'p') {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+  }, { capture: true, passive: false });
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
