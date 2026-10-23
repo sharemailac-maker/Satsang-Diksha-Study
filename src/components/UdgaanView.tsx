@@ -17,7 +17,9 @@ import {
   Sliders, 
   Sparkles, 
   BookOpen,
-  ArrowRight
+  ArrowRight,
+  X,
+  RefreshCw
 } from 'lucide-react';
 import { Shloka, UserPreferences } from '../types';
 import { AudioFormat, AUDIO_FORMAT_OPTIONS, getAudioUrls, globalAudio } from '../utils/audioPlayer';
@@ -31,8 +33,7 @@ interface UdgaanViewProps {
   onNavigateTab?: (tab: string) => void;
 }
 
-export type PlaybackMode = 'single' | 'group';
-export type RepeatMode = 'loop_verse' | 'continuous' | 'once';
+export type RepetitionOrder = 'each_verse' | 'whole_range';
 
 const SPEED_OPTIONS = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
 
@@ -44,45 +45,41 @@ const UDGAAN_I18N = {
     badge: '૩૧૫ શ્લોક • અવિરત વૈદિક ગાન',
     voiceStyleTitle: 'સ્વર અને ગાન શૈલી (Audio Voice & Raag):',
     voiceStyleDesc: 'મૂળ પુરૂષ સ્વર (સંગીત સાથે)',
-    playbackModeLabel: 'શ્રવણ પદ્ધતિ (Playback Mode):',
-    singleModeLabel: '૧ શ્લોક શ્રવણ (Single Shloka)',
-    groupModeLabel: 'જૂથ શ્રવણ (Group Range)',
-    singleModeDesc: 'કોઈપણ ૧ શ્લોક સાંભળો અથવા વારંવાર લૂપ કરી કંઠસ્થ કરો',
-    groupModeDesc: 'કોઈપણ શ્લોક ૧ થી ૩૧૫ વચ્ચેનો પ્રારંભિક અને અંતિમ શ્લોક પસંદ કરી જૂથ શ્રવણ કરો',
-    rangePlaybackTitle: 'શ્લોક શ્રેણી જૂથ શ્રવણ (Shloka Range Playback)',
-    startVerseLabel: 'પ્રારંભિક શ્લોક',
-    endVerseLabel: 'અંતિમ શ્લોક',
-    singleVerseLabel: 'શ્લોક પસંદ કરો',
-    totalVersesBadge: (count: number) => `કુલ ${count} શ્લોક શ્રેણી`,
-    playRangeBtn: (start: number, end: number) => `શ્લોક ${start} થી ${end} જૂથ શ્રવણ શરૂ કરો`,
-    playSingleBtn: (id: number) => `શ્લોક ${id} શ્રવણ શરૂ કરો`,
+    repeatModalTitle: 'રિપીટ',
+    shlokaLabel: 'શ્લોક',
+    toLabel: 'થી',
+    howManyTimesLabel: 'કેટલી વાર',
+    patternEachVerse: '1-1, 2-2',
+    patternEachVerseDesc: 'દરેક શ્લોક ક્રમશઃ પુનરાવર્તિત કરો (Mukhpath)',
+    patternWholeRange: '1-2, 1-2',
+    patternWholeRangeDesc: 'સમગ્ર શ્રેણી ક્રમિક પુનરાવર્તિત કરો (Parayan)',
+    cancelBtn: 'રદ કરો',
+    playBtn: 'વગાડો',
+    repeatSettingsBtn: 'રિપીટ / ગ્રૂપ શ્રવણ સેટિંગ્સ',
+    quickPresetsLabel: 'ઝડપી વિકલ્પો:',
     fullScriptureChanting: 'સર્વ ૧ થી ૩૧૫ અખંડ પાઠ',
-    rangePrefix: (start: number, end: number) => `શ્લોક ${start} થી ${end}`,
     activeHeroVerseTitle: (id: number) => `સત્સંગ દીક્ષા • શ્લોક ${id}`,
     studyBtn: 'અધ્યયન જુઓ',
     mangalChanting: '॥ શ્રી સ્વામિનારાયણો વિજયતે ॥',
     originalMeaningTitle: 'મૂળ ગુજરાતી ભાવાર્થ:',
     translatedMeaningTitle: 'ભાવાર્થ:',
     speedLabel: 'ગતિ (Speed)',
-    repeatLabel: 'પુનરાવર્તન (Repeat)',
-    repeatLoopVerse: 'આ શ્લોક લૂપ',
-    repeatLoopVerseTitle: 'આ શ્લોક વારંવાર સાંભળો (Loop this verse)',
-    repeatContinuous: 'અવિરત ક્રમિક',
-    repeatContinuousTitle: 'આગલા શ્લોક પર આપમેળે આગળ વધો (Continuous Auto-advance)',
-    repeatOnce: 'એક વાર',
-    repeatOnceTitle: 'એક વાર ગાન બાદ અટકો (Play once)',
     prevVerseTitle: 'પાછલો શ્લોક (Previous)',
     nextVerseTitle: 'આગલો શ્લોક (Next)',
     rewind5: '૫ સેકન્ડ પાછળ (-5s)',
     forward5: '૫ સેકન્ડ આગળ (+5s)',
     playTitle: 'શ્રવણ શરૂ કરો (Play)',
     pauseTitle: 'વિરામ (Pause)',
-    verseListTitle: (start: number, end: number, count: number) => `શ્લોક યાદી (શ્લોક ${start} થી ${end} - કુલ ${count})`,
+    verseListTitle: (start: number, end: number, count: number) => 
+      start === end 
+        ? `શ્લોક #${start} (એકલ શ્રવણ)` 
+        : `શ્લોક યાદી (શ્લોક ${start} થી ${end} - કુલ ${count})`,
     verseListSubtitle: 'ક્લિક કરી સીધા ગાન સાંભળો',
     chapterPrefix: 'પ્રકરણ',
     nowPlaying: 'હવે વાગી રહ્યું છે',
     audioBuffering: 'લોડ થઈ રહ્યું છે...',
-    audioError: 'ઓડિયો લોડ કરવામાં ક્ષતિ, ફરી પ્રયાસ કરો.'
+    singleShlokaNote: 'બંનેમાં સરખો શ્લોક નંબર લખવાથી ૧ જ શ્લોક વાગશે',
+    groupRangeNote: 'નાનાથી મોટા શ્લોક નંબર લખવાથી જૂથ વાગશે'
   },
   hindi: {
     tag: 'अधिकृत संस्कृत उद्गान (Authentic Vedic Chanting)',
@@ -91,45 +88,41 @@ const UDGAAN_I18N = {
     badge: '३१५ श्लोक • अविरत वैदिक गान',
     voiceStyleTitle: 'स्वर एवं गान शैली (Audio Voice & Raag):',
     voiceStyleDesc: 'मूल पुरुष स्वर (संगीत के साथ)',
-    playbackModeLabel: 'श्रवण पद्धति (Playback Mode):',
-    singleModeLabel: '१ श्लोक श्रवण (Single Shloka)',
-    groupModeLabel: 'समूह श्रवण (Group Range)',
-    singleModeDesc: 'कोई भी १ श्लोक सुनें अथवा बार-बार लूप कर कंठस्थ करें',
-    groupModeDesc: 'श्लोक १ से ३१५ के मध्य कोई भी प्रारंभिक एवं अंतिम श्लोक चुनकर समूह श्रवण करें',
-    rangePlaybackTitle: 'श्लोक श्रेणी समूह श्रवण (Shloka Range Playback)',
-    startVerseLabel: 'प्रारंभिक श्लोक',
-    endVerseLabel: 'अंतिम श्लोक',
-    singleVerseLabel: 'श्लोक चुनें',
-    totalVersesBadge: (count: number) => `कुल ${count} श्लोक श्रेणी`,
-    playRangeBtn: (start: number, end: number) => `श्लोक ${start} से ${end} समूह श्रवण शुरू करें`,
-    playSingleBtn: (id: number) => `श्लोक ${id} श्रवण शुरू करें`,
+    repeatModalTitle: 'रिपीट',
+    shlokaLabel: 'श्लोक',
+    toLabel: 'से',
+    howManyTimesLabel: 'कितनी बार',
+    patternEachVerse: '1-1, 2-2',
+    patternEachVerseDesc: 'प्रत्येक श्लोक क्रमशः दोहराएं (Mukhpath)',
+    patternWholeRange: '1-2, 1-2',
+    patternWholeRangeDesc: 'संपूर्ण श्रेणी क्रमिक दोहराएं (Parayan)',
+    cancelBtn: 'रद्द करें',
+    playBtn: 'बजाएं',
+    repeatSettingsBtn: 'रिपीट / समूह श्रवण सेटिंग्स',
+    quickPresetsLabel: 'त्वरित विकल्प:',
     fullScriptureChanting: 'सर्व १ से ३१५ अखंड पाठ',
-    rangePrefix: (start: number, end: number) => `श्लोक ${start} से ${end}`,
     activeHeroVerseTitle: (id: number) => `सत्संग दीक्षा • श्लोक ${id}`,
     studyBtn: 'अध्ययन देखें',
     mangalChanting: '॥ श्री स्वामिनारायणो विजयते ॥',
     originalMeaningTitle: 'मूल गुजराती भावार्थ:',
     translatedMeaningTitle: 'हिंदी भावार्थ:',
     speedLabel: 'गति (Speed)',
-    repeatLabel: 'पुनरावर्तन (Repeat)',
-    repeatLoopVerse: 'यह श्लोक लूप',
-    repeatLoopVerseTitle: 'यह श्लोक बार-बार सुनें (Loop this verse)',
-    repeatContinuous: 'अविरत क्रमिक',
-    repeatContinuousTitle: 'अगले श्लोक पर स्वतः आगे बढ़ें (Continuous Auto-advance)',
-    repeatOnce: 'एक बार',
-    repeatOnceTitle: 'एक बार गान के बाद विराम (Play once)',
     prevVerseTitle: 'पिछला श्लोक (Previous)',
     nextVerseTitle: 'अगला श्लोक (Next)',
     rewind5: '५ सेकंड पीछे (-5s)',
     forward5: '५ सेकंड आगे (+5s)',
     playTitle: 'श्रवण शुरू करें (Play)',
     pauseTitle: 'विराम (Pause)',
-    verseListTitle: (start: number, end: number, count: number) => `श्लोक सूची (श्लोक ${start} से ${end} - कुल ${count})`,
+    verseListTitle: (start: number, end: number, count: number) => 
+      start === end 
+        ? `श्लोक #${start} (एकल श्रवण)` 
+        : `श्लोक सूची (श्लोक ${start} से ${end} - कुल ${count})`,
     verseListSubtitle: 'क्लिक कर सीधे गान सुनें',
     chapterPrefix: 'प्रकरण',
     nowPlaying: 'अब बज रहा है',
     audioBuffering: 'लोड हो रहा है...',
-    audioError: 'ऑडियो लोड करने में त्रुटि, पुनः प्रयास करें।'
+    singleShlokaNote: 'समान संख्या से १ ही श्लोक बजेगा',
+    groupRangeNote: 'निम्न से उच्च संख्या से समूह बजेगा'
   },
   english: {
     tag: 'Authentic Sanskrit Udgaan (Authentic Vedic Chanting)',
@@ -138,45 +131,41 @@ const UDGAAN_I18N = {
     badge: '315 Verses • Vedic Chanting',
     voiceStyleTitle: 'Audio Voice & Chanting Style:',
     voiceStyleDesc: 'Authentic Male Voice with Divine Music',
-    playbackModeLabel: 'Playback Mode:',
-    singleModeLabel: 'Single Shloka (1 Verse)',
-    groupModeLabel: 'Group Playback (Range)',
-    singleModeDesc: 'Listen to a single verse or loop it repeatedly for memorization',
-    groupModeDesc: 'Select any start and end verse from 1 to 315 for continuous group playback',
-    rangePlaybackTitle: 'Shloka Range Group Playback',
-    startVerseLabel: 'Start Verse',
-    endVerseLabel: 'End Verse',
-    singleVerseLabel: 'Select Verse',
-    totalVersesBadge: (count: number) => `Total ${count} Verses Range`,
-    playRangeBtn: (start: number, end: number) => `Play Range (${start}–${end})`,
-    playSingleBtn: (id: number) => `Play Shloka #${id}`,
+    repeatModalTitle: 'Repeat',
+    shlokaLabel: 'Verse',
+    toLabel: 'to',
+    howManyTimesLabel: 'Repeat Count',
+    patternEachVerse: '1-1, 2-2',
+    patternEachVerseDesc: 'Repeat each verse consecutively (Mukhpath)',
+    patternWholeRange: '1-2, 1-2',
+    patternWholeRangeDesc: 'Repeat entire sequence consecutively (Parayan)',
+    cancelBtn: 'Cancel',
+    playBtn: 'Play',
+    repeatSettingsBtn: 'Repeat / Group Settings',
+    quickPresetsLabel: 'Quick Range:',
     fullScriptureChanting: 'Full 1–315 Scripture Recitation',
-    rangePrefix: (start: number, end: number) => `Verses ${start}–${end}`,
     activeHeroVerseTitle: (id: number) => `Satsang Diksha • Verse ${id}`,
     studyBtn: 'Study Verse',
     mangalChanting: '॥ Shree Swaminarayanō Vijayate ॥',
     originalMeaningTitle: 'Original Gujarati Meaning:',
     translatedMeaningTitle: 'Meaning:',
     speedLabel: 'Speed',
-    repeatLabel: 'Repeat Mode',
-    repeatLoopVerse: 'Loop Verse',
-    repeatLoopVerseTitle: 'Loop current verse repeatedly',
-    repeatContinuous: 'Continuous',
-    repeatContinuousTitle: 'Continuous auto-advance to next verse',
-    repeatOnce: 'Play Once',
-    repeatOnceTitle: 'Stop after playing once',
     prevVerseTitle: 'Previous Verse',
     nextVerseTitle: 'Next Verse',
     rewind5: 'Rewind 5s',
     forward5: 'Forward 5s',
     playTitle: 'Play Audio',
     pauseTitle: 'Pause Audio',
-    verseListTitle: (start: number, end: number, count: number) => `Verses List (${start}–${end} • Total ${count})`,
+    verseListTitle: (start: number, end: number, count: number) => 
+      start === end 
+        ? `Verse #${start} (Single Verse)` 
+        : `Verses List (${start}–${end} • Total ${count})`,
     verseListSubtitle: 'Tap any verse to chant',
     chapterPrefix: 'Chapter',
     nowPlaying: 'Now Playing',
     audioBuffering: 'Loading audio...',
-    audioError: 'Error loading audio, please retry.'
+    singleShlokaNote: 'Same start and end number plays 1 single verse',
+    groupRangeNote: 'Lower to higher range plays group sequence'
   }
 };
 
@@ -192,15 +181,33 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
   onSelectShloka,
   onNavigateTab 
 }) => {
-  // Playback mode: 'single' (1 shlok) vs 'group' (range between any start and end from 1 to 315)
-  const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('single');
+  // Active range bounds: lower to higher for group play, or same number for single play
   const [rangeStart, setRangeStart] = useState<number>(1);
-  const [rangeEnd, setRangeEnd] = useState<number>(50);
+  const [rangeEnd, setRangeEnd] = useState<number>(315);
+
+  // Repeat count (how many times: 1, 2, 3...)
+  const [repeatCount, setRepeatCount] = useState<number>(2);
+
+  // Repetition Order: 'each_verse' (1-1, 2-2) or 'whole_range' (1-2, 1-2)
+  const [repetitionOrder, setRepetitionOrder] = useState<RepetitionOrder>('each_verse');
+
+  // Repetition tracking counters
+  const [verseRepeatIndex, setVerseRepeatIndex] = useState<number>(1);
+  const [rangeCycleIndex, setRangeCycleIndex] = useState<number>(1);
+
+  // Modal dialog open/closed state
+  const [isRepeatModalOpen, setIsRepeatModalOpen] = useState<boolean>(false);
+
+  // Modal draft form state (empty by default so user can directly enter single or range without clearing)
+  const [modalStart, setModalStart] = useState<string>('');
+  const [modalEnd, setModalEnd] = useState<string>('');
+  const [modalRepeatCount, setModalRepeatCount] = useState<string>('2');
+  const [modalRepetitionOrder, setModalRepetitionOrder] = useState<RepetitionOrder>('each_verse');
+
+  // Audio configuration & state
   const [audioFormat, setAudioFormat] = useState<AudioFormat>('sanskrit');
-  
   const [currentShlokaId, setCurrentShlokaId] = useState<number>(1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [repeatMode, setRepeatMode] = useState<RepeatMode>('continuous');
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -212,13 +219,15 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
   const activeVerseRef = useRef<HTMLDivElement | null>(null);
   const isTransitioningRef = useRef<boolean>(false);
 
-  // Synchronized state refs to prevent stale closure bugs in audio event handlers
+  // Synchronized state refs to prevent stale closure bugs in audio event listeners
   const currentShlokaIdRef = useRef<number>(currentShlokaId);
   const isPlayingRef = useRef<boolean>(isPlaying);
-  const playbackModeRef = useRef<PlaybackMode>(playbackMode);
-  const repeatModeRef = useRef<RepeatMode>(repeatMode);
   const rangeStartRef = useRef<number>(rangeStart);
   const rangeEndRef = useRef<number>(rangeEnd);
+  const repeatCountRef = useRef<number>(repeatCount);
+  const repetitionOrderRef = useRef<RepetitionOrder>(repetitionOrder);
+  const verseRepeatIndexRef = useRef<number>(verseRepeatIndex);
+  const rangeCycleIndexRef = useRef<number>(rangeCycleIndex);
   const audioFormatRef = useRef<AudioFormat>(audioFormat);
   const playbackSpeedRef = useRef<number>(playbackSpeed);
   const isMutedRef = useRef<boolean>(isMuted);
@@ -226,48 +235,86 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
   // Sync refs on render
   currentShlokaIdRef.current = currentShlokaId;
   isPlayingRef.current = isPlaying;
-  playbackModeRef.current = playbackMode;
-  repeatModeRef.current = repeatMode;
   rangeStartRef.current = rangeStart;
   rangeEndRef.current = rangeEnd;
+  repeatCountRef.current = repeatCount;
+  repetitionOrderRef.current = repetitionOrder;
+  verseRepeatIndexRef.current = verseRepeatIndex;
+  rangeCycleIndexRef.current = rangeCycleIndex;
   audioFormatRef.current = audioFormat;
   playbackSpeedRef.current = playbackSpeed;
   isMutedRef.current = isMuted;
 
   const lang = preferences?.activeLanguage || preferences?.appLanguage || 'gujarati';
   const t = getUdgaanStrings(lang);
-  const langMeta = LANGUAGE_METADATA[lang] || LANGUAGE_METADATA.gujarati;
+
+  // Check if currently single shloka or group range
+  const isSingleVerse = rangeStart === rangeEnd;
 
   // Current shloka object
   const currentShloka = useMemo(() => {
     return shlokas.find(s => s.id === currentShlokaId) || shlokas[0];
   }, [shlokas, currentShlokaId]);
 
-  // Active shlokas list based on playback mode
+  // Active shlokas list based on range
   const displayedShlokas = useMemo(() => {
-    if (playbackMode === 'group') {
-      const s = Math.min(rangeStart, rangeEnd);
-      const e = Math.max(rangeStart, rangeEnd);
-      return shlokas.filter(item => item.id >= s && item.id <= e);
-    }
-    // In single mode, show all 315 shlokas for quick selection
-    return shlokas;
-  }, [shlokas, playbackMode, rangeStart, rangeEnd]);
+    const s = Math.min(rangeStart, rangeEnd);
+    const e = Math.max(rangeStart, rangeEnd);
+    return shlokas.filter(item => item.id >= s && item.id <= e);
+  }, [shlokas, rangeStart, rangeEnd]);
 
-  // Helper to adjust range bounds cleanly
-  const handleSetRange = (newStart: number, newEnd: number, autoStartPlayback: boolean = false) => {
-    const s = Math.max(1, Math.min(315, newStart));
-    const e = Math.max(s, Math.min(315, newEnd));
+  // Open Repeat Modal - shloka ranges are empty so user can directly fill for single or group play
+  const openRepeatModal = () => {
+    setModalStart('');
+    setModalEnd('');
+    setModalRepeatCount(String(repeatCount || 2));
+    setModalRepetitionOrder(repetitionOrder);
+    setIsRepeatModalOpen(true);
+  };
+
+  // Close Repeat Modal
+  const closeRepeatModal = () => {
+    setIsRepeatModalOpen(false);
+  };
+
+  // Apply modal settings and start playback
+  const handleModalSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const rawS = parseInt(modalStart.trim(), 10);
+    const rawE = modalEnd.trim() !== '' ? parseInt(modalEnd.trim(), 10) : rawS;
+    const rawCount = Math.max(1, parseInt(modalRepeatCount.trim(), 10) || 1);
+
+    if (isNaN(rawS)) return;
+
+    // Normalize bounds between 1 and 315
+    const clampedS = Math.max(1, Math.min(315, rawS));
+    const clampedE = isNaN(rawE) ? clampedS : Math.max(1, Math.min(315, rawE));
+
+    // Allow user to enter same number for single verse, or lower to higher for group play
+    const s = Math.min(clampedS, clampedE);
+    const endVal = Math.max(clampedS, clampedE);
+
     setRangeStart(s);
-    setRangeEnd(e);
+    setRangeEnd(endVal);
     rangeStartRef.current = s;
-    rangeEndRef.current = e;
+    rangeEndRef.current = endVal;
 
-    if (autoStartPlayback) {
-      playShloka(s, true, audioFormatRef.current);
-    } else if (currentShlokaIdRef.current < s || currentShlokaIdRef.current > e) {
-      playShloka(s, isPlayingRef.current, audioFormatRef.current);
-    }
+    setRepeatCount(rawCount);
+    repeatCountRef.current = rawCount;
+
+    setRepetitionOrder(modalRepetitionOrder);
+    repetitionOrderRef.current = modalRepetitionOrder;
+
+    // Reset progress counters
+    setVerseRepeatIndex(1);
+    verseRepeatIndexRef.current = 1;
+    setRangeCycleIndex(1);
+    rangeCycleIndexRef.current = 1;
+
+    setIsRepeatModalOpen(false);
+
+    // Play starting verse
+    playShloka(s, true, audioFormatRef.current);
   };
 
   // Play a specific shloka with automatic mirror fallback
@@ -277,20 +324,9 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
     setCurrentShlokaId(shlokaId);
     setHasError(false);
 
-    // Stop global audio from ShlokaCard so sounds do not clash
+    // Stop global audio from ShlokaCard so recitations do not clash
     globalAudio.stop();
 
-    if (playbackModeRef.current === 'group') {
-      // Ensure range covers this shloka if user clicked a shloka outside current range
-      if (shlokaId < rangeStartRef.current) {
-        setRangeStart(shlokaId);
-        rangeStartRef.current = shlokaId;
-      } else if (shlokaId > rangeEndRef.current) {
-        setRangeEnd(shlokaId);
-        rangeEndRef.current = shlokaId;
-      }
-    }
-    
     if (!audioRef.current) {
       isTransitioningRef.current = false;
       return;
@@ -382,32 +418,26 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
     }
   };
 
-  // Previous Shloka
+  // Previous Shloka within active range
   const handlePrevious = () => {
     const currentId = currentShlokaIdRef.current;
-    if (playbackModeRef.current === 'group') {
-      const start = rangeStartRef.current;
-      const end = rangeEndRef.current;
-      const prevId = currentId > start ? currentId - 1 : end;
-      playShloka(prevId, isPlayingRef.current, audioFormatRef.current);
-    } else {
-      const prevId = currentId > 1 ? currentId - 1 : 315;
-      playShloka(prevId, isPlayingRef.current, audioFormatRef.current);
-    }
+    const start = rangeStartRef.current;
+    const end = rangeEndRef.current;
+    const prevId = currentId > start ? currentId - 1 : end;
+    setVerseRepeatIndex(1);
+    verseRepeatIndexRef.current = 1;
+    playShloka(prevId, isPlayingRef.current, audioFormatRef.current);
   };
 
-  // Next Shloka
+  // Next Shloka within active range
   const handleNext = () => {
     const currentId = currentShlokaIdRef.current;
-    if (playbackModeRef.current === 'group') {
-      const start = rangeStartRef.current;
-      const end = rangeEndRef.current;
-      const nextId = currentId < end ? currentId + 1 : start;
-      playShloka(nextId, isPlayingRef.current, audioFormatRef.current);
-    } else {
-      const nextId = currentId < 315 ? currentId + 1 : 1;
-      playShloka(nextId, isPlayingRef.current, audioFormatRef.current);
-    }
+    const start = rangeStartRef.current;
+    const end = rangeEndRef.current;
+    const nextId = currentId < end ? currentId + 1 : start;
+    setVerseRepeatIndex(1);
+    verseRepeatIndexRef.current = 1;
+    playShloka(nextId, isPlayingRef.current, audioFormatRef.current);
   };
 
   // Rewind 5s
@@ -435,55 +465,93 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
     }
   };
 
-  // On audio ended - handles repeat modes (loop_verse, continuous, once)
+  // Audio ended handler implementing both 1-1, 2-2 and 1-2, 1-2 repetition rules
   const handleAudioEnded = () => {
     if (isTransitioningRef.current) return;
 
-    // 1. Loop current verse repeatedly
-    if (repeatModeRef.current === 'loop_verse') {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            setIsPlaying(true);
-            isPlayingRef.current = true;
-          }).catch(() => {});
+    const currentId = currentShlokaIdRef.current;
+    const start = rangeStartRef.current;
+    const end = rangeEndRef.current;
+    const count = repeatCountRef.current;
+    const order = repetitionOrderRef.current;
+
+    // CASE 1: Single verse mode (start === end)
+    if (start === end) {
+      if (verseRepeatIndexRef.current < count) {
+        verseRepeatIndexRef.current += 1;
+        setVerseRepeatIndex(verseRepeatIndexRef.current);
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              setIsPlaying(true);
+              isPlayingRef.current = true;
+            }).catch(() => {});
+          }
+        }
+      } else {
+        // Completed all repetitions of single verse
+        setVerseRepeatIndex(1);
+        verseRepeatIndexRef.current = 1;
+        setIsPlaying(false);
+        isPlayingRef.current = false;
+      }
+      return;
+    }
+
+    // CASE 2: Group range (start < end)
+    // Pattern A: "1-1, 2-2" (Repeat each verse N times consecutively before advancing)
+    if (order === 'each_verse') {
+      if (verseRepeatIndexRef.current < count) {
+        verseRepeatIndexRef.current += 1;
+        setVerseRepeatIndex(verseRepeatIndexRef.current);
+        if (audioRef.current) {
+          audioRef.current.currentTime = 0;
+          const playPromise = audioRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              setIsPlaying(true);
+              isPlayingRef.current = true;
+            }).catch(() => {});
+          }
+        }
+      } else {
+        // Finished repeating this verse N times, move to next verse in range
+        setVerseRepeatIndex(1);
+        verseRepeatIndexRef.current = 1;
+        if (currentId < end) {
+          playShloka(currentId + 1, true, audioFormatRef.current);
+        } else {
+          // Reached end of the group range
+          setIsPlaying(false);
+          isPlayingRef.current = false;
         }
       }
       return;
     }
 
-    // 2. Play once
-    if (repeatModeRef.current === 'once') {
-      if (playbackModeRef.current === 'single') {
-        setIsPlaying(false);
-        isPlayingRef.current = false;
-        return;
+    // Pattern B: "1-2, 1-2" (Play full range start to end, repeat whole sequence N times)
+    if (order === 'whole_range') {
+      if (currentId < end) {
+        // Advance to next verse in the range
+        playShloka(currentId + 1, true, audioFormatRef.current);
+      } else {
+        // Reached end of range sequence
+        if (rangeCycleIndexRef.current < count) {
+          rangeCycleIndexRef.current += 1;
+          setRangeCycleIndex(rangeCycleIndexRef.current);
+          // Restart from range start for next cycle
+          playShloka(start, true, audioFormatRef.current);
+        } else {
+          // Finished all range cycles
+          setRangeCycleIndex(1);
+          rangeCycleIndexRef.current = 1;
+          setIsPlaying(false);
+          isPlayingRef.current = false;
+        }
       }
-      // In group mode with 'once': advance to next verse until end of range
-      const currentId = currentShlokaIdRef.current;
-      if (currentId >= rangeEndRef.current) {
-        setIsPlaying(false);
-        isPlayingRef.current = false;
-        return;
-      }
-      playShloka(currentId + 1, true, audioFormatRef.current);
       return;
-    }
-
-    // 3. Continuous sequential playback
-    if (playbackModeRef.current === 'group') {
-      const currentId = currentShlokaIdRef.current;
-      const start = rangeStartRef.current;
-      const end = rangeEndRef.current;
-      const nextId = currentId < end ? currentId + 1 : start;
-      playShloka(nextId, true, audioFormatRef.current);
-    } else {
-      // In single mode with continuous repeat: advance to next shloka (1 -> 2 -> ... -> 315)
-      const currentId = currentShlokaIdRef.current;
-      const nextId = currentId < 315 ? currentId + 1 : 1;
-      playShloka(nextId, true, audioFormatRef.current);
     }
   };
 
@@ -609,9 +677,15 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
               <span>{lang === 'hindi' ? 'मुख्य पृष्ठ (Home)' : lang === 'english' ? 'Home' : 'મુખ્ય પેજ (Home)'}</span>
             </button>
           </div>
-          <span className="text-[11px] text-[#7A6B5C] dark:text-[#A89886] font-medium hidden sm:inline">
-            સત્સંગ દીક્ષા • ૩૧૫ શ્લોક
-          </span>
+          <button
+            type="button"
+            onClick={openRepeatModal}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-[#8B2500] dark:text-amber-300 font-bold text-xs border border-amber-300/70 hover:bg-amber-200 transition cursor-pointer shadow-2xs"
+            title={t.repeatSettingsBtn}
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>{t.repeatModalTitle}</span>
+          </button>
         </div>
       )}
 
@@ -631,9 +705,19 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 text-amber-100 text-xs font-semibold border border-amber-300/30 shadow-xs">
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            <span>{t.badge}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={openRepeatModal}
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-amber-100 text-xs font-bold border border-amber-300/50 shadow-xs transition cursor-pointer"
+            >
+              <RefreshCw className="w-4 h-4 text-amber-300" />
+              <span>{t.repeatModalTitle}</span>
+            </button>
+            <div className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/25 text-amber-200 text-xs font-semibold border border-amber-300/30">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+              <span>{t.badge}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -682,265 +766,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
         </div>
       </div>
 
-      {/* PLAYBACK MODE SELECTOR: Single Shloka vs Group Playback (Shloka Range) */}
-      <div className="bg-white dark:bg-[#221D1A] rounded-3xl p-4 sm:p-5 border border-[#E8DFD1] dark:border-[#3D342C] shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h3 className="font-serif font-bold text-base text-[#8B2500] dark:text-amber-300 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-amber-500" />
-              <span>{t.playbackModeLabel}</span>
-            </h3>
-            <p className="text-xs text-[#7A6B5C] dark:text-[#A89886] mt-0.5">
-              {playbackMode === 'single' ? t.singleModeDesc : t.groupModeDesc}
-            </p>
-          </div>
-
-          {/* Mode Switch Tabs */}
-          <div className="inline-flex p-1 rounded-2xl bg-[#FAF6F0] dark:bg-[#2A221C] border border-[#E8DFD1] dark:border-[#3D342C] self-start sm:self-auto">
-            <button
-              type="button"
-              onClick={() => setPlaybackMode('single')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-                playbackMode === 'single'
-                  ? 'bg-gradient-to-r from-[#8B2500] to-[#B33900] text-amber-50 shadow-xs'
-                  : 'text-[#6B5E51] dark:text-[#A89886] hover:text-[#8B2500]'
-              }`}
-            >
-              <Headphones className="w-3.5 h-3.5" />
-              <span>{t.singleModeLabel}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setPlaybackMode('group')}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
-                playbackMode === 'group'
-                  ? 'bg-gradient-to-r from-[#8B2500] to-[#B33900] text-amber-50 shadow-xs'
-                  : 'text-[#6B5E51] dark:text-[#A89886] hover:text-[#8B2500]'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>{t.groupModeLabel}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* CONDITIONALLY SHOWN: Group Playback Range Selector (Any start & end from 1 to 315) */}
-        {playbackMode === 'group' && (
-          <div className="pt-3 border-t border-[#F0E8DC] dark:border-[#352C24] space-y-4 animate-fadeIn">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300">
-                {t.rangePlaybackTitle}
-              </span>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/70 border border-amber-300/50 text-[#8B2500] dark:text-amber-300 text-xs font-bold shadow-2xs">
-                <span>{t.totalVersesBadge(Math.max(rangeStart, rangeEnd) - Math.min(rangeStart, rangeEnd) + 1)}</span>
-                <span className="text-stone-400">•</span>
-                <span>{t.rangePrefix(Math.min(rangeStart, rangeEnd), Math.max(rangeStart, rangeEnd))}</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-              {/* Start Verse Stepper */}
-              <div className="sm:col-span-4 bg-[#FAF6F0] dark:bg-[#2A221C] p-3 rounded-2xl border border-amber-200/60 dark:border-[#3D342C]">
-                <label className="block text-[11px] font-bold text-[#8B2500] dark:text-amber-300 uppercase tracking-wider mb-1.5">
-                  {t.startVerseLabel} (1–315)
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleSetRange(rangeStart - 1, rangeEnd)}
-                    disabled={rangeStart <= 1}
-                    className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/60 dark:border-[#3D342C] text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-base"
-                    title="Decrease start verse"
-                  >
-                    -
-                  </button>
-                  <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-600 dark:text-amber-400">#</span>
-                    <input
-                      type="number"
-                      min="1"
-                      max="315"
-                      value={rangeStart}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        if (!isNaN(val)) {
-                          handleSetRange(val, Math.max(val, rangeEnd));
-                        }
-                      }}
-                      className="w-full pl-7 pr-3 py-1.5 text-center font-bold text-base rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/70 dark:border-amber-800 text-[#8B2500] dark:text-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleSetRange(rangeStart + 1, Math.max(rangeStart + 1, rangeEnd))}
-                    disabled={rangeStart >= 315}
-                    className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/60 dark:border-[#3D342C] text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-base"
-                    title="Increase start verse"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* End Verse Stepper */}
-              <div className="sm:col-span-4 bg-[#FAF6F0] dark:bg-[#2A221C] p-3 rounded-2xl border border-amber-200/60 dark:border-[#3D342C]">
-                <label className="block text-[11px] font-bold text-[#8B2500] dark:text-amber-300 uppercase tracking-wider mb-1.5">
-                  {t.endVerseLabel} (1–315)
-                </label>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => handleSetRange(rangeStart, Math.max(rangeStart, rangeEnd - 1))}
-                    disabled={rangeEnd <= rangeStart}
-                    className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/60 dark:border-[#3D342C] text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-base"
-                    title="Decrease end verse"
-                  >
-                    -
-                  </button>
-                  <div className="relative flex-1">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-600 dark:text-amber-400">#</span>
-                    <input
-                      type="number"
-                      min={rangeStart}
-                      max="315"
-                      value={rangeEnd}
-                      onChange={(e) => {
-                        const val = parseInt(e.target.value, 10);
-                        if (!isNaN(val)) {
-                          handleSetRange(Math.min(rangeStart, val), val);
-                        }
-                      }}
-                      className="w-full pl-7 pr-3 py-1.5 text-center font-bold text-base rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/70 dark:border-amber-800 text-[#8B2500] dark:text-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleSetRange(rangeStart, rangeEnd + 1)}
-                    disabled={rangeEnd >= 315}
-                    className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1815] border border-amber-300/60 dark:border-[#3D342C] text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-base"
-                    title="Increase end verse"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-
-              {/* Action Button: Start Range Playback */}
-              <div className="sm:col-span-4 flex flex-col justify-end">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (currentShlokaId >= rangeStart && currentShlokaId <= rangeEnd && isPlaying) {
-                      playShloka(currentShlokaId, true, audioFormat);
-                    } else {
-                      playShloka(rangeStart, true, audioFormat);
-                    }
-                  }}
-                  className="w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7A1E00] via-[#8B2500] to-[#B45309] hover:from-[#8B2500] hover:to-[#C25E00] text-amber-50 font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition cursor-pointer"
-                >
-                  <Play className="w-4 h-4 fill-current" />
-                  <span>{t.playRangeBtn(rangeStart, rangeEnd)}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Range Presets Helpers */}
-            <div className="flex flex-wrap gap-2 pt-1 items-center">
-              <span className="text-[11px] font-semibold text-[#7A6B5C] dark:text-[#A89886] flex items-center gap-1">
-                <Sliders className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                <span>ઝડપી શ્રેણી:</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => handleSetRange(1, 315)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                  rangeStart === 1 && rangeEnd === 315
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-amber-100/80 dark:bg-[#32251D] text-amber-900 dark:text-amber-200 hover:bg-amber-200 border border-amber-300/60'
-                }`}
-              >
-                {t.fullScriptureChanting}
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetRange(currentShlokaId, Math.min(315, currentShlokaId + 4))}
-                className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-[#FAF6F0] dark:bg-[#2A221C] text-stone-600 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 transition cursor-pointer"
-              >
-                +5 શ્લોક
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetRange(currentShlokaId, Math.min(315, currentShlokaId + 9))}
-                className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-[#FAF6F0] dark:bg-[#2A221C] text-stone-600 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 transition cursor-pointer"
-              >
-                +10 શ્લોક
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSetRange(currentShlokaId, Math.min(315, currentShlokaId + 24))}
-                className="px-2.5 py-1.5 rounded-xl text-xs font-medium bg-[#FAF6F0] dark:bg-[#2A221C] text-stone-600 dark:text-stone-300 hover:bg-amber-100 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 transition cursor-pointer"
-              >
-                +25 શ્લોક
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* CONDITIONALLY SHOWN: Single Shloka Quick Picker */}
-        {playbackMode === 'single' && (
-          <div className="pt-3 border-t border-[#F0E8DC] dark:border-[#352C24] flex flex-wrap items-center justify-between gap-3 animate-fadeIn">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300">
-                {t.singleVerseLabel}:
-              </span>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => playShloka(Math.max(1, currentShlokaId - 1), isPlaying, audioFormat)}
-                  disabled={currentShlokaId <= 1}
-                  className="w-8 h-8 rounded-lg bg-[#FAF6F0] dark:bg-[#2A221C] border border-amber-300/50 text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-sm"
-                >
-                  -
-                </button>
-                <div className="relative w-20">
-                  <input
-                    type="number"
-                    min="1"
-                    max="315"
-                    value={currentShlokaId}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value, 10);
-                      if (!isNaN(val) && val >= 1 && val <= 315) {
-                        playShloka(val, isPlaying, audioFormat);
-                      }
-                    }}
-                    className="w-full py-1 text-center font-bold text-sm rounded-lg bg-[#FAF6F0] dark:bg-[#2A221C] border border-amber-300/70 text-[#8B2500] dark:text-amber-200 focus:outline-none"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => playShloka(Math.min(315, currentShlokaId + 1), isPlaying, audioFormat)}
-                  disabled={currentShlokaId >= 315}
-                  className="w-8 h-8 rounded-lg bg-[#FAF6F0] dark:bg-[#2A221C] border border-amber-300/50 text-[#8B2500] dark:text-amber-300 font-bold hover:bg-amber-100 disabled:opacity-30 disabled:cursor-not-allowed transition flex items-center justify-center cursor-pointer text-sm"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => playShloka(currentShlokaId, true, audioFormat)}
-              className="py-2 px-4 rounded-xl bg-gradient-to-r from-[#7A1E00] via-[#8B2500] to-[#B45309] text-amber-50 font-bold text-xs shadow-sm flex items-center gap-1.5 transition cursor-pointer"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>{t.playSingleBtn(currentShlokaId)}</span>
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* RESTORED MAIN HERO AUDIO PLAYER PANEL */}
+      {/* RETAINED HERO AUDIO PLAYER PANEL */}
       <div className="bg-gradient-to-b from-[#FFFDF9] to-[#FAF6EE] dark:from-[#241D19] dark:to-[#1C1714] rounded-3xl p-5 sm:p-7 border-2 border-amber-400/50 dark:border-amber-600/40 shadow-xl space-y-6">
         {/* Top Player Status Bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-amber-200/60 dark:border-[#3D342C] pb-4">
@@ -949,7 +775,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
               #{currentShloka.id}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs uppercase tracking-wider font-bold text-amber-700 dark:text-amber-400">
                   {isPlaying ? t.nowPlaying : t.pauseTitle}
                 </span>
@@ -957,8 +783,16 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
                 <span className="text-xs text-[#7A6B5C] dark:text-[#A89886]">
                   {t.chapterPrefix} {currentShloka.chapterId}: {getShlokaChapterName(currentShloka, lang)}
                 </span>
+                {/* Active repetition indicator pill */}
+                <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-[#8B2500] dark:text-amber-300 text-[10px] font-bold border border-amber-300/60">
+                  {isSingleVerse 
+                    ? `૧ શ્લોક (${verseRepeatIndex}/${repeatCount})` 
+                    : repetitionOrder === 'each_verse' 
+                    ? `જૂથ ${rangeStart}–${rangeEnd} • 1-1, 2-2 (${verseRepeatIndex}/${repeatCount})` 
+                    : `જૂથ ${rangeStart}–${rangeEnd} • 1-2, 1-2 (આવર્તન ${rangeCycleIndex}/${repeatCount})`}
+                </span>
               </div>
-              <h3 className="font-serif font-bold text-lg sm:text-xl text-[#7A1E00] dark:text-amber-200">
+              <h3 className="font-serif font-bold text-lg sm:text-xl text-[#7A1E00] dark:text-amber-200 mt-0.5">
                 {currentShloka.titleGu}
                 {lang !== 'gujarati' && (
                   <span className="text-xs font-normal text-stone-500 dark:text-stone-400 ml-2">
@@ -969,18 +803,30 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
             </div>
           </div>
 
-          {/* Jump to Reader Study */}
-          {onSelectShloka && (
+          <div className="flex items-center gap-2">
+            {/* Quick Open Repeat Modal */}
             <button
               type="button"
-              onClick={() => onSelectShloka(currentShloka.id)}
-              className="px-3.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/70 text-[#8B2500] dark:text-amber-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border border-amber-300/50 shadow-2xs"
+              onClick={openRepeatModal}
+              className="p-2 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/70 text-[#8B2500] dark:text-amber-300 transition cursor-pointer border border-amber-300/50 shadow-2xs"
+              title={t.repeatModalTitle}
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>{t.studyBtn}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <RefreshCw className="w-4 h-4" />
             </button>
-          )}
+
+            {/* Jump to Reader Study */}
+            {onSelectShloka && (
+              <button
+                type="button"
+                onClick={() => onSelectShloka(currentShloka.id)}
+                className="px-3.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 dark:bg-amber-950/70 text-[#8B2500] dark:text-amber-300 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer border border-amber-300/50 shadow-2xs"
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>{t.studyBtn}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Sanskrit Text & Meaning Presentation */}
@@ -1077,9 +923,8 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
           </button>
         </div>
 
-        {/* Audio Toolbar: Speed Adjustment & Repeat / Loop Options */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-amber-200/60 dark:border-[#3D342C]">
-          {/* 1. Playback Speed Adjustment (0.5x, 0.75x, 1x, 1.25x, 1.5x, 2x) */}
+        {/* Audio Speed Adjustment Toolbar */}
+        <div className="pt-3 border-t border-amber-200/60 dark:border-[#3D342C]">
           <div className="bg-white/80 dark:bg-[#1E1815] p-3 rounded-2xl border border-amber-200/60 dark:border-stone-800 space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-[#8B2500] dark:text-amber-300">
               <span className="flex items-center gap-1.5">
@@ -1107,64 +952,6 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
               ))}
             </div>
           </div>
-
-          {/* 2. Repeat / Loop Mode Options ("repeatedly hear or not") */}
-          <div className="bg-white/80 dark:bg-[#1E1815] p-3 rounded-2xl border border-amber-200/60 dark:border-stone-800 space-y-2">
-            <div className="flex items-center justify-between text-xs font-bold text-[#8B2500] dark:text-amber-300">
-              <span className="flex items-center gap-1.5">
-                <Repeat className="w-3.5 h-3.5 text-amber-600" />
-                <span>{t.repeatLabel}</span>
-              </span>
-              <span className="text-[10px] text-[#7A6B5C] dark:text-[#A89886]">
-                {repeatMode === 'loop_verse' 
-                  ? t.repeatLoopVerse 
-                  : repeatMode === 'continuous' 
-                  ? t.repeatContinuous 
-                  : t.repeatOnce}
-              </span>
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              <button
-                type="button"
-                onClick={() => setRepeatMode('loop_verse')}
-                title={t.repeatLoopVerseTitle}
-                className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer text-center ${
-                  repeatMode === 'loop_verse'
-                    ? 'bg-[#8B2500] text-amber-50 shadow-xs ring-1 ring-amber-400'
-                    : 'bg-[#FAF6F0] dark:bg-[#2A221C] text-[#6B5E51] dark:text-[#A89886] hover:bg-amber-100'
-                }`}
-              >
-                <span>🔂</span>
-                <span className="truncate">{t.repeatLoopVerse}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRepeatMode('continuous')}
-                title={t.repeatContinuousTitle}
-                className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer text-center ${
-                  repeatMode === 'continuous'
-                    ? 'bg-[#8B2500] text-amber-50 shadow-xs ring-1 ring-amber-400'
-                    : 'bg-[#FAF6F0] dark:bg-[#2A221C] text-[#6B5E51] dark:text-[#A89886] hover:bg-amber-100'
-                }`}
-              >
-                <span>🔁</span>
-                <span className="truncate">{t.repeatContinuous}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setRepeatMode('once')}
-                title={t.repeatOnceTitle}
-                className={`py-2 px-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer text-center ${
-                  repeatMode === 'once'
-                    ? 'bg-[#8B2500] text-amber-50 shadow-xs ring-1 ring-amber-400'
-                    : 'bg-[#FAF6F0] dark:bg-[#2A221C] text-[#6B5E51] dark:text-[#A89886] hover:bg-amber-100'
-                }`}
-              >
-                <span>⏹️</span>
-                <span className="truncate">{t.repeatOnce}</span>
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1174,9 +961,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
           <h3 className="font-serif font-bold text-base text-[#8B2500] dark:text-amber-300 flex items-center gap-2">
             <Headphones className="w-5 h-5 text-amber-500" />
             <span>
-              {playbackMode === 'group'
-                ? t.verseListTitle(Math.min(rangeStart, rangeEnd), Math.max(rangeStart, rangeEnd), displayedShlokas.length)
-                : t.verseListTitle(1, 315, 315)}
+              {t.verseListTitle(rangeStart, rangeEnd, displayedShlokas.length)}
             </span>
           </h3>
           <span className="text-xs text-[#7A6B5C] dark:text-[#A89886]">
@@ -1193,7 +978,12 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
               <div
                 key={s.id}
                 ref={isCurrent ? activeVerseRef : undefined}
-                onClick={() => playShloka(s.id, true, audioFormat)}
+                onClick={() => {
+                  // Tapping a verse in list plays that verse
+                  playShloka(s.id, true, audioFormat);
+                  setVerseRepeatIndex(1);
+                  verseRepeatIndexRef.current = 1;
+                }}
                 className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 ${
                   isCurrent
                     ? 'bg-amber-100/90 dark:bg-amber-950/70 border-amber-500 shadow-md ring-2 ring-amber-400/50'
@@ -1236,6 +1026,120 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
           })}
         </div>
       </div>
+
+      {/* REPEAT MODAL DIALOG (Exact replication of user screenshot) */}
+      {isRepeatModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn"
+          onClick={closeRepeatModal}
+        >
+          <div 
+            className="w-full max-w-sm rounded-3xl bg-[#F4EFF6] dark:bg-[#27212E] p-6 shadow-2xl border border-purple-200/40 dark:border-purple-900/40 space-y-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Title */}
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif font-bold text-2xl text-[#2C2416] dark:text-amber-100">
+                {t.repeatModalTitle}
+              </h3>
+              <button
+                type="button"
+                onClick={closeRepeatModal}
+                className="p-1 rounded-full text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleModalSubmit} className="space-y-5">
+              {/* Row 1: શ્લોક [  ] થી [  ] (Blank by default - user fills for single verse or group range) */}
+              <div className="flex items-center gap-2.5 text-base font-bold text-[#2C2416] dark:text-amber-100">
+                <span className="text-base">{t.shlokaLabel}</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="315"
+                  value={modalStart}
+                  onChange={(e) => setModalStart(e.target.value)}
+                  placeholder="૧"
+                  className="w-24 px-3 py-2 text-center text-lg font-bold rounded-2xl bg-white dark:bg-[#1E1815] border border-stone-200 dark:border-stone-700 text-[#2C2416] dark:text-amber-100 placeholder:text-stone-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-[#8B2500] shadow-2xs"
+                  required
+                  autoFocus
+                />
+                <span className="text-base">{t.toLabel}</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="315"
+                  value={modalEnd}
+                  onChange={(e) => setModalEnd(e.target.value)}
+                  placeholder="૩૧૫"
+                  className="w-24 px-3 py-2 text-center text-lg font-bold rounded-2xl bg-white dark:bg-[#1E1815] border border-stone-200 dark:border-stone-700 text-[#2C2416] dark:text-amber-100 placeholder:text-stone-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-[#8B2500] shadow-2xs"
+                />
+              </div>
+
+              {/* Row 2: કેટલી વાર [ 2 ] */}
+              <div className="flex items-center gap-3 text-base font-bold text-[#2C2416] dark:text-amber-100">
+                <span className="text-base">{t.howManyTimesLabel}</span>
+                <input
+                  type="number"
+                  min="1"
+                  max="999"
+                  value={modalRepeatCount}
+                  onChange={(e) => setModalRepeatCount(e.target.value)}
+                  placeholder="૨"
+                  className="w-24 px-3 py-2 text-center text-lg font-bold rounded-2xl bg-white dark:bg-[#1E1815] border border-stone-200 dark:border-stone-700 text-[#2C2416] dark:text-amber-100 placeholder:text-stone-400 placeholder:font-normal focus:outline-none focus:ring-2 focus:ring-[#8B2500] shadow-2xs"
+                  required
+                />
+              </div>
+
+              {/* Row 3: Radio Options (1-1, 2-2  and  1-2, 1-2) */}
+              <div className="flex items-center justify-center gap-6 pt-1 text-base font-bold text-[#2C2416] dark:text-amber-100">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="modalRepetitionOrder"
+                    value="each_verse"
+                    checked={modalRepetitionOrder === 'each_verse'}
+                    onChange={() => setModalRepetitionOrder('each_verse')}
+                    className="w-5 h-5 text-[#8B2500] focus:ring-[#8B2500] accent-[#8B2500] cursor-pointer"
+                  />
+                  <span className="text-base font-semibold">{t.patternEachVerse}</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="modalRepetitionOrder"
+                    value="whole_range"
+                    checked={modalRepetitionOrder === 'whole_range'}
+                    onChange={() => setModalRepetitionOrder('whole_range')}
+                    className="w-5 h-5 text-[#8B2500] focus:ring-[#8B2500] accent-[#8B2500] cursor-pointer"
+                  />
+                  <span className="text-base font-semibold">{t.patternWholeRange}</span>
+                </label>
+              </div>
+
+              {/* Row 4: Action Buttons [ રદ કરો ] [ વગાડો ] */}
+              <div className="flex items-center justify-center gap-4 pt-3">
+                <button
+                  type="button"
+                  onClick={closeRepeatModal}
+                  className="px-6 py-2.5 rounded-full bg-white dark:bg-[#1E1815] text-[#8B2500] dark:text-amber-300 font-bold text-sm border border-stone-200 dark:border-stone-700 hover:bg-stone-50 shadow-2xs transition cursor-pointer min-w-[100px]"
+                >
+                  {t.cancelBtn}
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-white dark:bg-[#342738] text-[#8B2500] dark:text-amber-300 font-bold text-sm border border-purple-200 dark:border-purple-800/60 hover:bg-purple-50 dark:hover:bg-purple-950/40 shadow-2xs transition cursor-pointer min-w-[100px]"
+                >
+                  {t.playBtn}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
