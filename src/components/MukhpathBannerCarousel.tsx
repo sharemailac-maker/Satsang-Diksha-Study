@@ -15,14 +15,14 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
 
   return (
     <div 
-      className="relative rounded-3xl overflow-hidden shadow-xl border-2 border-amber-500/50 bg-gradient-to-br from-[#FFFDF8] via-[#FFF8E7] to-[#FCEECB] dark:from-[#2A160E] dark:via-[#221008] dark:to-[#1A0C06] text-[#2C1808] dark:text-[#FDF8EE] p-5 sm:p-8 md:p-10 select-none transition-all"
+      className="relative rounded-3xl overflow-hidden shadow-xl border-2 border-[#8B2500] dark:border-[#8B2500]/70 bg-gradient-to-br from-[#FFFDF8] via-[#FFF8E7] to-[#FCEECB] dark:from-[#2A160E] dark:via-[#221008] dark:to-[#1A0C06] text-[#2C1808] dark:text-[#FDF8EE] p-5 sm:p-8 md:p-10 select-none transition-all"
       id="mukhpath-divine-quote-banner"
     >
       {/* Background ambient sacred pattern & gold glow */}
       <div className="absolute inset-0 bg-radial from-amber-400/15 via-transparent to-transparent pointer-events-none" />
 
-      {/* Decorative Ornate Gold Inner Border */}
-      <div className="absolute inset-2 sm:inset-3 border-2 border-amber-400/30 dark:border-amber-500/20 rounded-2xl pointer-events-none" />
+      {/* Decorative Ornate Brown & Gold Inner Border */}
+      <div className="absolute inset-2 sm:inset-3 border border-[#8B2500]/30 dark:border-[#8B2500]/40 rounded-2xl pointer-events-none" />
 
       <div className="relative z-10 max-w-3xl mx-auto text-center space-y-4 sm:space-y-6">
         {/* Top Header Tag */}
@@ -43,7 +43,7 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
         </div>
 
         {/* Sacred Divine Exclamation Quote Card */}
-        <div className="p-5 sm:p-7 md:p-9 rounded-2xl bg-amber-100/60 dark:bg-black/40 border-2 border-amber-300/80 dark:border-amber-500/40 text-center shadow-sm relative">
+        <div className="p-5 sm:p-7 md:p-9 rounded-2xl bg-amber-100/60 dark:bg-black/40 border-2 border-[#8B2500]/30 dark:border-amber-600/40 text-center shadow-sm relative">
           <div className="text-amber-700/60 dark:text-amber-400/60 text-2xl sm:text-3xl font-serif">“</div>
           
           <blockquote className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-[#7A1D05] dark:text-amber-100 leading-relaxed tracking-tight text-balance">
@@ -77,9 +77,9 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
 
         {/* Sacred Lotus Divider */}
         <div className="flex items-center justify-center gap-3 text-amber-700 dark:text-amber-400">
-          <div className="h-px bg-amber-400/60 w-16 sm:w-28" />
+          <div className="h-px bg-[#8B2500]/30 dark:bg-amber-400/40 w-16 sm:w-28" />
           <span className="text-xl">🪷</span>
-          <div className="h-px bg-amber-400/60 w-16 sm:w-28" />
+          <div className="h-px bg-[#8B2500]/30 dark:bg-amber-400/40 w-16 sm:w-28" />
         </div>
 
         {/* Author Attribution & Date/Place */}
@@ -94,8 +94,12 @@ export const MukhpathBannerCarousel: React.FC<MukhpathBannerCarouselProps> = ({
               ? 'પ્રગટ ગુરુહરિ પ.પૂ. મહંતસ્વામી મહારાજ' 
               : 'Pragat Guruhari HH Mahant Swami Maharaj'}
           </div>
-          <div className="text-xs text-amber-800/80 dark:text-amber-400/80 font-mono">
-            {isHindi ? 'ता. ९/५/२०२० • सारंगपुर' : isGujarati ? 'તા. ૯/૫/૨૦૨૦ • સારંગપુર' : '9 May 2020 • Sarangpur'}
+          <div className="text-xs sm:text-sm font-serif font-semibold text-[#8B2500] dark:text-amber-300 tracking-wide pt-1">
+            {isHindi 
+              ? 'ता. ९/५/२०२६ • सारंगपुर' 
+              : isGujarati 
+              ? 'તા. ૯/૫/૨૦૨૬ • સારંગપુર' 
+              : '9 May 2026 • Sarangpur'}
           </div>
         </div>
       </div>
