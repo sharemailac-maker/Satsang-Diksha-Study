@@ -39,7 +39,7 @@ import { globalAudio } from '../utils/audioPlayer';
 import { PADACHHEDA_DATA } from '../data/padachhedaData';
 import { MukhpathBannerCarousel } from './MukhpathBannerCarousel';
 import { QUIZ_TEST_SETS } from '../data/quizDatabase';
-import { getBestScores } from '../utils/quizStorage';
+import { getBestScores, getBonusUnlockStatus } from '../utils/quizStorage';
 import { LevelExamModal, getExamGrade } from './LevelExamModal';
 
 interface MukhpathViewProps {
@@ -101,32 +101,15 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
   };
 
   // Requirement for unlocking bonus sets:
-  // Every 5 levels unlock 1 bonus set:
-  // Set 27 -> after Level 5 (50%+)
-  // Set 28 -> after Level 10 (50%+)
-  // Set 29 -> after Level 15 (50%+)
-  // Set 30 -> after Level 20 (50%+)
-  // Set 31 -> after Level 25 (50%+)
-  // Set 32 -> after Level 26 (All 26 levels completed) with 100 Hard Questions!
+  // Every 5 levels unlock 1 bonus set, but ALL 5 tests must achieve >= 90% score!
+  // Set 27 -> Levels 1, 2, 3, 4, 5 (all >= 90%)
+  // Set 28 -> Levels 6, 7, 8, 9, 10 (all >= 90%)
+  // Set 29 -> Levels 11, 12, 13, 14, 15 (all >= 90%)
+  // Set 30 -> Levels 16, 17, 18, 19, 20 (all >= 90%)
+  // Set 31 -> Levels 21, 22, 23, 24, 25 (all >= 90%)
+  // Set 32 -> All 26 levels with >= 90% (Grand 100 Questions Exam)
   const getBonusUnlockInfo = (bSetId: number) => {
-    let reqLevel = 5;
-    if (bSetId === 27) reqLevel = 5;
-    else if (bSetId === 28) reqLevel = 10;
-    else if (bSetId === 29) reqLevel = 15;
-    else if (bSetId === 30) reqLevel = 20;
-    else if (bSetId === 31) reqLevel = 25;
-    else if (bSetId === 32) reqLevel = 26;
-
-    const score = bestScores[String(reqLevel)];
-    const isUnlocked = score !== undefined && score.percentage >= 50;
-
-    return {
-      reqLevel,
-      isUnlocked,
-      labelGu: bSetId === 32 ? 'લેવલ ૨૬ (તમામ સ્તરો) પાસ કર્યા બાદ ખૂલશે' : `લેવલ ${reqLevel} પાસ કર્યા બાદ ખૂલશે (૫૦%+)`,
-      labelHi: bSetId === 32 ? 'लेवल २६ (सभी स्तर) उत्तीर्ण होने पर खुलेगा' : `लेवल ${reqLevel} उत्तीर्ण होने पर खुलेगा (५०%+)`,
-      labelEn: bSetId === 32 ? 'Unlocks after completing all 26 levels' : `Unlocks after passing Level ${reqLevel} (50%+)`
-    };
+    return getBonusUnlockStatus(bSetId, bestScores);
   };
 
   // Today's Target Level: first unlocked level that hasn't achieved at least 50% yet
@@ -490,10 +473,10 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                 </h3>
                 <p className="text-xs text-[#7A6B5C] dark:text-[#A89886]">
                   {lang === 'hindi' 
-                    ? 'विषयवार पुनरावर्तन, सिद्धांतरहस्य एवं समग्र शास्त्र मॉक परीक्षा' 
+                    ? 'प्रत्येक ५ लेवल के सभी ५ टेस्ट में ९०%+ अंक लाने पर बोनस सेट अनलॉक होता है। सेट ३२ के लिए सभी २६ स्तरों में ९०%+ अनिवार्य है।' 
                     : lang === 'english'
-                    ? 'Comprehensive mock examinations and deep doctrinal revisions'
-                    : 'વિષયવાર પુનરાવર્તન, સિદ્ધાંત દર્શન અને સંપૂર્ણ શાસ્ત્ર આધારિત મોક પરીક્ષાઓ'}
+                    ? 'Unlocks bonus set when achieving 90%+ in all 5 respective tests. Set 32 unlocks with 90%+ in all 26 levels.'
+                    : 'દરેક ૫ લેવલના તમામ ૫ ટેસ્ટમાં ૯૦%+ સ્કોર આવે તો જ જે તે બોનસ સેટ અનલૉક થાય છે. સેટ ૩૨ માટે તમામ ૨૬ લેવલમાં ૯૦%+ ફરજિયાત છે.'}
                 </p>
               </div>
             </div>
@@ -526,9 +509,9 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                         </span>
 
                         {!unlock.isUnlocked ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
                             <Lock className="w-3 h-3" />
-                            <span>લોક</span>
+                            <span>લૉક (૯૦%+ જરૂરી)</span>
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
@@ -587,10 +570,11 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
                         <button
                           type="button"
                           disabled
-                          className="px-3 py-1.5 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500 text-xs font-bold cursor-not-allowed flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400 text-xs font-bold cursor-not-allowed flex items-center gap-1.5"
+                          title={lang === 'hindi' ? unlock.labelHi : lang === 'english' ? unlock.labelEn : unlock.labelGu}
                         >
-                          <Lock className="w-3 h-3" />
-                          <span>{unlock.reqLevel === 26 ? 'લેવલ ૨૬ પાસ કરો' : `લેવલ ${unlock.reqLevel} પાસ કરો`}</span>
+                          <Lock className="w-3 h-3 text-stone-400" />
+                          <span>{unlock.passedCount}/{unlock.totalCount} પાસ (૯૦%+)</span>
                         </button>
                       )}
                     </div>

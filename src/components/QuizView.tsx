@@ -18,7 +18,8 @@ import {
   Check,
   Zap,
   Layers,
-  HelpCircle
+  HelpCircle,
+  Lock
 } from 'lucide-react';
 import { UserPreferences, QuizTestSet, QuizQuestion, QuizAttemptRecord } from '../types';
 import { 
@@ -34,6 +35,7 @@ import {
   getBestScores, 
   getDailyStreak, 
   recordDailyCompletion, 
+  getBonusUnlockStatus,
   DailyStreakInfo 
 } from '../utils/quizStorage';
 
@@ -100,6 +102,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
 
   // Start a regular test set
   const handleStartSet = (testSet: QuizTestSet, daily: boolean = false) => {
+    if (!daily && testSet.id >= 27) {
+      const bonusInfo = getBonusUnlockStatus(testSet.id, bestScores);
+      if (!bonusInfo.isUnlocked) {
+        return;
+      }
+    }
     setActiveSet(testSet);
     setIsDailyMode(daily);
     setCurrentIdx(0);
@@ -397,21 +405,39 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {filteredSets.map(testSet => {
                 const best = bestScores[String(testSet.id)];
+                const bonusInfo = testSet.id >= 27 ? getBonusUnlockStatus(testSet.id, bestScores) : null;
+                const isLocked = bonusInfo ? !bonusInfo.isUnlocked : false;
+
                 return (
                   <div
                     key={testSet.id}
-                    className="bg-white dark:bg-[#221D1A] rounded-2xl p-5 border border-[#E8DFD1] dark:border-[#3D342C] shadow-sm hover:shadow-md transition-all flex flex-col justify-between gap-4 group"
+                    className={`rounded-2xl p-5 border shadow-sm transition-all flex flex-col justify-between gap-4 group ${
+                      isLocked
+                        ? 'bg-stone-50/90 dark:bg-[#1C1613] border-stone-200 dark:border-stone-800 opacity-85'
+                        : testSet.id === 32
+                        ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-[#2A180E] dark:to-[#1C130D] border-2 border-amber-500/80 shadow-md ring-1 ring-amber-500/20'
+                        : 'bg-white dark:bg-[#221D1A] border-[#E8DFD1] dark:border-[#3D342C] hover:shadow-md'
+                    }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 text-xs font-bold font-mono">
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold font-mono ${
+                          testSet.id === 32
+                            ? 'bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 font-extrabold'
+                            : 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200'
+                        }`}>
                           <Layers className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
                           <span>{getSetBadgeLabel(testSet.id, activeLang)}</span>
                           <span className="text-amber-500">•</span>
                           <span>{testSet.questionsCount} Qs</span>
                         </span>
 
-                        {best ? (
+                        {isLocked ? (
+                          <div className="px-2.5 py-0.5 rounded-full text-xs font-bold flex items-center gap-1 bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800">
+                            <Lock className="w-3 h-3" />
+                            <span>{bonusInfo?.passedCount}/{bonusInfo?.totalCount} પાસ (૯૦%+)</span>
+                          </div>
+                        ) : best ? (
                           <div className={`px-2.5 py-0.5 rounded-full text-xs font-bold font-mono flex items-center gap-1 ${
                             best.percentage >= 80 
                               ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300'
@@ -436,6 +462,11 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
                         <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-1 mt-0.5">
                           {getSetChapter(testSet, activeLang)}
                         </p>
+                        {isLocked && bonusInfo && (
+                          <p className="text-[11px] text-amber-800 dark:text-amber-400 font-semibold mt-1">
+                            {activeLang === 'hindi' ? bonusInfo.labelHi : activeLang === 'english' ? bonusInfo.labelEn : bonusInfo.labelGu}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -445,13 +476,24 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
                         <strong className="text-stone-800 dark:text-stone-200">{testSet.startShloka} - {testSet.endShloka}</strong>
                       </div>
 
-                      <button
-                        onClick={() => handleStartSet(testSet, false)}
-                        className="px-4 py-2 rounded-xl bg-[#FAF6F0] dark:bg-[#2C241F] hover:bg-[#8B2500] hover:text-white dark:hover:bg-[#8B2500] text-[#8B2500] dark:text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm"
-                      >
-                        <span>{activeLang === 'hindi' ? 'टेस्ट दें' : activeLang === 'english' ? 'Start Test' : 'ટેસ્ટ આપો'}</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
+                      {isLocked ? (
+                        <button
+                          disabled
+                          className="px-3.5 py-1.5 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400 font-bold text-xs flex items-center gap-1.5 cursor-not-allowed"
+                          title={activeLang === 'hindi' ? bonusInfo?.labelHi : activeLang === 'english' ? bonusInfo?.labelEn : bonusInfo?.labelGu}
+                        >
+                          <Lock className="w-3.5 h-3.5 text-stone-400" />
+                          <span>{activeLang === 'hindi' ? 'लॉक (९०%+ आवश्यक)' : activeLang === 'english' ? 'Locked (90%+ req)' : 'લૉક (૯૦%+ જરૂરી)'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleStartSet(testSet, false)}
+                          className="px-4 py-2 rounded-xl bg-[#FAF6F0] dark:bg-[#2C241F] hover:bg-[#8B2500] hover:text-white dark:hover:bg-[#8B2500] text-[#8B2500] dark:text-amber-300 font-bold text-xs flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                        >
+                          <span>{activeLang === 'hindi' ? 'टेस्ट दें' : activeLang === 'english' ? 'Start Test' : 'ટેસ્ટ આપો'}</span>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
