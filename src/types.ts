@@ -209,6 +209,8 @@ export interface QuizQuestion {
   questionEn?: string;
   optionsDevanagari?: string[];
   optionsGujarati?: string[];
+  optionsHindi?: string[];
+  optionsEnglish?: string[];
   question?: string;
   questionLang?: Language;
   options?: string[];

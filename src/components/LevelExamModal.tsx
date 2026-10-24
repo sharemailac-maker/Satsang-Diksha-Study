@@ -136,7 +136,7 @@ export const LevelExamModal: React.FC<LevelExamModalProps> = ({
   const questions = testSet.questions;
   const currentQ = questions[currentIdx];
   const currentPrompt = currentQ ? getQuestionPrompt(currentQ, lang, sanskritScript) : '';
-  const currentOptions = currentQ ? getQuestionOptions(currentQ, sanskritScript) : [];
+  const currentOptions = currentQ ? getQuestionOptions(currentQ, sanskritScript, lang) : [];
 
   const handleSelectOption = (optIndex: number) => {
     setUserSelectedOptions(prev => ({
@@ -217,10 +217,12 @@ export const LevelExamModal: React.FC<LevelExamModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-xs uppercase font-bold text-amber-200">
-                  {lang === 'hindi' ? `लेवल ${levelNumber} परीक्षा` : lang === 'english' ? `Level ${levelNumber} Exam` : `લેવલ ${levelNumber} સ્તર પરીક્ષા`}
+                  {levelNumber > 26 
+                    ? (levelNumber === 32 ? '🏆 સર્વોચ્ચ ૧૦૦ પ્રશ્નોની મહાપરીક્ષા' : `🌟 બોનસ સેટ #${levelNumber}`)
+                    : (lang === 'hindi' ? `लेवल ${levelNumber} परीक्षा` : lang === 'english' ? `Level ${levelNumber} Exam` : `લેવલ ${levelNumber} સ્તર પરીક્ષા`)}
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/20 text-white font-mono">
-                  શ્લોક {testSet.startShloka} - {testSet.endShloka}
+                  {levelNumber === 32 ? '૧૦૦ પ્રશ્નો • શ્લોક ૧-૩૧૫' : `શ્લોક ${testSet.startShloka} - ${testSet.endShloka} (${testSet.questions.length} Qs)`}
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-serif font-bold text-white leading-tight">
@@ -271,17 +273,6 @@ export const LevelExamModal: React.FC<LevelExamModalProps> = ({
                 />
               </div>
 
-              {/* Sanskrit Verse excerpt */}
-              {currentQ.verseExcerptGujarati && (
-                <div className="p-4 rounded-2xl bg-[#FFFDF8] dark:bg-[#251E19] border border-amber-300/60 dark:border-amber-900/40 text-center shadow-2xs">
-                  <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-widest block mb-1">
-                    સંસ્કૃત શ્લોક સંદર્ભ (શ્લોક #{currentQ.shlokaId})
-                  </span>
-                  <p className="font-sanskrit font-bold text-[#731E00] dark:text-amber-300 text-base sm:text-lg">
-                    {sanskritScript === 'devanagari' ? currentQ.verseExcerptDevanagari : currentQ.verseExcerptGujarati}
-                  </p>
-                </div>
-              )}
 
               {/* Question Text */}
               <div className="bg-white dark:bg-[#251E19] p-4 sm:p-5 rounded-2xl border border-[#E8DFD1] dark:border-stone-800 shadow-2xs">

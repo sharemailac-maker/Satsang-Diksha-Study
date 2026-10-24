@@ -231,7 +231,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
   // Current question during test taking
   const currentQ = activeSet.questions[currentIdx];
   const currentPrompt = currentQ ? getQuestionPrompt(currentQ, activeLang, sanskritScript) : '';
-  const currentOptions = currentQ ? getQuestionOptions(currentQ, sanskritScript) : [];
+  const currentOptions = currentQ ? getQuestionOptions(currentQ, sanskritScript, activeLang) : [];
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
@@ -531,17 +531,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
           <div className="bg-white dark:bg-[#221D1A] rounded-3xl p-6 sm:p-8 shadow-lg border border-[#E8DFD1] dark:border-[#3D342C] space-y-6">
             {/* Question Header */}
             <div className="flex items-center justify-between text-xs font-bold text-amber-800 dark:text-amber-400">
-              <span className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60">
-                {activeLang === 'hindi' ? `सत्संग दीक्षा श्लोक #${currentQ.shlokaId}` : activeLang === 'english' ? `Satsang Diksha Shloka #${currentQ.shlokaId}` : `સત્સંગ દીક્ષા શ્લોક #${currentQ.shlokaId}`}
+              <span className="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-950/60 font-mono">
+                {activeLang === 'hindi' ? `प्रश्न ${currentIdx + 1} / ${activeSet.questions.length}` : activeLang === 'english' ? `Question ${currentIdx + 1} of ${activeSet.questions.length}` : `પ્રશ્ન ${currentIdx + 1} / ${activeSet.questions.length}`}
               </span>
 
-              <button
-                onClick={() => onSelectShloka(currentQ.shlokaId)}
-                className="hover:underline flex items-center gap-1 text-stone-500 dark:text-stone-400 hover:text-[#8B2500]"
-              >
-                <BookOpen className="w-3.5 h-3.5" />
-                <span>{activeLang === 'hindi' ? 'श्लोक देखें' : activeLang === 'english' ? 'View Shloka' : 'શ્લોક વાચકમાં જુઓ'}</span>
-              </button>
+              <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                {activeSet.id === 32 ? (activeLang === 'english' ? 'Grand 100 Qs Test' : 'સર્વોચ્ચ ૧૦૦ પ્રશ્નોની મહાપરીક્ષા') : (activeLang === 'english' ? 'Swadhyay Exam' : 'સ્વાધ્યાય કસોટી')}
+              </span>
             </div>
 
             {/* Prompt in user's active language */}
@@ -549,10 +545,10 @@ export const QuizView: React.FC<QuizViewProps> = ({ preferences, onSelectShloka 
               {currentPrompt}
             </h2>
 
-            {/* 4 Sanskrit Options */}
+            {/* Options */}
             <div className="space-y-3">
               <div className="text-[11px] uppercase tracking-wider font-bold text-stone-400 dark:text-stone-500">
-                {activeLang === 'hindi' ? 'संस्कृत विकल्प:' : activeLang === 'english' ? 'Sanskrit Options:' : 'સંસ્કૃત વિકલ્પો:'}
+                {activeLang === 'hindi' ? 'विकल्प:' : activeLang === 'english' ? 'Options:' : 'વિકલ્પો:'}
               </div>
 
               {currentOptions.map((optText, optIdx) => {

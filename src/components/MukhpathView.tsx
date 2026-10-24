@@ -100,6 +100,35 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
     return prevScore !== undefined && prevScore.percentage >= 50;
   };
 
+  // Requirement for unlocking bonus sets:
+  // Every 5 levels unlock 1 bonus set:
+  // Set 27 -> after Level 5 (50%+)
+  // Set 28 -> after Level 10 (50%+)
+  // Set 29 -> after Level 15 (50%+)
+  // Set 30 -> after Level 20 (50%+)
+  // Set 31 -> after Level 25 (50%+)
+  // Set 32 -> after Level 26 (All 26 levels completed) with 100 Hard Questions!
+  const getBonusUnlockInfo = (bSetId: number) => {
+    let reqLevel = 5;
+    if (bSetId === 27) reqLevel = 5;
+    else if (bSetId === 28) reqLevel = 10;
+    else if (bSetId === 29) reqLevel = 15;
+    else if (bSetId === 30) reqLevel = 20;
+    else if (bSetId === 31) reqLevel = 25;
+    else if (bSetId === 32) reqLevel = 26;
+
+    const score = bestScores[String(reqLevel)];
+    const isUnlocked = score !== undefined && score.percentage >= 50;
+
+    return {
+      reqLevel,
+      isUnlocked,
+      labelGu: bSetId === 32 ? 'લેવલ ૨૬ (તમામ સ્તરો) પાસ કર્યા બાદ ખૂલશે' : `લેવલ ${reqLevel} પાસ કર્યા બાદ ખૂલશે (૫૦%+)`,
+      labelHi: bSetId === 32 ? 'लेवल २६ (सभी स्तर) उत्तीर्ण होने पर खुलेगा' : `लेवल ${reqLevel} उत्तीर्ण होने पर खुलेगा (५०%+)`,
+      labelEn: bSetId === 32 ? 'Unlocks after completing all 26 levels' : `Unlocks after passing Level ${reqLevel} (50%+)`
+    };
+  };
+
   // Today's Target Level: first unlocked level that hasn't achieved at least 50% yet
   const todayTargetLevel = useMemo(() => {
     for (let i = 1; i <= 26; i++) {
@@ -469,41 +498,101 @@ export const MukhpathView: React.FC<MukhpathViewProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 pt-2">
               {bonusSets.map((bSet) => {
                 const best = bestScores[String(bSet.id)];
+                const unlock = getBonusUnlockInfo(bSet.id);
+                const isSet32 = bSet.id === 32;
+
                 return (
                   <div 
                     key={bSet.id}
-                    className="p-4 rounded-2xl bg-white dark:bg-[#1E1713] border border-amber-200 dark:border-stone-700 shadow-2xs flex flex-col justify-between space-y-3"
+                    className={`p-4 rounded-2xl border transition-all flex flex-col justify-between space-y-3 shadow-2xs ${
+                      !unlock.isUnlocked
+                        ? 'bg-stone-50/80 dark:bg-[#181310] border-stone-200 dark:border-stone-800 opacity-80'
+                        : isSet32
+                        ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-[#28180E] dark:to-[#1B1109] border-2 border-amber-500/80 shadow-md ring-1 ring-amber-500/20'
+                        : 'bg-white dark:bg-[#1E1713] border-amber-200 dark:border-stone-700'
+                    }`}
                   >
-                    <div>
-                      <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 block uppercase">
-                        બોનસ સેટ #{bSet.id}
-                      </span>
-                      <h4 className="text-xs font-serif font-bold text-[#2D241E] dark:text-[#EDE5D8]">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                          isSet32 ? 'text-amber-800 dark:text-amber-300 font-extrabold' : 'text-amber-700 dark:text-amber-400'
+                        }`}>
+                          {isSet32 
+                            ? (lang === 'hindi' ? '🏆 सर्वोच्च महापरीक्षा' : lang === 'english' ? '🏆 Grand Ultimate Test' : '🏆 સર્વોચ્ચ મહાપરીક્ષા')
+                            : `બોનસ સેટ #${bSet.id}`}
+                        </span>
+
+                        {!unlock.isUnlocked ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+                            <Lock className="w-3 h-3" />
+                            <span>લોક</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300">
+                            <Unlock className="w-3 h-3" />
+                            <span>અનલૉક</span>
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="text-xs sm:text-sm font-serif font-bold text-[#2D241E] dark:text-[#EDE5D8] leading-snug">
                         {lang === 'hindi' ? bSet.titleHi : lang === 'english' ? bSet.titleEn : bSet.titleGu}
                       </h4>
-                      <p className="text-[11px] text-[#7A6B5C] dark:text-[#A89886] mt-0.5">
-                        {bSet.questions.length} પ્રશ્નો
-                      </p>
+
+                      <div className="flex items-center gap-2 pt-0.5">
+                        <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
+                          isSet32
+                            ? 'bg-amber-200 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 font-mono'
+                            : 'bg-amber-100/70 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+                        }`}>
+                          {bSet.questionsCount} {lang === 'english' ? 'Questions' : 'પ્રશ્નો'}
+                        </span>
+
+                        {!unlock.isUnlocked && (
+                          <span className="text-[10px] text-amber-900/80 dark:text-amber-400/90 font-medium">
+                            {lang === 'hindi' ? unlock.labelHi : lang === 'english' ? unlock.labelEn : unlock.labelGu}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between">
+                    <div className="pt-2 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between gap-2">
                       {best ? (
                         <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                          {best.score}/{best.total} ({best.percentage}%)
+                          સ્કોર: {best.score}/{best.total} ({best.percentage}%)
                         </span>
                       ) : (
-                        <span className="text-[11px] text-stone-400">બાકી</span>
+                        <span className="text-[11px] text-stone-400 font-mono">
+                          {!unlock.isUnlocked ? '🔒 લૉક છે' : 'નવો ટેસ્ટ'}
+                        </span>
                       )}
-                      <button
-                        type="button"
-                        onClick={() => setExamLevelNumber(bSet.id)}
-                        className="px-3 py-1.5 rounded-xl bg-[#8B2500] hover:bg-[#A83200] text-white text-xs font-bold transition cursor-pointer"
-                      >
-                        ક્વિઝ શરૂ કરો
-                      </button>
+
+                      {unlock.isUnlocked ? (
+                        <button
+                          type="button"
+                          onClick={() => setExamLevelNumber(bSet.id)}
+                          className={`px-3.5 py-1.5 rounded-xl text-white text-xs font-bold transition shadow-sm cursor-pointer flex items-center gap-1.5 ${
+                            isSet32
+                              ? 'bg-gradient-to-r from-amber-600 via-[#8B2500] to-amber-700 hover:brightness-110'
+                              : 'bg-[#8B2500] hover:bg-[#A83200]'
+                          }`}
+                        >
+                          <Award className="w-3.5 h-3.5 text-amber-300" />
+                          <span>{isSet32 ? '૧૦૦ પ્રશ્નોની પરીક્ષા' : 'ક્વિઝ આપો'}</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="px-3 py-1.5 rounded-xl bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500 text-xs font-bold cursor-not-allowed flex items-center gap-1"
+                        >
+                          <Lock className="w-3 h-3" />
+                          <span>{unlock.reqLevel === 26 ? 'લેવલ ૨૬ પાસ કરો' : `લેવલ ${unlock.reqLevel} પાસ કરો`}</span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
