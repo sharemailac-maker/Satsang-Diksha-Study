@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { ThemeMode, UserPreferences } from '../types';
 import { getUIStrings } from '../utils/i18n';
-import appIconImg from '../assets/images/satsang_diksha_akshar_purushottam_logo_1788180536338.jpg';
+import appIconImg from '../assets/images/satsang_diksha_study_icon.png';
 
 interface HeaderProps {
   preferences: UserPreferences;
@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-amber-300 bg-amber-950 flex-shrink-0">
             <img 
               src={appIconImg} 
-              alt="Satsang Diksha Holy Scripture" 
+              alt="Satsang Diksha Study" 
               referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
             />
