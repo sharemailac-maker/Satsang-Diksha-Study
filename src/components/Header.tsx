@@ -161,7 +161,7 @@ export const Header: React.FC<HeaderProps> = ({
               onChange={(e) => {
                 onSearchChange(e.target.value);
                 if (activeTab === 'home' && e.target.value.trim()) {
-                  setActiveTab('reader');
+                  setActiveTab('mukhpath');
                 }
               }}
               placeholder={ui.searchPlaceholder}

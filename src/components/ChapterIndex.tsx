@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Sparkles, 
   BookOpen, 
@@ -10,31 +10,66 @@ import {
   Compass, 
   Crown, 
   Award, 
-  ChevronRight, 
-  CheckCircle2,
-  Hash
+  Volume2, 
+  VolumeX, 
+  Type,
+  ChevronDown,
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
-import { Chapter, MukhpathLevel, UserPreferences } from '../types';
+import { Chapter, Shloka, MukhpathLevel, UserPreferences, SanskritScript } from '../types';
 import { getChapterTitle, getChapterDescription } from '../utils/translationHelper';
 import { getUIStrings } from '../utils/i18n';
+import { globalAudio } from '../utils/audioPlayer';
 
 interface ChapterIndexProps {
   chapters: Chapter[];
+  shlokas?: Shloka[];
   preferences?: UserPreferences;
-  mukhpathRecords: Record<number, { status: MukhpathLevel }>;
-  onSelectChapter: (chapterId: number) => void;
+  onUpdatePreferences?: (prefs: Partial<UserPreferences>) => void;
+  mukhpathRecords?: Record<number, { status: MukhpathLevel }>;
+  onSelectChapter?: (chapterId: number) => void;
   onSelectShloka: (shlokaId: number) => void;
 }
 
 export const ChapterIndex: React.FC<ChapterIndexProps> = ({
   chapters,
+  shlokas = [],
   preferences,
-  mukhpathRecords,
-  onSelectChapter,
+  onUpdatePreferences,
   onSelectShloka
 }) => {
   const lang = preferences?.activeLanguage || 'gujarati';
   const ui = getUIStrings(lang);
+  
+  // Local script state synced with preferences or toggleable directly here
+  const [activeScript, setActiveScript] = useState<SanskritScript>(preferences?.sanskritScript || 'gujarati');
+  const [selectedChapterId, setSelectedChapterId] = useState<number | 'all'>('all');
+  const [playingShlokaId, setPlayingShlokaId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (preferences?.sanskritScript) {
+      setActiveScript(preferences.sanskritScript);
+    }
+  }, [preferences?.sanskritScript]);
+
+  // Global audio listener
+  useEffect(() => {
+    return globalAudio.subscribe((state) => {
+      if (state.isPlaying) {
+        setPlayingShlokaId(state.shlokaId);
+      } else {
+        setPlayingShlokaId(null);
+      }
+    });
+  }, []);
+
+  const handleScriptChange = (script: SanskritScript) => {
+    setActiveScript(script);
+    if (onUpdatePreferences) {
+      onUpdatePreferences({ sanskritScript: script });
+    }
+  };
 
   const getIcon = (name: string) => {
     switch (name) {
@@ -52,91 +87,206 @@ export const ChapterIndex: React.FC<ChapterIndexProps> = ({
     }
   };
 
+  const activeChapters = selectedChapterId === 'all'
+    ? chapters
+    : chapters.filter(c => c.id === selectedChapterId);
+
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
-      {/* Index Title Banner */}
-      <div className="text-center space-y-2 mb-8">
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#8B2500] dark:text-amber-300">
-          {lang === 'hindi' ? 'सत्संग दीक्षा अध्याय अनुक्रमणिका' : lang === 'english' ? 'Satsang Diksha Chapter Index' : 'સત્સંગ દીક્ષા પ્રકરણ અનુક્રમણિકા'}
-        </h2>
-        <p className="text-xs sm:text-sm text-[#6B5E51] dark:text-[#C5B7A8] max-w-xl mx-auto">
-          {lang === 'hindi' ? '१० मुख्य अध्यायों में विभाजित ३१५ दिव्य श्लोकों का विषयवार अध्ययन' : lang === 'english' ? 'Subject-wise study of 315 verses organized across 10 main chapters' : '૧૦ મુખ્ય પ્રકરણોમાં વિભાજિત ૩૧૫ દિવ્ય શ્લોકોનું વિષયવાર અધ્યયન અને માર્ગદર્શન'}
-        </p>
+      {/* Top Banner */}
+      <div className="bg-gradient-to-r from-[#691800] via-[#8B2500] to-[#B33900] rounded-3xl p-6 sm:p-7 text-white shadow-xl border border-amber-400/40">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 text-amber-200 text-xs font-semibold border border-amber-300/30">
+              <BookOpen className="w-3.5 h-3.5 text-amber-300" />
+              <span>
+                {lang === 'hindi' ? 'प्रकरणवार श्लोक पठन' : lang === 'english' ? 'Chapter-wise Verse Recitation' : 'પ્રકરણવાર શ્લોક પઠન'}
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-amber-50">
+              {lang === 'hindi' ? 'सत्संग दीक्षा अध्याय श्लोक पाठ' : lang === 'english' ? 'Satsang Diksha Continuous Chanting' : 'સત્સંગ દીક્ષા પ્રકરણ શ્લોક પઠન'}
+            </h2>
+            <p className="text-xs sm:text-sm text-amber-100/90 max-w-xl leading-relaxed">
+              {lang === 'hindi' 
+                ? 'शुद्ध संस्कृत श्लोक पाठ (बिना अनुवाद प्रत्यक्ष पारायण एवं मुखपाठ हेतु)' 
+                : lang === 'english' 
+                ? 'Pure Sanskrit verse recitation without translation for direct chanting & path' 
+                : 'શુદ્ધ સંસ્કૃત શ્લોકોનું અખંડ પઠન (અનુવાદ રહિત સીધા વાચન અને પારાયણ માટે)'}
+            </p>
+          </div>
+
+          {/* Script Selection Buttons (Devanagari / Gujarati / Roman IAST) */}
+          <div className="bg-black/35 backdrop-blur-sm p-1.5 rounded-2xl border border-amber-300/40 flex items-center gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleScriptChange('devanagari')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                activeScript === 'devanagari'
+                  ? 'bg-amber-400 text-amber-950 shadow-sm'
+                  : 'text-amber-100 hover:bg-white/10'
+              }`}
+            >
+              દેવનાગરી
+            </button>
+            <button
+              type="button"
+              onClick={() => handleScriptChange('gujarati')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                activeScript === 'gujarati'
+                  ? 'bg-amber-400 text-amber-950 shadow-sm'
+                  : 'text-amber-100 hover:bg-white/10'
+              }`}
+            >
+              ગુજરાતી
+            </button>
+            <button
+              type="button"
+              onClick={() => handleScriptChange('iast')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+                activeScript === 'iast'
+                  ? 'bg-amber-400 text-amber-950 shadow-sm'
+                  : 'text-amber-100 hover:bg-white/10'
+              }`}
+            >
+              રોમન (IAST)
+            </button>
+          </div>
+        </div>
+
+        {/* Chapter Quick Filter Buttons */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-5 pb-1 no-scrollbar border-t border-amber-400/20 mt-5">
+          <button
+            type="button"
+            onClick={() => setSelectedChapterId('all')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+              selectedChapterId === 'all'
+                ? 'bg-white text-[#7A1D05] shadow-md'
+                : 'bg-black/25 text-amber-100 hover:bg-black/40'
+            }`}
+          >
+            {lang === 'hindi' ? 'सभी १० अध्याय (१-३१५)' : lang === 'english' ? 'All 10 Chapters (1-315)' : 'તમામ ૧૦ પ્રકરણ (૧-૩૧૫)'}
+          </button>
+          {chapters.map((ch) => (
+            <button
+              key={ch.id}
+              type="button"
+              onClick={() => setSelectedChapterId(ch.id)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+                selectedChapterId === ch.id
+                  ? 'bg-white text-[#7A1D05] shadow-md'
+                  : 'bg-black/25 text-amber-100 hover:bg-black/40'
+              }`}
+            >
+              {ui.chapterPrefix} {ch.id}: {ch.shlokaRange[0]}-{ch.shlokaRange[1]}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Chapters Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-        {chapters.map((chapter) => {
+      {/* Chapters & Pure Verses List */}
+      <div className="space-y-8">
+        {activeChapters.map((chapter) => {
           const Icon = getIcon(chapter.iconName);
           const [start, end] = chapter.shlokaRange;
-          const totalInChapter = end - start + 1;
-
-          // Count memorized in this chapter
-          let memorizedInChapter = 0;
-          for (let i = start; i <= end; i++) {
-            const st = mukhpathRecords[i]?.status;
-            if (st === 'memorized' || st === 'mastered') {
-              memorizedInChapter++;
-            }
-          }
-
-          const percent = Math.round((memorizedInChapter / totalInChapter) * 100);
+          const chapterShlokas = shlokas.filter(s => s.id >= start && s.id <= end);
 
           return (
-            <div
+            <div 
               key={chapter.id}
-              className="bg-white dark:bg-[#221D1A] rounded-2xl p-5 shadow-md border border-[#E8DFD1] dark:border-[#3D342C] hover:border-amber-400/80 transition-all hover:shadow-lg flex flex-col justify-between group cursor-pointer"
-              onClick={() => onSelectChapter(chapter.id)}
+              className="bg-white dark:bg-[#221D1A] rounded-3xl p-5 sm:p-7 shadow-md border border-[#E8DFD1] dark:border-[#3D342C] space-y-6"
             >
-              <div className="space-y-3">
-                {/* Chapter Header */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${chapter.themeColor} text-white flex items-center justify-center shadow-md flex-shrink-0`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="text-[11px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
+              {/* Chapter Header Banner */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[#F0E8DC] dark:border-[#352C24] gap-3">
+                <div className="flex items-center gap-3">
+                  <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${chapter.themeColor} text-white flex items-center justify-center shadow-md shrink-0`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
                         {ui.chapterPrefix} {chapter.id}
                       </span>
-                      <h3 className="text-base font-serif font-bold text-[#2D241E] dark:text-[#F3ECE1] group-hover:text-[#8B2500] dark:group-hover:text-amber-300 transition">
-                        {getChapterTitle(chapter, lang)}
-                      </h3>
-                      <span className="text-xs text-[#8A7A68] dark:text-[#A89886] font-normal block">
-                        {lang === 'gujarati' ? `${chapter.titleHi} • ${chapter.titleEn}` : `${chapter.titleGu} • ${chapter.titleEn}`}
+                      <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 font-mono font-bold">
+                        {ui.shlokaNumberPrefix} {start} - {end} ({end - start + 1} {lang === 'english' ? 'Verses' : 'શ્લોક'})
                       </span>
                     </div>
+                    <h3 className="text-lg sm:text-xl font-serif font-bold text-[#2D241E] dark:text-[#F3ECE1]">
+                      {getChapterTitle(chapter, lang)}
+                    </h3>
                   </div>
-
-                  <span className="text-xs px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 font-mono font-bold whitespace-nowrap">
-                    {ui.shlokaNumberPrefix} {start} - {end}
-                  </span>
                 </div>
 
-                {/* Chapter Description */}
-                <p className="text-xs text-[#54473C] dark:text-[#C5B7A8] leading-relaxed line-clamp-2">
-                  {getChapterDescription(chapter, lang)}
-                </p>
+                <div className="text-xs text-[#7A6B5C] dark:text-[#A89886] font-medium">
+                  {lang === 'hindi' ? 'केवल श्लोक वाचन' : lang === 'english' ? 'Chanting Only' : 'માત્ર શ્લોક વાચન'}
+                </div>
               </div>
 
-              {/* Progress & Quick Shloka Pills */}
-              <div className="mt-4 pt-3 border-t border-[#F2EADB] dark:border-[#332A23] space-y-2">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-[#7A6B5C] dark:text-[#A89D91]">
-                    {ui.tabMukhpath}: {memorizedInChapter}/{totalInChapter} ({percent}%)
-                  </span>
-                  <div className="flex items-center text-amber-700 dark:text-amber-400 font-semibold group-hover:translate-x-1 transition-transform">
-                    <span>{ui.tabReader}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
+              {/* Pure Shlokas Grid/List - No Translations */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {chapterShlokas.map((s) => {
+                  const isCurrentPlaying = playingShlokaId === s.id;
+                  const verseText = activeScript === 'gujarati' 
+                    ? s.sanskritGujarati 
+                    : activeScript === 'iast' 
+                    ? s.sanskritIast 
+                    : s.sanskritDevanagari;
 
-                <div className="w-full bg-[#EAE2D5] dark:bg-[#332B24] h-1.5 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-amber-600 dark:bg-amber-400 h-full rounded-full transition-all"
-                    style={{ width: `${percent}%` }}
-                  />
-                </div>
+                  return (
+                    <div
+                      key={s.id}
+                      className={`relative rounded-2xl p-4 sm:p-5 border transition-all flex flex-col justify-between ${
+                        isCurrentPlaying 
+                          ? 'bg-amber-50 dark:bg-[#2A2016] border-amber-500 shadow-md ring-2 ring-amber-400/40' 
+                          : 'bg-[#FCFAF6] dark:bg-[#1C1714] border-[#EADBCC] dark:border-[#382E25] hover:border-amber-400/70 hover:shadow-sm'
+                      }`}
+                    >
+                      {/* Top Verse Number & Controls */}
+                      <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#F0E8DC] dark:border-[#2C231C]">
+                        <div className="flex items-center gap-2">
+                          <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7A1E00] to-[#8B2500] text-amber-50 flex items-center justify-center font-bold text-xs shadow-2xs">
+                            {s.id}
+                          </span>
+                          <span className="text-xs font-serif font-bold text-[#8B2500] dark:text-amber-300">
+                            ॥ શ્લોક {s.id} ॥
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          {/* Audio Player Button */}
+                          <button
+                            type="button"
+                            onClick={() => globalAudio.play(s.id, 'sanskrit')}
+                            className={`p-1.5 rounded-lg border transition cursor-pointer ${
+                              isCurrentPlaying
+                                ? 'bg-amber-500 text-amber-950 border-amber-600 animate-pulse'
+                                : 'bg-white dark:bg-[#251E19] text-[#8B2500] dark:text-amber-300 border-amber-200/60 dark:border-stone-700 hover:bg-amber-100'
+                            }`}
+                            title={isCurrentPlaying ? ui.listenAudioStop : ui.listenAudio}
+                          >
+                            {isCurrentPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                          </button>
+
+                          {/* Jump to Study with meanings */}
+                          <button
+                            type="button"
+                            onClick={() => onSelectShloka(s.id)}
+                            className="p-1.5 rounded-lg bg-white dark:bg-[#251E19] text-[#7A6B5C] dark:text-[#A89886] border border-amber-200/60 dark:border-stone-700 hover:text-[#8B2500] hover:bg-amber-50 transition cursor-pointer"
+                            title="અધ્યયનમાં ખોલો (Open in Adhyayan)"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Pure Sanskrit Verse Text - Clean and Elegant typography */}
+                      <div className="py-2 text-center my-auto">
+                        <p className="font-sanskrit font-bold text-[#731E00] dark:text-[#F39C38] leading-relaxed whitespace-pre-line text-base sm:text-lg select-text">
+                          {verseText}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );

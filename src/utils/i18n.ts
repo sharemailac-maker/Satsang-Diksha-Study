@@ -381,7 +381,7 @@ export const I18N_TRANSLATIONS: Record<Language, UIStrings> = {
 
   english: {
     tabHome: 'Home',
-    tabReader: 'Shlokas 1-315',
+    tabReader: 'Shloka Study',
     tabMukhpath: 'Mukhpath Tool',
     tabChapters: 'Chapters',
     tabCrossref: 'Vachnamrut Links',

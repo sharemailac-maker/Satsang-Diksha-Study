@@ -657,37 +657,7 @@ export const UdgaanView: React.FC<UdgaanViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto px-3 sm:px-6 py-5 space-y-6 animate-fadeIn pb-28 select-none">
-      {/* Top Section Breadcrumb / Navigation Bar */}
-      {onNavigateTab && (
-        <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-white/80 dark:bg-[#221D1A]/80 border border-[#E8DFD1] dark:border-[#3D342C] shadow-2xs">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onNavigateTab('reader')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#7A1E00] to-[#8B2500] text-amber-50 font-bold text-xs shadow-xs hover:opacity-95 transition cursor-pointer"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>{lang === 'hindi' ? '← श्लोक अध्ययन (Reader)' : lang === 'english' ? '← Shloka Study (Reader)' : '← શ્લોક અધ્યયન (Reader)'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => onNavigateTab('home')}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#FAF6F0] dark:bg-[#2A221C] text-[#6B5E51] dark:text-[#A89886] font-semibold text-xs border border-amber-200/60 dark:border-stone-800 hover:bg-amber-50 transition cursor-pointer"
-            >
-              <span>{lang === 'hindi' ? 'मुख्य पृष्ठ (Home)' : lang === 'english' ? 'Home' : 'મુખ્ય પેજ (Home)'}</span>
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={openRepeatModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 dark:bg-amber-950/80 text-[#8B2500] dark:text-amber-300 font-bold text-xs border border-amber-300/70 hover:bg-amber-200 transition cursor-pointer shadow-2xs"
-            title={t.repeatSettingsBtn}
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>{t.repeatModalTitle}</span>
-          </button>
-        </div>
-      )}
+
 
       {/* Header Banner - Zero external redirection links */}
       <div className="relative rounded-3xl overflow-hidden shadow-xl border border-amber-400/40 bg-gradient-to-r from-[#691800] via-[#8B2500] to-[#A03900] text-white p-5 sm:p-7">

@@ -30,6 +30,7 @@ import { SwaminiVatoChipsView } from './SwaminiVatoChipsView';
 import { VachnamrutChipsView } from './VachnamrutChipsView';
 import { VachnamrutListView } from './VachnamrutListView';
 import { SwaminiVatoListView } from './SwaminiVatoListView';
+import { CHAPTERS } from '../data/chapters';
 
 const CROSS_REF_I18N: Record<string, {
   tag: string;
@@ -459,7 +460,7 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
   onSelectShloka
 }) => {
   const [filterType, setFilterType] = useState<'all' | 'vachnamrut' | 'swamini_vato'>('all');
-  const [selectedChapter, setSelectedChapter] = useState<number | 'all'>('all');
+  const [expandedChapters, setExpandedChapters] = useState<Set<number>>(() => new Set([1]));
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedWordShlokaId, setExpandedWordShlokaId] = useState<number | null>(null);
   const [activeWordIndex, setActiveWordIndex] = useState<{ [shlokaId: number]: number }>({});
@@ -475,11 +476,6 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
       if (filterType !== 'all') {
         const hasType = s.crossReferences?.some(r => r.type === filterType);
         if (!hasType) return false;
-      }
-
-      // Filter by chapter
-      if (selectedChapter !== 'all' && s.chapterId !== selectedChapter) {
-        return false;
       }
 
       // Filter by search query (id, title, meaning, sanskrit, vachnamrut title, or word)
@@ -524,7 +520,31 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
 
       return true;
     });
-  }, [shlokas, filterType, selectedChapter, searchQuery]);
+  }, [shlokas, filterType, searchQuery]);
+
+  // Toggle chapter expansion
+  const toggleChapter = (chId: number) => {
+    setExpandedChapters(prev => {
+      const next = new Set(prev);
+      if (next.has(chId)) {
+        next.delete(chId);
+      } else {
+        next.add(chId);
+      }
+      return next;
+    });
+  };
+
+  // Auto-expand chapters matching active search query
+  React.useEffect(() => {
+    if (searchQuery.trim()) {
+      const matchChapters = new Set<number>();
+      filteredItems.forEach(s => matchChapters.add(s.chapterId));
+      if (matchChapters.size > 0) {
+        setExpandedChapters(matchChapters);
+      }
+    }
+  }, [searchQuery, filteredItems]);
 
   const toggleWordBreakdown = (id: number) => {
     setExpandedWordShlokaId(prev => prev === id ? null : id);
@@ -619,59 +639,103 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
               ))}
             </div>
           </div>
-
-          {/* Chapter Selector Chips (Shown only for All 315 Verses mode) */}
-          {filterType === 'all' && (
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
-              <span className="text-amber-200/80 font-medium whitespace-nowrap mr-1">
-                {ui.chapterPrefix}:
-              </span>
-              <button
-                onClick={() => setSelectedChapter('all')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
-                  selectedChapter === 'all'
-                    ? 'bg-white text-amber-950 font-bold shadow-xs'
-                    : 'bg-white/10 text-amber-100 hover:bg-white/20'
-                }`}
-              >
-                {t.allChapters}
-              </button>
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((ch) => (
-                <button
-                  key={ch}
-                  onClick={() => setSelectedChapter(ch)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition whitespace-nowrap ${
-                    selectedChapter === ch
-                      ? 'bg-white text-amber-950 font-bold shadow-xs'
-                      : 'bg-white/10 text-amber-100 hover:bg-white/20'
-                  }`}
-                >
-                  {ui.chapterPrefix} {ch}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
 
-      {/* MODE 1: ALL 315 SHLOKAS CONCORDANCE CARDS */}
+      {/* MODE 1: CHAPTER 1 TO 10 ORGANIZED SHLOKAS CONCORDANCE */}
       {filterType === 'all' && (
-        <>
-          {/* Results Header Count */}
-      <div className="flex items-center justify-between px-2 text-xs text-[#7A6B5C] dark:text-[#A89886]">
-        <span>
-          {t.availableCount(filteredItems.length)}
-        </span>
-        {searchQuery && (
-          <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 px-2.5 py-0.5 rounded-full font-medium">
-            {t.searchQueryLabel}: "{searchQuery}"
-          </span>
-        )}
-      </div>
+        <div className="space-y-4">
+          {/* Results Summary Bar */}
+          <div className="flex items-center justify-between px-2 text-xs text-[#7A6B5C] dark:text-[#A89886] flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <span>
+                {t.availableCount(filteredItems.length)} • પ્રકરણ ૧ થી ૧૦ વાર દર્શન
+              </span>
+              {searchQuery && (
+                <span className="bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 px-2.5 py-0.5 rounded-full font-medium">
+                  {t.searchQueryLabel}: "{searchQuery}"
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setExpandedChapters(new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]))}
+                className="text-xs font-bold text-[#8B2500] dark:text-amber-400 hover:underline cursor-pointer"
+              >
+                {lang === 'hindi' ? 'सभी प्रकरण खोलें' : lang === 'english' ? 'Expand All' : 'બધાં પ્રકરણો ખોલો'}
+              </button>
+              <span className="text-stone-300 dark:text-stone-700">•</span>
+              <button
+                type="button"
+                onClick={() => setExpandedChapters(new Set())}
+                className="text-xs font-medium text-[#7A6B5C] dark:text-[#A89886] hover:underline cursor-pointer"
+              >
+                {lang === 'hindi' ? 'सभी समेटें' : lang === 'english' ? 'Collapse All' : 'બધાં સંકેલો'}
+              </button>
+            </div>
+          </div>
 
-      {/* Cross Reference Cards Grid */}
-      <div className="grid grid-cols-1 gap-6">
-        {filteredItems.map((shloka) => {
+          {/* Chapters 1 to 10 Accordion List */}
+          <div className="space-y-4">
+            {CHAPTERS.map((ch) => {
+              const chapterShlokas = filteredItems.filter(s => s.chapterId === ch.id);
+              if (chapterShlokas.length === 0 && searchQuery.trim()) return null;
+
+              const isExpanded = expandedChapters.has(ch.id);
+              const chTitle = lang === 'hindi' ? ch.titleHi : lang === 'english' ? ch.titleEn : ch.titleGu;
+              const chDesc = lang === 'hindi' ? ch.descriptionHi : lang === 'english' ? ch.descriptionEn : ch.descriptionGu;
+
+              return (
+                <div
+                  key={ch.id}
+                  id={`crossref-chapter-${ch.id}`}
+                  className="bg-white dark:bg-[#221D1A] rounded-2xl sm:rounded-3xl shadow-sm border border-[#E8DFD1] dark:border-[#3D342C] overflow-hidden transition-all duration-200"
+                >
+                  {/* Clickable Chapter Banner Header - Clicking reveals shlokas */}
+                  <button
+                    type="button"
+                    onClick={() => toggleChapter(ch.id)}
+                    className="w-full text-left p-4 sm:p-5 flex items-center justify-between gap-3 hover:bg-[#FAF6F0] dark:hover:bg-[#2A231F] transition cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#7A1E00] to-[#A03900] text-amber-300 font-bold flex flex-col items-center justify-center text-xs shadow-md border border-amber-300/40 flex-shrink-0">
+                        <span className="text-[9px] uppercase font-mono opacity-80">
+                          {lang === 'hindi' ? 'प्रकरण' : lang === 'english' ? 'CH' : 'પ્રકરણ'}
+                        </span>
+                        <span className="text-base font-bold leading-none">{ch.id}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-serif font-bold text-base sm:text-lg text-[#7A1E00] dark:text-amber-200 truncate">
+                            {chTitle}
+                          </h3>
+                          <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-[#8B2500] dark:text-amber-300 font-semibold border border-amber-300/50">
+                            {lang === 'hindi' ? `श्लोक ${ch.shlokaRange[0]} से ${ch.shlokaRange[1]}` : lang === 'english' ? `Verses ${ch.shlokaRange[0]}–${ch.shlokaRange[1]}` : `શ્લોક ${ch.shlokaRange[0]} થી ${ch.shlokaRange[1]}`} ({chapterShlokas.length} {lang === 'english' ? 'verses' : 'શ્લોક'})
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#7A6B5C] dark:text-[#A89886] line-clamp-1 mt-0.5">
+                          {chDesc}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs font-bold text-[#8B2500] dark:text-amber-300 hidden md:inline">
+                        {isExpanded 
+                          ? (lang === 'hindi' ? 'संकेतें' : lang === 'english' ? 'Hide' : 'સંકેલો') 
+                          : (lang === 'hindi' ? 'श्लोक देखें' : lang === 'english' ? 'View Shlokas' : 'શ્લોકો જુઓ')}
+                      </span>
+                      <div className={`p-2 rounded-xl transition-transform duration-200 ${isExpanded ? 'bg-amber-500 text-amber-950 rotate-180' : 'bg-amber-100 dark:bg-amber-950 text-[#8B2500] dark:text-amber-300'}`}>
+                        <ChevronDown className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Chapter Shlokas (Rendered when clicked/expanded) */}
+                  {isExpanded && (
+                    <div className="border-t border-[#F0E8DC] dark:border-[#352D26] p-3 sm:p-5 bg-[#FAF7F2]/60 dark:bg-[#1D1714]/60 space-y-5 animate-fadeIn">
+                      {chapterShlokas.map((shloka) => {
           const isWordExpanded = expandedWordShlokaId === shloka.id;
           const currentWordIdx = activeWordIndex[shloka.id] ?? 0;
           const padachhedaList: WordMeaning[] = (PADACHHEDA_DATA && PADACHHEDA_DATA[shloka.id]) || shloka.padachheda || [];
@@ -959,33 +1023,37 @@ export const CrossScriptureView: React.FC<CrossScriptureViewProps> = ({
                 );
               })()}
             </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+})}
+</div>
 
-        {filteredItems.length === 0 && (
-          <div className="p-12 text-center bg-white dark:bg-[#221D1A] rounded-2xl border border-[#E8DFD1] dark:border-[#3D342C] space-y-3">
-            <BookOpen className="w-12 h-12 text-amber-600 mx-auto opacity-50" />
-            <h4 className="font-serif font-bold text-base text-stone-800 dark:text-stone-200">
-              કોઈ સંદર્ભ મળ્યો નથી
-            </h4>
-            <p className="text-xs text-stone-500 max-w-md mx-auto">
-              કૃપા કરીને શોધ શબ્દ બદલો અથવા ફિલ્ટર સાફ કરો.
-            </p>
-            <button
-              onClick={() => {
-                setSearchQuery('');
-                setFilterType('all');
-                setSelectedChapter('all');
-              }}
-              className="px-4 py-2 rounded-xl bg-amber-500 text-amber-950 font-bold text-xs"
-            >
-              તમામ ફિલ્ટર સાફ કરો
-            </button>
+            {filteredItems.length === 0 && (
+              <div className="p-12 text-center bg-white dark:bg-[#221D1A] rounded-2xl border border-[#E8DFD1] dark:border-[#3D342C] space-y-3">
+                <BookOpen className="w-12 h-12 text-amber-600 mx-auto opacity-50" />
+                <h4 className="font-serif font-bold text-base text-stone-800 dark:text-stone-200">
+                  કોઈ સંદર્ભ મળ્યો નથી
+                </h4>
+                <p className="text-xs text-stone-500 max-w-md mx-auto">
+                  કૃપા કરીને શોધ શબ્દ બદલો અથવા ફિલ્ટર સાફ કરો.
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilterType('all');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-amber-500 text-amber-950 font-bold text-xs"
+                >
+                  તમામ ફિલ્ટર સાફ કરો
+                </button>
+              </div>
+            )}
           </div>
         )}
-      </div>
-        </>
-      )}
 
       {/* MODE 2: ALL VACHNAMRUT LIST WITH RELATED SATSANG DIKSHA SHLOKAS */}
       {filterType === 'vachnamrut' && (

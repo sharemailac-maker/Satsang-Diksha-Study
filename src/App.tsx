@@ -6,7 +6,6 @@ import {
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { HomeView } from './components/HomeView';
-import { ShlokaCard } from './components/ShlokaCard';
 import { MukhpathView } from './components/MukhpathView';
 import { ChapterIndex } from './components/ChapterIndex';
 import { CrossScriptureView } from './components/CrossScriptureView';
@@ -38,6 +37,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>('home');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
+  const [selectedShlokaId, setSelectedShlokaId] = useState<number | null>(null);
   
   // Modals state
   const [isQuickJumpOpen, setIsQuickJumpOpen] = useState<boolean>(false);
@@ -108,15 +108,11 @@ export default function App() {
   };
 
   const handleJumpToShloka = (shlokaId: number) => {
-    setActiveTab('reader');
+    setSelectedShlokaId(shlokaId);
+    setActiveTab('mukhpath');
     setSelectedChapterId(null);
     setSearchQuery('');
-    setTimeout(() => {
-      const elem = document.getElementById(`shloka-card-${shlokaId}`);
-      if (elem) {
-        elem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 150);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Filter shlokas based on search and chapter selection
@@ -218,96 +214,20 @@ export default function App() {
           />
         )}
 
-        {/* TAB 1: SCRIPTURE READER */}
-        {activeTab === 'reader' && (
-          <div className="max-w-5xl mx-auto px-3 sm:px-6 py-6 space-y-6">
-            {/* Chapter Filter Pill Bar */}
-            <div className="flex items-center justify-between gap-2 overflow-x-auto pb-2 no-scrollbar">
-              <button
-                onClick={() => setSelectedChapterId(null)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition whitespace-nowrap ${
-                  selectedChapterId === null
-                    ? 'bg-[#8B2500] text-amber-50 shadow-sm font-bold'
-                    : 'bg-white dark:bg-[#221D1A] border border-[#E8DFD1] dark:border-[#3D342C] text-[#6B5E51] dark:text-[#C5B7A8] hover:bg-[#FAF6F0]'
-                }`}
-              >
-                {ui.allShlokas}
-              </button>
-              {CHAPTERS.map(ch => (
-                <button
-                  key={ch.id}
-                  onClick={() => setSelectedChapterId(ch.id)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium transition whitespace-nowrap ${
-                    selectedChapterId === ch.id
-                      ? 'bg-[#8B2500] text-amber-50 shadow-sm font-bold'
-                      : 'bg-white dark:bg-[#221D1A] border border-[#E8DFD1] dark:border-[#3D342C] text-[#6B5E51] dark:text-[#C5B7A8] hover:bg-[#FAF6F0]'
-                  }`}
-                >
-                  {ui.chapterPrefix} {ch.id}: {preferences.activeLanguage === 'hindi' ? ch.titleHi : ch.titleGu}
-                </button>
-              ))}
-            </div>
-
-            {/* Showing Count & Reset */}
-            <div className="flex items-center justify-between text-xs text-[#7A6B5C] dark:text-[#A89D91]">
-              <span>
-                {ui.filterShowingCount} <strong>{filteredShlokas.length}</strong> / 315
-                {selectedChapterId !== null && ` (${ui.chapterPrefix} ${selectedChapterId})`}
-                {searchQuery && ` (${searchQuery})`}
-              </span>
-              {(selectedChapterId !== null || searchQuery) && (
-                <button
-                  onClick={() => {
-                    setSelectedChapterId(null);
-                    setSearchQuery('');
-                  }}
-                  className="text-[#8B2500] dark:text-amber-400 font-semibold hover:underline"
-                >
-                  {ui.clearFilter}
-                </button>
-              )}
-            </div>
-
-            {/* Shloka Cards List */}
-            {filteredShlokas.length > 0 ? (
-              <div className="space-y-6">
-                {filteredShlokas.map(shloka => {
-                  const bookmark = bookmarkMap.get(shloka.id);
-                  const isBookmarked = !!bookmark;
-                  const mRecord = mukhpathRecords[shloka.id];
-                  const mStatus = mRecord?.status || 'unlearned';
-
-                  return (
-                    <ShlokaCard
-                      key={shloka.id}
-                      shloka={shloka}
-                      preferences={preferences}
-                      isBookmarked={isBookmarked}
-                      onToggleBookmark={handleToggleBookmark}
-                      bookmarkNote={bookmark?.note}
-                      onUpdateBookmarkNote={handleUpdateBookmarkNote}
-                      mukhpathStatus={mStatus}
-                      onUpdateMukhpathStatus={handleUpdateMukhpathStatus}
-                      highlightQuery={searchQuery}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="bg-white dark:bg-[#221D1A] rounded-3xl p-12 text-center border border-[#E8DFD1] dark:border-[#3D342C] space-y-3">
-                <Search className="w-12 h-12 text-amber-500 mx-auto opacity-60" />
-                <h3 className="text-base font-serif font-bold text-[#8B2500] dark:text-amber-300">
-                  {ui.noShlokasFound}
-                </h3>
-                <p className="text-xs text-[#6B5E51] dark:text-[#A89886]">
-                  {ui.noShlokasDesc}
-                </p>
-              </div>
-            )}
-          </div>
+        {/* TAB 1: SHLOKA ADHYAYAN (Mukhpath Sadhna renamed to Shloka Adhyayan, positioned beside Home) */}
+        {activeTab === 'mukhpath' && (
+          <MukhpathView
+            shlokas={allShlokas}
+            preferences={preferences}
+            mukhpathRecords={mukhpathRecords}
+            onUpdateStatus={handleUpdateMukhpathStatus}
+            onSelectShloka={handleJumpToShloka}
+            selectedShlokaId={selectedShlokaId}
+            searchQuery={searchQuery}
+          />
         )}
 
-        {/* TAB: UDGAAN AUDIO (VEDIC CHANTING) */}
+        {/* TAB 2: UDGAAN AUDIO (VEDIC CHANTING) */}
         {activeTab === 'udgaan' && (
           <UdgaanView
             shlokas={allShlokas}
@@ -321,26 +241,16 @@ export default function App() {
           />
         )}
 
-        {/* TAB 2: MUKHPATH STUDY */}
-        {activeTab === 'mukhpath' && (
-          <MukhpathView
-            shlokas={allShlokas}
-            preferences={preferences}
-            mukhpathRecords={mukhpathRecords}
-            onUpdateStatus={handleUpdateMukhpathStatus}
-            onSelectShloka={handleJumpToShloka}
-          />
-        )}
-
         {/* TAB 3: CHAPTERS INDEX */}
         {activeTab === 'chapters' && (
           <ChapterIndex
             chapters={CHAPTERS}
+            shlokas={allShlokas}
             preferences={preferences}
+            onUpdatePreferences={handleUpdatePreferences}
             mukhpathRecords={mukhpathRecords}
             onSelectChapter={(chId) => {
               setSelectedChapterId(chId);
-              setActiveTab('reader');
             }}
             onSelectShloka={handleJumpToShloka}
           />

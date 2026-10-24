@@ -38,7 +38,7 @@ interface SettingsModalProps {
   onResetPreferences: () => void;
 }
 
-// 16 Supported Languages with authentic native titles and descriptions matching screenshot
+// 16 Supported Languages with authentic native titles and descriptions
 const LANGUAGE_GRID_OPTIONS: Array<{
   id: Language;
   title: string;
@@ -61,6 +61,217 @@ const LANGUAGE_GRID_OPTIONS: Array<{
   { id: 'greek', title: 'Ελληνικά', subtitle: 'Ελληνικά' },
   { id: 'polish', title: 'Polski', subtitle: 'Polski' }
 ];
+
+// Multilingual translations for Settings UI
+function getSettingsLabels(lang: Language) {
+  switch (lang) {
+    case 'hindi':
+      return {
+        settingsTitle: 'अध्ययन एवं भाषा सेटिंग्स',
+        settingsSubtitle: 'भाषा चयन, ऑफ़लाइन पैक और सूचनाएं',
+        primaryLangTitle: 'मुख्य अनुवाद भाषा',
+        primaryLangDesc: 'श्लोक के नीचे प्रदर्शित मुख्य भावार्थ भाषा:',
+        offlineReady: 'ऑफ़लाइन तैयार',
+        downloadOffline: 'ऑफ़लाइन डाउनलोड',
+        downloading: 'डाउनलोड हो रहा है...',
+        scriptTitle: 'संस्कृत श्लोक लिपि (Sanskrit Script):',
+        defaultScript: 'डिफ़ॉल्ट: देवनागरी',
+        optDevanagari: 'देवनागरी (Devanagari - Default)',
+        optGujarati: 'गुजराती लिपि (Gujarati Script)',
+        optIast: 'रोमन लिपि (Roman IAST Script)',
+        autoSwipeReadTitle: "'पढ़ा' क्लिक करने पर अगला श्लोक (Auto Swipe)",
+        autoSwipeReadDesc: 'श्लोक पूर्ण होने पर स्वतः आगे बढ़ें',
+        autoSwipeListenTitle: 'ऑडियो सुनते समय स्वतः आगे बढ़ें (Auto Swipe Verses)',
+        autoSwipeListenDesc: 'उद्गान समाप्त होने पर अगला श्लोक स्वतः प्रारंभ करें',
+        fontSizeTitle: 'अक्षर आकार (Font Size)',
+        fontSizeDesc: 'पठन हेतु अक्षरों का आकार बढ़ाएं या घटाएं',
+        dailyTargetTitle: 'दैनिक स्वाध्याय एवं रिमाइंडर (Daily Target & Reminder)',
+        goalLabel: 'श्लोक लक्ष्य (Study Goal):',
+        shlokasSuffix: 'श्लोक',
+        quickTarget: 'त्वरित लक्ष्य:',
+        completeAll: '३१५ (संपूर्ण)',
+        dailyReminderTitle: 'दैनिक सूचना (Daily Reminder)',
+        dailyReminderDesc: 'नियत समय पर स्वाध्याय का रिमाइंडर प्राप्त करें',
+        timeLabel: 'समय (Time):',
+        testNotification: 'टेस्ट सूचना भेजें',
+        updateAppTitle: 'ऐप अपडेट करें (Update App)',
+        updateAppDesc: 'नए सुधार, ताजे श्लोक एवं सुविधाएं प्राप्त करने हेतु अपडेट करें।',
+        versionLabel: 'संस्करण',
+        newVersionAvailable: 'नया संस्करण उपलब्ध!',
+        checkUpdates: 'अपडेट्स जांचें',
+        updateNow: 'अभी अपडेट करें',
+        checkingUpdates: 'जांच हो रही है...',
+        updatingNow: 'अपडेट हो रहा है...',
+        updateBgNote: '* ऑनलाइन होने पर ऐप स्वतः पृष्ठभूमि में अपडेट जांचती है।',
+        visitsTitle: 'कुल ऐप विज़िट्स (App Visits & Access)',
+        visitsSubtitle: 'अनाम उपयोगकर्ता गणना (Anonymous Hit Counter)',
+        refreshCount: 'रीफ़्रेश',
+        totalAccesses: 'कुल ऐप एक्सेस (Total Accesses)',
+        times: 'बार',
+        privacyNote: '* १००% गोपनीय एवं अनाम: कोई व्यक्तिगत डेटा या कुकीज़ एकत्र नहीं की जाती हैं।',
+        shareTitle: 'यह ऐप शेयर करें (Share This App)',
+        shareDesc: 'सत्संगी मित्रों, परिवारजनों एवं परिचितों के साथ शेयर करें',
+        shareBtn: 'ऐप शेयर करें',
+        resetBtn: 'मूल सेटिंग्स (Reset)',
+        saveCloseBtn: 'सहेजें और बंद करें',
+        resetConfirm: 'क्या आप सभी सेटिंग्स को डिफ़ॉल्ट पर रीसेट करना चाहते हैं?'
+      };
+    case 'english':
+      return {
+        settingsTitle: 'Study & Language Settings',
+        settingsSubtitle: 'Language selection, offline packs & notifications',
+        primaryLangTitle: 'Primary Meaning Language',
+        primaryLangDesc: 'Primary translation displayed below each Sanskrit verse:',
+        offlineReady: 'Offline Ready',
+        downloadOffline: 'Download Offline',
+        downloading: 'Downloading...',
+        scriptTitle: 'Default Sanskrit Script:',
+        defaultScript: 'Default: Devanagari',
+        optDevanagari: 'Devanagari (Default)',
+        optGujarati: 'Gujarati Script',
+        optIast: 'Roman IAST Script',
+        autoSwipeReadTitle: "Auto-advance on 'Read' (Auto Swipe)",
+        autoSwipeReadDesc: 'Automatically move to the next verse after finishing',
+        autoSwipeListenTitle: 'Auto-advance verses while listening',
+        autoSwipeListenDesc: 'Automatically play next verse when chanting concludes',
+        fontSizeTitle: 'Text Size (Font Size)',
+        fontSizeDesc: 'Adjust reading font size larger or smaller',
+        dailyTargetTitle: 'Daily Target & Study Reminder',
+        goalLabel: 'Verse Goal (Study Goal):',
+        shlokasSuffix: 'Verses',
+        quickTarget: 'Quick Target:',
+        completeAll: '315 (Complete)',
+        dailyReminderTitle: 'Daily Reminder',
+        dailyReminderDesc: 'Receive notification to maintain regular daily study',
+        timeLabel: 'Time:',
+        testNotification: 'Send Test Alert',
+        updateAppTitle: 'Update App',
+        updateAppDesc: 'Get the latest revisions, authentic scriptures and enhancements.',
+        versionLabel: 'Version',
+        newVersionAvailable: 'New version available!',
+        checkUpdates: 'Check for Updates',
+        updateNow: 'Update Now',
+        checkingUpdates: 'Checking...',
+        updatingNow: 'Updating...',
+        updateBgNote: '* When online, the app automatically checks for updates in the background.',
+        visitsTitle: 'Total App Accesses',
+        visitsSubtitle: 'Anonymous Hit Counter',
+        refreshCount: 'Refresh',
+        totalAccesses: 'Total App Accesses',
+        times: 'times',
+        privacyNote: '* 100% private & anonymous: No personal data or tracking cookies collected.',
+        shareTitle: 'Share This App',
+        shareDesc: 'Share with fellow devotees, friends, and family',
+        shareBtn: 'Share App',
+        resetBtn: 'Reset Defaults',
+        saveCloseBtn: 'Save & Close',
+        resetConfirm: 'Reset all settings to default?'
+      };
+    case 'marathi':
+      return {
+        settingsTitle: 'अध्ययन आणि भाषा सेटिंग्ज',
+        settingsSubtitle: 'भाषा निवड, ऑफलाइन पॅक आणि सूचना',
+        primaryLangTitle: 'मुख्य अनुवाद भाषा',
+        primaryLangDesc: 'श्लोकाखाली प्रदर्शित होणारा मुख्य भावार्थ:',
+        offlineReady: 'ऑफलाइन तयार',
+        downloadOffline: 'ऑफलाइन डाउनलोड',
+        downloading: 'डाउनलोड होत आहे...',
+        scriptTitle: 'संस्कृत श्लोक लिपी:',
+        defaultScript: 'डिफॉल्ट: देवनागरी',
+        optDevanagari: 'देवनागरी (Devanagari)',
+        optGujarati: 'गुजराथी लिपी (Gujarati)',
+        optIast: 'रोमन लिपी (Roman IAST)',
+        autoSwipeReadTitle: "'वाचले' क्लिक केल्यावर पुढील श्लोक",
+        autoSwipeReadDesc: 'श्लोक पूर्ण झाल्यावर आपोआप पुढे जा',
+        autoSwipeListenTitle: 'ऑडिओ ऐकताना आपोआप पुढे जा',
+        autoSwipeListenDesc: 'उद्गान संपल्यावर पुढील श्लोक सुरू करा',
+        fontSizeTitle: 'अक्षर आकार (Font Size)',
+        fontSizeDesc: 'वाचनासाठी अक्षरांचा आकार वाढवा किंवा कमी करा',
+        dailyTargetTitle: 'दैनिक स्वाध्याय आणि स्मरणपत्र',
+        goalLabel: 'श्लोक ध्येय:',
+        shlokasSuffix: 'श्लोक',
+        quickTarget: 'त्वरित ध्येय:',
+        completeAll: '३१५ (संपूर्ण)',
+        dailyReminderTitle: 'दैनिक स्मरणपत्र (Daily Reminder)',
+        dailyReminderDesc: 'ठरलेल्या वेळी स्वाध्याय स्मरणपत्र मिळवा',
+        timeLabel: 'वेळ:',
+        testNotification: 'चाचणी सूचना पाठवा',
+        updateAppTitle: 'अॅप अपडेट करा',
+        updateAppDesc: 'नवीन सुधारणा आणि श्लोक मिळवण्यासाठी अपडेट करा.',
+        versionLabel: 'आवृत्ती',
+        newVersionAvailable: 'नवीन उपलब्ध!',
+        checkUpdates: 'अपडेट्स तपासा',
+        updateNow: 'आता अपडेट करा',
+        checkingUpdates: 'तपासत आहे...',
+        updatingNow: 'अपडेट होत आहे...',
+        updateBgNote: '* ऑनलाइन असताना अॅप आपोआप अपडेट्स तपासते.',
+        visitsTitle: 'एकूण अॅप प्रवेश',
+        visitsSubtitle: 'अनामित वापरकर्ता गणना',
+        refreshCount: 'रिफ्रेश',
+        totalAccesses: 'एकूण प्रवेश',
+        times: 'वेळा',
+        privacyNote: '* १००% गोपनीय: कोणतीही वैयक्तिक माहिती गोळा केली जात नाही.',
+        shareTitle: 'हे अॅप शेअर करा',
+        shareDesc: 'मित्र आणि कुटुंबासह शेअर करा',
+        shareBtn: 'शेअर करा',
+        resetBtn: 'मूळ सेटिंग्ज',
+        saveCloseBtn: 'जतन करा आणि बंद करा',
+        resetConfirm: 'सर्व सेटिंग्ज पूर्ववत करायची आहेत का?'
+      };
+    default:
+      // Default: Gujarati
+      return {
+        settingsTitle: 'અધ્યયન & ભાષા સેટિંગ્સ',
+        settingsSubtitle: 'ભાષા પસંદગી, ઑફલાઇન પેક & નોટિફિકેશન',
+        primaryLangTitle: 'મુખ્ય અનુવાદ ભાષા (Primary Meaning Language)',
+        primaryLangDesc: 'શ્લોક નીચે દર્શાવાતો મુખ્ય ભાવાર્થ. (પૂર્વ-નિર્ધારિત: સંસ્કૃત થી ગુજરાતી):',
+        offlineReady: 'ઑફલાઇન તૈયાર (Ready)',
+        downloadOffline: 'ઑફલાઇન ડાઉનલોડ',
+        downloading: 'ડાઉનલોડ...',
+        scriptTitle: 'સંસ્કૃત શ્લોક લિપિ (Default Sanskrit Script):',
+        defaultScript: 'Default: દેવનાગરી',
+        optDevanagari: 'દેવનાગરી (Devanagari - Default)',
+        optGujarati: 'ગુજરાતી લિપિ (Gujarati Script)',
+        optIast: 'રોમન લિપિ (Roman IAST Script)',
+        autoSwipeReadTitle: "'વાંચ્યું' ક્લિક કરતાં આગળનો શ્લોક (Auto Swipe)",
+        autoSwipeReadDesc: 'શ્લોક પૂર્ણ થયા પછી આપોઆપ આગળ વધવું',
+        autoSwipeListenTitle: 'ઓડિયો શ્રવણ વખતે આપોઆપ આગળ વધવું (Auto swipe Verses while listening)',
+        autoSwipeListenDesc: 'ઉદ્ગાન ઓડિયો પૂર્ણ થતાં પછીનો શ્લોક આપોઆપ શરૂ કરવો',
+        fontSizeTitle: 'અક્ષર કદ (Font Size)',
+        fontSizeDesc: 'વાંચન માટે અક્ષરોનું માપ વધારો કે ઘટાડો',
+        dailyTargetTitle: 'દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)',
+        goalLabel: 'શ્લોક લક્ષ્યાંક (Study Goal):',
+        shlokasSuffix: 'શ્લોક',
+        quickTarget: 'ઝડપી લક્ષ્યાંક:',
+        completeAll: '315 (સંપૂર્ણ)',
+        dailyReminderTitle: 'રોજિંદી સૂચના (Daily Reminder)',
+        dailyReminderDesc: 'નિયત સમયે સ્વાધ્યાયનું રીમાઇન્ડર મેળવો',
+        timeLabel: 'સમય (Time):',
+        testNotification: 'ટેસ્ટ સૂચના',
+        updateAppTitle: 'એપ અપડેટ કરો (Update App)',
+        updateAppDesc: 'એપમાં થયેલા તમામ નવા સુધારા અને શ્લોકો મેળવવા માટે અપડેટ કરો.',
+        versionLabel: 'આવૃત્તિ',
+        newVersionAvailable: 'નવું ઉપલબ્ધ!',
+        checkUpdates: 'અપડેટ્સ માટે તપાસો (Check for Updates)',
+        updateNow: 'હમણાં અપડેટ કરો (Update Now)',
+        checkingUpdates: 'તપાસ થઈ રહી છે...',
+        updatingNow: 'અપડેટ થઈ રહ્યું છે...',
+        updateBgNote: '* જ્યારે પણ તમે ઓનલાઇન હોવ ત્યારે એપ આપોઆપ બેકગ્રાઉન્ડમાં નવા અપડેટ્સ તપાસે છે અને તમને સૂચિત કરે છે.',
+        visitsTitle: 'કુલ એપ મુલાકાતો (App Visits & Access)',
+        visitsSubtitle: 'ગુમનામ વપરાશકર્તા ગણતરી (Anonymous Hit Counter)',
+        refreshCount: 'રીફ્રેશ',
+        totalAccesses: 'કુલ એપ એક્સેસ (Total Accesses)',
+        times: 'વખત',
+        privacyNote: '* ૧૦૦% ગોપનીય અને ગુમનામ: કોઈ અંગત માહિતી, નામ, ઈમેલ કે કૂકીઝ એકત્રિત થતી નથી. માત્ર એપ એક્સેસની સંખ્યા ગણવામાં આવે છે.',
+        shareTitle: 'આ એપ શેર કરો (Share This App)',
+        shareDesc: 'સહપાઠીઓ, મિત્રો અને સત્સંગી પરિજનો સાથે શેર કરો',
+        shareBtn: 'એપ શેર કરો (Share App)',
+        resetBtn: 'મૂળ સેટિંગ્સ (Reset)',
+        saveCloseBtn: 'સાચવો & બંધ કરો',
+        resetConfirm: 'બધા જ સેટિંગ્સ મૂળ સ્થિતિમાં લાવવા માંગો છો?'
+      };
+  }
+}
 
 // Helper to format 24h time to 12h AM/PM
 function formatTimeTo12Hour(timeStr?: string): string {
@@ -106,7 +317,7 @@ const WarmToggleSwitch: React.FC<{
       e.stopPropagation();
       onChange(!checked);
     }}
-    className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+    className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
       checked ? 'bg-[#7A1D05]' : 'bg-[#E5DACE] dark:bg-[#382E26]'
     }`}
   >
@@ -146,7 +357,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   // Share App Modal state
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  const ui = getUIStrings(preferences.activeLanguage);
+  const lang = preferences.activeLanguage || 'gujarati';
+  const s = getSettingsLabels(lang);
 
   if (!isOpen) return null;
 
@@ -157,15 +369,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const isLangPackInstalled = (preferences.installedLanguagePacks || ['gujarati', 'hindi', 'english']).includes(preferences.activeLanguage);
 
   // Handle language pack download for offline use
-  const handleDownloadPack = (lang: Language) => {
-    setDownloadingPackLang(lang);
+  const handleDownloadPack = (lKey: Language) => {
+    setDownloadingPackLang(lKey);
     setPackDownloadMessage(null);
     setTimeout(() => {
-      const updated = StorageService.installLanguagePack(lang);
+      const updated = StorageService.installLanguagePack(lKey);
       onUpdatePreferences({ installedLanguagePacks: updated });
       setDownloadingPackLang(null);
-      const langObj = LANGUAGE_GRID_OPTIONS.find(l => l.id === lang);
-      setPackDownloadMessage(`${langObj?.title || lang} ઑફલાઇન પેક સફળતાપૂર્વક સાચવવામાં આવ્યું છે! ✓`);
+      const langObj = LANGUAGE_GRID_OPTIONS.find(l => l.id === lKey);
+      setPackDownloadMessage(`${langObj?.title || lKey} ✓`);
       setTimeout(() => setPackDownloadMessage(null), 4000);
     }, 700);
   };
@@ -180,10 +392,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       try {
         const found = await checkForUpdates(false);
         if (found) {
-          setUpdateSuccess('નવું સંસ્કરણ ઉપલબ્ધ છે! કૃપા કરીને અપડેટ કરો.');
+          setUpdateSuccess(s.newVersionAvailable);
         }
       } catch {
-        setUpdateSuccess('અપડેટ તપાસવામાં નિષ્ફળતા આવી. કૃપા કરીને પુનઃ પ્રયાસ કરો.');
+        setUpdateSuccess('Update check failed.');
       } finally {
         setUpdatingApp(false);
       }
@@ -198,9 +410,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         body: `નિયમ શ્લોક પાઠ અને મુખપાઠ કરવાનો સમય થયો છે. (${formatTimeTo12Hour(preferences.reminder?.time)})`,
         icon: '/icon-192.png'
       });
-      setTestNotificationStatus('નોટિફિકેશન સફળતાપૂર્વક મોકલાઈ ગયું! ✓');
+      setTestNotificationStatus('Notification sent! ✓');
     } else {
-      setTestNotificationStatus('કૃપા કરીને બ્રાઉઝરમાં નોટિફિકેશન પરવાનગી આપો.');
+      setTestNotificationStatus('Please allow notification permission.');
     }
     setTimeout(() => setTestNotificationStatus(null), 3500);
   };
@@ -221,37 +433,34 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         {/* =========================================================
-            TOP HEADER BAR (Matching Reference Screenshot)
-            Rich gradient: Deep russet to golden amber with round yellow icon
+            TOP HEADER BAR
             ========================================================= */}
         <div 
           id="settings-top-bar"
-          className="bg-gradient-to-r from-[#6E1803] via-[#852305] to-[#B35800] px-4 sm:px-5 py-3.5 flex items-center justify-between text-white flex-shrink-0 shadow-md select-none"
+          className="bg-gradient-to-r from-[#6E1803] via-[#852305] to-[#B35800] px-4 sm:px-5 py-3.5 flex items-center justify-between text-white shrink-0 shadow-md select-none"
         >
           <div className="flex items-center gap-3.5">
-            {/* Yellow / Golden Round Badge with Sliders Icon */}
             <div 
               id="settings-header-icon"
-              className="w-10 h-10 rounded-full bg-[#F59E0B] flex items-center justify-center text-[#6E1803] shadow-sm flex-shrink-0"
+              className="w-10 h-10 rounded-full bg-[#F59E0B] flex items-center justify-center text-[#6E1803] shadow-sm shrink-0"
             >
               <SlidersHorizontal className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
               <h2 className="text-[17px] sm:text-[18px] font-bold text-white tracking-tight leading-tight">
-                {ui.settingsTitle}
+                {s.settingsTitle}
               </h2>
               <p className="text-[11.5px] sm:text-[12px] text-amber-200/95 font-medium leading-tight mt-0.5">
-                {ui.settingsSubtitle}
+                {s.settingsSubtitle}
               </p>
             </div>
           </div>
 
-          {/* Close Button: Circular translucent matching screenshot */}
           <button
             id="settings-close-btn"
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition cursor-pointer flex-shrink-0"
+            className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition cursor-pointer shrink-0"
             title="Close"
           >
             <X className="w-5 h-5 stroke-[2.5]" />
@@ -260,7 +469,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
         {/* =========================================================
             SCROLLABLE CONTENT BODY
-            Warm cream cards with golden-amber borders
             ========================================================= */}
         <div 
           id="settings-scroll-body"
@@ -269,35 +477,31 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* =========================================================
               CARD 1: મુખ્ય અનુવાદ ભાષા (Primary Meaning Language)
-              Compact Drop-down Selector + Offline Pack Download Option
               ========================================================= */}
           <div 
             id="card-primary-language"
             className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3"
           >
-            {/* Header row with Languages icon */}
             <div className="flex items-start justify-between gap-2.5">
               <div className="flex items-start gap-2.5">
-                <Languages className="w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0" />
+                <Languages className="w-5 h-5 text-[#B85D00] mt-0.5 shrink-0" />
                 <div>
                   <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                    {ui.primaryLanguageTitle}
+                    {s.primaryLangTitle}
                   </h3>
                   <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
-                    {ui.primaryLanguageDesc}
+                    {s.primaryLangDesc}
                   </p>
                 </div>
               </div>
 
-              {/* Active Badge */}
               <span className="shrink-0 hidden sm:inline-block text-[11px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-[#7A1D05] dark:text-amber-300 font-bold border border-amber-300/50">
                 {selectedLangOption?.title || preferences.activeLanguage}
               </span>
             </div>
 
-            {/* Compact Dropdown & Offline Download Action Row */}
+            {/* Dropdown Selector */}
             <div className="pt-0.5 flex flex-col sm:flex-row sm:items-center gap-2.5">
-              {/* Dropdown Selector */}
               <div className="relative flex-1">
                 <select
                   id="select-primary-language"
@@ -322,17 +526,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
               </div>
 
-              {/* Offline Pack Download / Installed Badge Button */}
+              {/* Offline Pack Download Button */}
               <div className="shrink-0 flex items-center">
                 {isLangPackInstalled ? (
                   <button
                     type="button"
                     onClick={() => handleDownloadPack(preferences.activeLanguage)}
                     className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition shadow-2xs"
-                    title="ઑફલાઇન પેક તૈયાર છે (Offline Pack Ready)"
                   >
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span>{ui.offlineReadyBadge || 'ઑફલાઇન તૈયાર (Ready)'}</span>
+                    <span>{s.offlineReady}</span>
                     <span className="text-[10.5px] text-emerald-700/80 dark:text-emerald-400/80 font-mono">({packSizeMb} MB)</span>
                   </button>
                 ) : (
@@ -345,12 +548,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     {downloadingPackLang === preferences.activeLanguage ? (
                       <>
                         <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                        <span>{ui.installingButton || 'ડાઉનલોડ...'}</span>
+                        <span>{s.downloading}</span>
                       </>
                     ) : (
                       <>
                         <Download className="w-4 h-4" />
-                        <span>{ui.installButton || 'ઑફલાઇન ડાઉનલોડ'}</span>
+                        <span>{s.downloadOffline}</span>
                         <span className="text-[10.5px] opacity-85 font-mono">({packSizeMb} MB)</span>
                       </>
                     )}
@@ -359,9 +562,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             </div>
 
-            {/* Notification Banner when pack is downloaded */}
             {packDownloadMessage && (
-              <div className="flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-in fade-in duration-200">
+              <div className="flex items-center gap-2 text-xs text-emerald-800 dark:text-emerald-300 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-fadeIn">
                 <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
                 <span>{packDownloadMessage}</span>
               </div>
@@ -369,24 +571,22 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD 2: વાંચન & લિપિ સેટિંગ્સ (Sanskrit Script & Display)
-              Warm card matching the palette
+              CARD 2: સંસ્કૃત લિપિ સેટિંગ્સ (Sanskrit Script & Auto Swipe)
               ========================================================= */}
           <div 
             id="card-script-display"
             className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
           >
-            {/* Sanskrit Script Dropdown Menu */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <Type className="w-4 h-4 text-[#B85D00]" />
                   <span className="font-bold text-[14.5px] sm:text-[15px] text-[#7A1D05] dark:text-amber-300">
-                    {ui.sanskritScriptTitle}
+                    {s.scriptTitle}
                   </span>
                 </div>
                 <span className="text-[11px] px-2 py-0.5 rounded-full font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-300/60">
-                  Default: દેવનાગરી
+                  {s.defaultScript}
                 </span>
               </div>
               <div className="relative">
@@ -396,9 +596,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange={(e) => onUpdatePreferences({ sanskritScript: e.target.value as SanskritScript })}
                   className="w-full appearance-none px-4 py-3 rounded-xl border-2 border-[#EADBCC] dark:border-stone-700 bg-white dark:bg-[#181310] text-[#7A1D05] dark:text-amber-200 font-bold text-sm focus:outline-none focus:border-[#7A1D05] cursor-pointer shadow-2xs pr-10"
                 >
-                  <option value="devanagari">દેવનાગરી (Devanagari - Default)</option>
-                  <option value="gujarati">ગુજરાતી લિપિ (Gujarati Script)</option>
-                  <option value="iast">રોમન લિપિ (Roman IAST Script)</option>
+                  <option value="devanagari">{s.optDevanagari}</option>
+                  <option value="gujarati">{s.optGujarati}</option>
+                  <option value="iast">{s.optIast}</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-[#7A1D05] dark:text-amber-300">
                   <ChevronDown className="w-4 h-4" />
@@ -413,10 +613,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <div>
                 <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                  'વાંચ્યું' ક્લિક કરતાં આગળનો શ્લોક (Auto Swipe)
+                  {s.autoSwipeReadTitle}
                 </span>
                 <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  શ્લોક પૂર્ણ થયા પછી આપોઆપ આગળ વધવું
+                  {s.autoSwipeReadDesc}
                 </span>
               </div>
               <WarmToggleSwitch
@@ -434,10 +634,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             >
               <div>
                 <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                  ઓડિયો શ્રવણ વખતે આપોઆપ આગળ વધવું (Auto swipe Verses while listening)
+                  {s.autoSwipeListenTitle}
                 </span>
                 <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                  ઉદ્ગાન ઓડિયો પૂર્ણ થતાં પછીનો શ્લોક આપોઆપ શરૂ કરવો
+                  {s.autoSwipeListenDesc}
                 </span>
               </div>
               <WarmToggleSwitch
@@ -450,7 +650,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD: અક્ષર કદ (Font Size Settings - Outside layout group)
+              CARD 3: અક્ષર કદ (Font Size Settings)
               ========================================================= */}
           <div 
             id="card-font-size-settings"
@@ -458,10 +658,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             <div>
               <span className="font-bold text-[14.5px] text-[#7A1D05] dark:text-amber-300 block">
-                {ui.fontSizeTitle || 'અક્ષર કદ (Font Size)'}
+                {s.fontSizeTitle}
               </span>
               <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                વાંચન માટે અક્ષરોનું માપ વધારો કે ઘટાડો ({preferences.fontSize || 18} px)
+                {s.fontSizeDesc} ({preferences.fontSize || 18} px)
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -488,39 +688,35 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD 3: દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)
-              Streamlined, concise, non-repeating
+              CARD 4: દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)
               ========================================================= */}
           <div 
             id="card-daily-target-reminder"
             className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs space-y-4"
           >
-            {/* Unified Card Header */}
             <div className="flex items-center gap-2">
-              <BookmarkCheck className="w-5 h-5 text-[#B85D00] flex-shrink-0" />
+              <BookmarkCheck className="w-5 h-5 text-[#B85D00] shrink-0" />
               <h3 className="font-bold text-[15.5px] sm:text-[16.5px] text-[#7A1D05] dark:text-amber-300">
-                દૈનિક સ્વાધ્યાય & રીમાઇન્ડર (Daily Target & Reminder)
+                {s.dailyTargetTitle}
               </h3>
             </div>
 
-            {/* Shloka Target Selection: 1/315 Stepper, Slider & Input */}
+            {/* Shloka Target Selection */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#785E4F] dark:text-stone-300">
-                  શ્લોક લક્ષ્યાંક (Study Goal):
+                  {s.goalLabel}
                 </span>
                 <span className="text-xs font-bold text-[#7A1D05] dark:text-amber-400 font-mono bg-amber-100/70 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-md border border-amber-300/60 dark:border-amber-800">
-                  {preferences.dailyGoal || 1} / 315 શ્લોક
+                  {preferences.dailyGoal || 1} / 315 {s.shlokasSuffix}
                 </span>
               </div>
 
-              {/* Stepper + Range Slider + Number Input in 1/315 style */}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => onUpdatePreferences({ dailyGoal: Math.max(1, (preferences.dailyGoal || 1) - 1) })}
                   className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 dark:hover:bg-stone-800 cursor-pointer flex items-center justify-center transition shadow-2xs"
-                  title="Previous Shloka"
                 >
                   <Minus className="w-3.5 h-3.5" />
                 </button>
@@ -557,15 +753,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   type="button"
                   onClick={() => onUpdatePreferences({ dailyGoal: Math.min(315, (preferences.dailyGoal || 1) + 1) })}
                   className="w-8 h-8 rounded-lg bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#7A1D05] dark:text-amber-300 font-bold hover:bg-amber-50 dark:hover:bg-stone-800 cursor-pointer flex items-center justify-center transition shadow-2xs"
-                  title="Next Shloka"
                 >
                   <Plus className="w-3.5 h-3.5" />
                 </button>
               </div>
 
-              {/* Quick Preset Shortcuts */}
+              {/* Quick Presets */}
               <div className="flex items-center justify-between text-[11px] text-[#785E4F] dark:text-stone-400 pt-0.5">
-                <span className="text-[10.5px]">ઝડપી લક્ષ્યાંક:</span>
+                <span className="text-[10.5px]">{s.quickTarget}</span>
                 <div className="flex items-center gap-1">
                   {[1, 5, 11, 21, 315].map((preset) => (
                     <button
@@ -578,14 +773,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           : 'bg-white dark:bg-[#181310] border border-[#EADBCC] dark:border-stone-700 text-[#2D1A0E] dark:text-stone-300 hover:border-amber-400'
                       }`}
                     >
-                      {preset === 315 ? '315 (સંપૂર્ણ)' : `${preset} શ્લોક`}
+                      {preset === 315 ? s.completeAll : `${preset} ${s.shlokasSuffix}`}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Daily Reminder Toggle & Time Settings */}
+            {/* Daily Reminder Toggle & Time */}
             <div className="pt-3 border-t border-[#F5E6CE] dark:border-stone-800 space-y-2.5">
               <div 
                 className="flex items-center justify-between cursor-pointer"
@@ -598,10 +793,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               >
                 <div>
                   <span className="font-bold text-[14px] text-[#7A1D05] dark:text-amber-300 block">
-                    રોજિંદી સૂચના (Daily Reminder)
+                    {s.dailyReminderTitle}
                   </span>
                   <span className="text-xs text-[#785E4F] dark:text-stone-400">
-                    નિયત સમયે સ્વાધ્યાયનું રીમાઇન્ડર મેળવો
+                    {s.dailyReminderDesc}
                   </span>
                 </div>
                 <WarmToggleSwitch
@@ -627,7 +822,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#7A1D05] dark:text-amber-400" />
                     <span className="text-xs font-semibold text-[#4A2D1B] dark:text-stone-200">
-                      સમય (Time):
+                      {s.timeLabel}
                     </span>
                     <input
                       type="time"
@@ -649,7 +844,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     onClick={handleTestNotification}
                     className="px-2.5 py-1.5 rounded-lg bg-[#7A1D05] hover:bg-[#601503] text-white text-[11px] font-semibold transition cursor-pointer shadow-2xs"
                   >
-                    {ui.testNotificationButton || 'ટેસ્ટ સૂચના'}
+                    {s.testNotification}
                   </button>
                 </div>
               )}
@@ -663,34 +858,33 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           </div>
 
           {/* =========================================================
-              CARD 4: એપ અપડેટ કરો (Update App)
-              Clean, compact card with refresh status
+              CARD 5: એપ અપડેટ કરો (Update App)
               ========================================================= */}
           <div 
             id="card-update-app"
             className="border-2 border-[#F6DEAC] dark:border-amber-900/40 bg-[#FFFDF7] dark:bg-[#201915] rounded-2xl p-4 sm:p-5 shadow-xs"
           >
             <div className="flex items-start gap-2.5">
-              <RefreshCw className={`w-5 h-5 text-[#B85D00] mt-0.5 flex-shrink-0 ${updatingApp ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-5 h-5 text-[#B85D00] mt-0.5 shrink-0 ${updatingApp ? 'animate-spin' : ''}`} />
               <div className="flex-1">
                 <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                  {ui.updateAppTitle || 'એપ અપડેટ કરો (Update App)'}
+                  {s.updateAppTitle}
                 </h3>
                 <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5 leading-normal">
-                  {ui.updateAppDesc || 'એપમાં થયેલા તમામ નવા સુધારા અને શ્લોકો મેળવવા માટે અપડેટ કરો.'}
+                  {s.updateAppDesc}
                 </p>
               </div>
             </div>
 
             <div className="mt-3.5 pt-3 border-t border-[#F5E6CE] dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <div className="text-xs text-[#7A6250] dark:text-stone-400 flex items-center gap-2">
-                <span>{ui.appVersionLabel || 'આવૃત્તિ'}:</span>
+                <span>{s.versionLabel}:</span>
                 <span className="font-bold text-[#7A1D05] dark:text-amber-300">
                   v{CURRENT_APP_VERSION.version}
                 </span>
                 {updateAvailable && (
                   <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300 animate-pulse">
-                    નવું ઉપલબ્ધ! (v{remoteVersion?.version || '2.5.0'})
+                    {s.newVersionAvailable}
                   </span>
                 )}
               </div>
@@ -709,18 +903,18 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <RefreshCw className={`w-4 h-4 ${(updatingApp || isCheckingUpdate) ? 'animate-spin' : ''}`} />
                 <span>
                   {updatingApp 
-                    ? (ui.updatingAppButton || 'અપડેટ થઈ રહ્યું છે...') 
+                    ? s.updatingNow 
                     : isCheckingUpdate
-                    ? 'તપાસ થઈ રહી છે...'
+                    ? s.checkingUpdates
                     : updateAvailable
-                    ? 'હમણાં અપડેટ કરો (Update Now)'
-                    : 'અપડેટ્સ માટે તપાસો (Check for Updates)'}
+                    ? s.updateNow
+                    : s.checkUpdates}
                 </span>
               </button>
             </div>
 
             <p className="text-[11px] text-[#8C7665] dark:text-stone-400 mt-2 italic text-center sm:text-left">
-              * જ્યારે પણ તમે ઓનલાઇન હોવ ત્યારે એપ આપોઆપ બેકગ્રાઉન્ડમાં નવા અપડેટ્સ તપાસે છે અને તમને સૂચિત કરે છે.
+              {s.updateBgNote}
             </p>
 
             {(checkStatusMessage || updateSuccess) && (
@@ -730,11 +924,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             )}
           </div>
 
-
-
           {/* =========================================================
-              CARD 5: એપ વપરાશ & મુલાકાતીઓ (Anonymous Hit Counter & GA4)
-              Real-time aggregate app visits counter without personal data
+              CARD 6: એપ મુલાકાતો (Anonymous Hit Counter)
               ========================================================= */}
           <div 
             id="card-anonymous-hit-counter"
@@ -742,57 +933,54 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 flex-shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 shrink-0 mt-0.5">
                   <Users className="w-5 h-5 stroke-[2.3]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                    કુલ એપ મુલાકાતો (App Visits & Access)
+                    {s.visitsTitle}
                   </h3>
                   <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5">
-                    ગુમનામ વપરાશકર્તા ગણતરી (Anonymous Hit Counter)
+                    {s.visitsSubtitle}
                   </p>
                 </div>
               </div>
 
-              {/* Refresh Live Count Button */}
               <button
                 type="button"
                 onClick={refreshHits}
                 disabled={isHitLoading}
-                title="રીફ્રેશ કરો (Refresh Count)"
+                title={s.refreshCount}
                 className="p-2 sm:px-3 sm:py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-[#7A1D05] dark:text-amber-300 border border-amber-200 dark:border-stone-700 text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isHitLoading ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">રીફ્રેશ</span>
+                <span className="hidden sm:inline">{s.refreshCount}</span>
               </button>
             </div>
 
-            {/* Live Count Display Metric */}
             <div className="mt-3.5 p-3.5 sm:p-4 rounded-xl bg-gradient-to-br from-[#FFF9EE] via-[#FDF5E6] to-[#F5EBD7] dark:from-[#292019] dark:via-[#221B16] dark:to-[#1C1612] border border-[#ECDCC7] dark:border-stone-800 flex items-center justify-between gap-3 shadow-2xs">
               <div>
                 <span className="text-[11px] font-bold text-[#8C6B52] dark:text-amber-200/80 uppercase tracking-wider block">
-                  કુલ એપ એક્સેસ (Total Accesses)
+                  {s.totalAccesses}
                 </span>
                 <div className="flex items-baseline gap-2 mt-0.5">
                   <span className="text-3xl sm:text-4xl font-extrabold text-[#7A1D05] dark:text-amber-300 tracking-tight font-mono">
                     {isHitLoading ? '...' : hitCount.toLocaleString()}
                   </span>
                   <span className="text-xs font-semibold text-stone-500 dark:text-stone-400">
-                    વખત
+                    {s.times}
                   </span>
                 </div>
               </div>
             </div>
 
             <p className="text-[11px] text-[#8C7665] dark:text-stone-400 mt-2.5 leading-relaxed">
-              * ૧૦૦% ગોપનીય અને ગુમનામ: કોઈ અંગત માહિતી, નામ, ઈમેલ કે કૂકીઝ એકત્રિત થતી નથી. માત્ર એપ એક્સેસની સંખ્યા ગણવામાં આવે છે.
+              {s.privacyNote}
             </p>
           </div>
 
           {/* =========================================================
-              CARD 6: એપ શેર કરો (Share This App)
-              Only in settings matching existing brown/red branding without disclosing link
+              CARD 7: એપ શેર કરો (Share This App)
               ========================================================= */}
           <div 
             id="card-share-app"
@@ -800,15 +988,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 flex-shrink-0 mt-0.5">
+                <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/70 border border-amber-300/70 flex items-center justify-center text-[#7A1D05] dark:text-amber-300 shrink-0 mt-0.5">
                   <Share2 className="w-5 h-5 stroke-[2.3]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-[16px] sm:text-[17px] text-[#7A1D05] dark:text-amber-300 leading-snug">
-                    Share This App
+                    {s.shareTitle}
                   </h3>
                   <p className="text-[12.5px] sm:text-[13px] text-[#785E4F] dark:text-stone-300 mt-0.5">
-                    Share with colleagues, tellers, shopkeepers, or friends
+                    {s.shareDesc}
                   </p>
                 </div>
               </div>
@@ -816,10 +1004,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <button
                 type="button"
                 onClick={() => setIsShareModalOpen(true)}
-                className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer flex-shrink-0"
+                className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-xs transition cursor-pointer shrink-0"
               >
                 <Share2 className="w-4 h-4" />
-                <span>Share App</span>
+                <span>{s.shareBtn}</span>
               </button>
             </div>
           </div>
@@ -827,43 +1015,38 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         {/* =========================================================
-            BOTTOM FIXED ACTION BAR (Exact Match with Attachment)
-            Left: મૂળ સેટિંગ્સ (Reset)
-            Center: મુલાકાતીઓ કાઉન્ટર ઇન્ડિકેટર (Visitor Counter)
-            Right: સાચવો & બંધ કરો (Save & Close)
+            BOTTOM FIXED ACTION BAR
             ========================================================= */}
         <div 
           id="settings-bottom-bar"
-          className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 flex-shrink-0 select-none shadow-xs ${
+          className={`border-t px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 shrink-0 select-none shadow-xs ${
             preferences.theme === 'dark'
               ? 'bg-[#15100C] border-stone-800'
               : 'bg-[#FAF5EC] border-[#ECD8BE]'
           }`}
         >
-          {/* Left: મૂળ સેટિંગ્સ (Reset) */}
           <button
             id="btn-reset-settings"
             type="button"
             onClick={() => {
-              if (confirm('Reset all settings to default?')) {
+              if (confirm(s.resetConfirm)) {
                 onResetPreferences();
                 onClose();
               }
             }}
-            className="flex items-center gap-2 text-[#4A2D1B] dark:text-stone-300 hover:text-[#7A1D05] text-sm font-medium transition cursor-pointer py-2 px-1 flex-shrink-0"
+            className="flex items-center gap-2 text-[#4A2D1B] dark:text-stone-300 hover:text-[#7A1D05] text-sm font-medium transition cursor-pointer py-2 px-1 shrink-0"
           >
             <RotateCcw className="w-4 h-4 text-[#7A1D05] stroke-[2.5]" />
-            <span>{ui.resetButton}</span>
+            <span>{s.resetBtn}</span>
           </button>
 
-          {/* Right: સાચવો & બંધ કરો */}
           <button
             id="btn-save-and-close"
             type="button"
             onClick={onClose}
-            className="px-5 sm:px-7 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer active:scale-98 flex-shrink-0"
+            className="px-5 sm:px-7 py-2.5 rounded-xl bg-[#7A1D05] hover:bg-[#601503] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer active:scale-98 shrink-0"
           >
-            {ui.saveCloseButton}
+            {s.saveCloseBtn}
           </button>
         </div>
 

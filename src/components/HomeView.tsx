@@ -78,12 +78,12 @@ export const HomeView: React.FC<HomeViewProps> = ({
   // Primary Study Modules
   const studyModules = [
     {
-      id: 'reader',
+      id: 'mukhpath',
       title: ui.homeShlokAdhyayanTitle || 'શ્લોક અધ્યયન',
-      subtitle: ui.homeShlokAdhyayanDesc || 'સંસ્કૃત શ્લોક, ભાવાર્થ, પદચ્છેદ અને વ્યાકરણ',
+      subtitle: 'સંસ્કૃત શ્લોક, ભાવાર્થ, પદચ્છેદ, અન્વય, મુખપાઠ સાધના અને શ્રવણ',
       icon: BookOpen,
       color: 'from-[#8B2500] to-[#B33900]',
-      badge: ui.allShlokas || '૩૧૫ શ્લોક'
+      badge: '૩૧૫ શ્લોક'
     },
     {
       id: 'udgaan',
@@ -92,14 +92,6 @@ export const HomeView: React.FC<HomeViewProps> = ({
       icon: Radio,
       color: 'from-[#D97706] to-[#B45309]',
       badge: '૩૧૫ શ્લોક ગાન'
-    },
-    {
-      id: 'mukhpath',
-      title: ui.homeMukhpathTitle || 'મુખપાઠ સાધના',
-      subtitle: ui.homeMukhpathDesc || 'શ્લોકો કંઠસ્થ કરવાની વિશિષ્ટ વૈદિક પદ્ધતિ અને શ્રવણ કસોટી',
-      icon: Sparkles,
-      color: 'from-[#B45309] to-[#D97706]',
-      badge: `${memorizedCount}/315`
     },
     {
       id: 'chapters',
